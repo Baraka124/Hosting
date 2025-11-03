@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COPD Patient Tracker</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+    :root {
+      --bg: #f5f5f5;
+      --text: #111;
+      --card: #fff;
+    }
+    .dark {
+      --bg: #121212;
+      --text: #eee;
+      --card: #1e1e1e;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1em 2em;
+      background: var(--card);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .container {
+      padding: 2em;
+    }
+    .patient {
+      background: var(--card);
+      padding: 1.5em;
+      border-radius: 10px;
+      margin-bottom: 1em;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      padding: 0.5em 1em;
+      border: none;
+      border-radius: 6px;
+      background: #0078d7;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>COPD Digital Tracing</h2>
+    <button id="themeToggle">Switch Theme</button>
+  </header>
+
+  <div class="container" id="dataContainer">
+    <h3>Loading patient data...</h3>
+  </div>
+
+  <script>
+    const container = document.getElementById('dataContainer');
+    const themeToggle = document.getElementById('themeToggle');
+    let dark = false;
+
+    // Toggle theme
+    themeToggle.addEventListener('click', () => {
+      dark = !dark;
+      document.body.classList.toggle('dark', dark);
+      themeToggle.textContent = dark ? 'Light Mode' : 'Dark Mode';
+    });
+
+    // Fetch patient data from backend
+    async function fetchData() {
+      try {
+        const res = await fetch('https://hosting-production-a352.up.railway.app/patients');
+        const data = await res.json();
+        renderData(data);
+      } catch (e) {
+        container.innerHTML = "<p style='color:red;'>Unable to load data. Backend might not have /patients endpoint yet.</p>";
+      }
+    }
+
+    // Render patient data
+    function renderData(data) {
+      container.innerHTML = '';
+      data.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'patient';
+        div.innerHTML = `
+          <h3>${p.name} (ID: ${p.id})</h3>
+          <p><strong>Stage:</strong> ${p.stage}</p>
+          <p><strong>Last Spirometry:</strong> ${p.spirometry}</p>
+          <p><strong>Medication:</strong> ${p.medication}</p>
+          <p><strong>Trend:</strong> ${p.trend}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    fetchData();
+  </script>
+</body>
+</html>

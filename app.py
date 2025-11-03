@@ -1,148 +1,125 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import sqlite3
-from datetime import datetime
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>COPD Digital Tracing Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 2rem;
+      color: #333;
+    }
+    h1 {
+      color: #2b4eff;
+      text-align: center;
+    }
+    #patients {
+      margin-top: 2rem;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    #patients th, #patients td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    #patients th {
+      background-color: #e8ecff;
+    }
+    form {
+      margin-bottom: 2rem;
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    input, select {
+      padding: 0.4rem;
+      margin-right: 0.5rem;
+    }
+    button {
+      background: #2b4eff;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>COPD Digital Tracing Dashboard</h1>
 
-app = Flask(__name__)
-CORS(app)  # Allow requests from frontend (e.g., Vercel)
+  <form id="addPatientForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="number" id="age" placeholder="Age">
+    <select id="gender">
+      <option value="">Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    <button type="submit">Add Patient</button>
+  </form>
 
-DB_FILE = "database.db"
+  <table id="patients">
+    <thead>
+      <tr>
+        <th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Diagnosis Date</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
+  <script>
+    // Replace with your backend URL:
+    const API_BASE = "https://hosting-production-a352.up.railway.app/api";
 
-# ------------------------------
-# Database Helpers
-# ------------------------------
-def get_db_connection():
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    return conn
+    async function loadPatients() {
+      try {
+        const res = await fetch(`${API_BASE}/patients`);
+        if (!res.ok) throw new Error('Response not OK');
+        const patients = await res.json();
 
+        const tbody = document.querySelector("#patients tbody");
+        tbody.innerHTML = "";
+        patients.forEach(p => {
+          const row = `<tr>
+            <td>${p.id}</td>
+            <td>${p.name}</td>
+            <td>${p.age ?? '-'}</td>
+            <td>${p.gender ?? '-'}</td>
+            <td>${p.diagnosis_date ?? '-'}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Unable to load data. Check backend URL or /api/patients route.");
+      }
+    }
 
-def init_db():
-    conn = get_db_connection()
-    cur = conn.cursor()
+    document.querySelector("#addPatientForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const name = document.querySelector("#name").value.trim();
+      const age = document.querySelector("#age").value;
+      const gender = document.querySelector("#gender").value;
+      if (!name) return alert("Please enter a name");
 
-    # Create patients table
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS patients (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            age INTEGER,
-            gender TEXT,
-            diagnosis_date TEXT
-        )
-    """)
+      await fetch(`${API_BASE}/patients`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name, age, gender })
+      });
 
-    # Create vitals table
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS vitals (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            patient_id INTEGER,
-            timestamp TEXT,
-            oxygen_sat REAL,
-            resp_rate REAL,
-            heart_rate REAL,
-            lung_capacity REAL,
-            treatment_stage TEXT,
-            FOREIGN KEY(patient_id) REFERENCES patients(id)
-        )
-    """)
+      document.querySelector("#name").value = "";
+      document.querySelector("#age").value = "";
+      document.querySelector("#gender").value = "";
+      loadPatients();
+    });
 
-    conn.commit()
-    conn.close()
-
-
-# Initialize the database
-init_db()
-
-
-# ------------------------------
-# Routes
-# ------------------------------
-
-@app.route('/')
-def index():
-    return jsonify({"message": "COPD Digital Tracing API active"}), 200
-
-
-# --- PATIENTS ---
-
-@app.route('/api/patients', methods=['GET'])
-def get_patients():
-    conn = get_db_connection()
-    patients = conn.execute('SELECT * FROM patients').fetchall()
-    conn.close()
-    return jsonify([dict(p) for p in patients])
-
-
-@app.route('/api/patients', methods=['POST'])
-def add_patient():
-    data = request.json
-    conn = get_db_connection()
-    conn.execute(
-        'INSERT INTO patients (name, age, gender, diagnosis_date) VALUES (?, ?, ?, ?)',
-        (data['name'], data.get('age'), data.get('gender'), data.get('diagnosis_date', datetime.now().strftime('%Y-%m-%d')))
-    )
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Patient added successfully"}), 201
-
-
-# --- VITALS ---
-
-@app.route('/api/vitals/<int:patient_id>', methods=['GET'])
-def get_vitals(patient_id):
-    conn = get_db_connection()
-    vitals = conn.execute('SELECT * FROM vitals WHERE patient_id = ?', (patient_id,)).fetchall()
-    conn.close()
-    return jsonify([dict(v) for v in vitals])
-
-
-@app.route('/api/vitals', methods=['POST'])
-def add_vitals():
-    data = request.json
-    conn = get_db_connection()
-    conn.execute(
-        'INSERT INTO vitals (patient_id, timestamp, oxygen_sat, resp_rate, heart_rate, lung_capacity, treatment_stage) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        (
-            data['patient_id'],
-            datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            data.get('oxygen_sat'),
-            data.get('resp_rate'),
-            data.get('heart_rate'),
-            data.get('lung_capacity'),
-            data.get('treatment_stage', 'unknown')
-        )
-    )
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Vitals recorded successfully"}), 201
-
-
-# --- SIMULATED DATA (optional) ---
-@app.route('/api/simulate/<int:patient_id>', methods=['POST'])
-def simulate_vitals(patient_id):
-    import random
-    conn = get_db_connection()
-    conn.execute(
-        'INSERT INTO vitals (patient_id, timestamp, oxygen_sat, resp_rate, heart_rate, lung_capacity, treatment_stage) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        (
-            patient_id,
-            datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            random.uniform(88, 99),
-            random.uniform(12, 25),
-            random.uniform(60, 110),
-            random.uniform(2.0, 5.5),
-            random.choice(['pre-treatment', 'post-treatment'])
-        )
-    )
-    conn.commit()
-    conn.close()
-    return jsonify({"message": "Simulated vital added"}), 201
-
-
-# ------------------------------
-# Main Entry
-# ------------------------------
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    loadPatients();
+  </script>
+</body>
+</html>
