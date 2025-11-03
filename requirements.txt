@@ -1,4 +1,3 @@
 Flask
 gunicorn
 PyJWT
-sqlite3
