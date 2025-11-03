@@ -1,125 +1,140 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>COPD Digital Tracing Dashboard</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      margin: 0;
-      padding: 2rem;
-      color: #333;
-    }
-    h1 {
-      color: #2b4eff;
-      text-align: center;
-    }
-    #patients {
-      margin-top: 2rem;
-      border-collapse: collapse;
-      width: 100%;
-    }
-    #patients th, #patients td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    #patients th {
-      background-color: #e8ecff;
-    }
-    form {
-      margin-bottom: 2rem;
-      background: white;
-      padding: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    input, select {
-      padding: 0.4rem;
-      margin-right: 0.5rem;
-    }
-    button {
-      background: #2b4eff;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <h1>COPD Digital Tracing Dashboard</h1>
+from flask import Flask, request, jsonify, send_from_directory
+import sqlite3, os, jwt
+from datetime import datetime, timedelta
 
-  <form id="addPatientForm">
-    <input type="text" id="name" placeholder="Name" required>
-    <input type="number" id="age" placeholder="Age">
-    <select id="gender">
-      <option value="">Gender</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-    </select>
-    <button type="submit">Add Patient</button>
-  </form>
+app = Flask(__name__)
+DB_NAME = "konekt.db"
+SECRET_KEY = "supersecret-jwt-key"
 
-  <table id="patients">
-    <thead>
-      <tr>
-        <th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Diagnosis Date</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+# ---------- Database Layer ----------
+def get_db():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
 
-  <script>
-    // Replace with your backend URL:
-    const API_BASE = "https://hosting-production-a352.up.railway.app/api";
+def init_db():
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""CREATE TABLE IF NOT EXISTS users(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE NOT NULL,
+                    password TEXT NOT NULL
+                )""")
+    c.execute("""CREATE TABLE IF NOT EXISTS posts(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    category TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    timestamp TEXT NOT NULL,
+                    FOREIGN KEY(user_id) REFERENCES users(id)
+                )""")
+    conn.commit()
+    conn.close()
 
-    async function loadPatients() {
-      try {
-        const res = await fetch(`${API_BASE}/patients`);
-        if (!res.ok) throw new Error('Response not OK');
-        const patients = await res.json();
+init_db()
 
-        const tbody = document.querySelector("#patients tbody");
-        tbody.innerHTML = "";
-        patients.forEach(p => {
-          const row = `<tr>
-            <td>${p.id}</td>
-            <td>${p.name}</td>
-            <td>${p.age ?? '-'}</td>
-            <td>${p.gender ?? '-'}</td>
-            <td>${p.diagnosis_date ?? '-'}</td>
-          </tr>`;
-          tbody.innerHTML += row;
-        });
-      } catch (err) {
-        console.error(err);
-        alert("Unable to load data. Check backend URL or /api/patients route.");
-      }
-    }
+# ---------- Helper Functions ----------
+def token_required(func):
+    def wrapper(*args, **kwargs):
+        token = request.headers.get("Authorization")
+        if not token:
+            return jsonify({"error": "Missing token"}), 401
+        try:
+            decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            request.user_id = decoded["user_id"]
+        except Exception as e:
+            return jsonify({"error": "Invalid token"}), 401
+        return func(*args, **kwargs)
+    wrapper.__name__ = func.__name__
+    return wrapper
 
-    document.querySelector("#addPatientForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      const name = document.querySelector("#name").value.trim();
-      const age = document.querySelector("#age").value;
-      const gender = document.querySelector("#gender").value;
-      if (!name) return alert("Please enter a name");
+def validate_fields(data, required):
+    for field in required:
+        if not data.get(field):
+            return False, f"Missing field: {field}"
+    return True, None
 
-      await fetch(`${API_BASE}/patients`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ name, age, gender })
-      });
+# ---------- Routes ----------
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
 
-      document.querySelector("#name").value = "";
-      document.querySelector("#age").value = "";
-      document.querySelector("#gender").value = "";
-      loadPatients();
-    });
+# Register new user
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    valid, msg = validate_fields(data, ["username", "password"])
+    if not valid:
+        return jsonify({"error": msg}), 400
 
-    loadPatients();
-  </script>
-</body>
-</html>
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)",
+                  (data["username"], data["password"]))
+        conn.commit()
+        return jsonify({"message": "User registered successfully"})
+    except sqlite3.IntegrityError:
+        return jsonify({"error": "Username already exists"}), 400
+    finally:
+        conn.close()
+
+# Login
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    valid, msg = validate_fields(data, ["username", "password"])
+    if not valid:
+        return jsonify({"error": msg}), 400
+
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("SELECT id FROM users WHERE username=? AND password=?",
+              (data["username"], data["password"]))
+    user = c.fetchone()
+    conn.close()
+
+    if not user:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+    token = jwt.encode({
+        "user_id": user["id"],
+        "exp": datetime.utcnow() + timedelta(hours=2)
+    }, SECRET_KEY, algorithm="HS256")
+    return jsonify({"token": token})
+
+# Post creation and listing
+@app.route('/api/posts', methods=['GET', 'POST'])
+@token_required
+def posts():
+    conn = get_db()
+    c = conn.cursor()
+
+    if request.method == 'POST':
+        data = request.get_json()
+        valid, msg = validate_fields(data, ["category", "content"])
+        if not valid:
+            return jsonify({"error": msg}), 400
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        c.execute("INSERT INTO posts (user_id, category, content, timestamp) VALUES (?, ?, ?, ?)",
+                  (request.user_id, data["category"], data["content"], timestamp))
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Post added"}), 201
+
+    c.execute("""SELECT p.id, u.username, p.category, p.content, p.timestamp
+                 FROM posts p JOIN users u ON p.user_id=u.id
+                 ORDER BY p.id DESC""")
+    rows = [dict(row) for row in c.fetchall()]
+    conn.close()
+    return jsonify(rows)
+
+# ---------- Error Handling ----------
+@app.errorhandler(404)
+def not_found(e): return jsonify({"error": "Not found"}), 404
+
+@app.errorhandler(500)
+def server_error(e): return jsonify({"error": "Server error"}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
