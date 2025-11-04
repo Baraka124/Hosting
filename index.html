@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Konekt • Community Forum</title>
+  <title>EdgePowered • Community Forum</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <style>
@@ -180,6 +180,37 @@
       border-color: #444;
       color: white;
     }
+
+    .reputation-badge {
+      background: linear-gradient(45deg, #FF9500, #FF3B30);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+
+    .recommendation-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .shortcut-hint {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
@@ -188,7 +219,7 @@
     <div class="container">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3 style="margin: 0; color: #007AFF;">
-          <i class="bi bi-chat-dots"></i> Konekt
+          <i class="bi bi-lightning-charge"></i> EdgePowered
         </h3>
         <div style="display: flex; align-items: center; gap: 15px;">
           <button id="theme-toggle" class="btn btn-outline-secondary btn-sm">
@@ -196,6 +227,7 @@
           </button>
           <div id="user-section">
             <span id="username-display" style="margin-right: 10px;"></span>
+            <span id="reputation-display" class="reputation-badge" style="display: none;"></span>
             <button class="btn btn-outline-secondary btn-sm" id="logout-btn" style="display: none;">Log Out</button>
           </div>
         </div>
@@ -206,13 +238,18 @@
   <!-- Toast Container -->
   <div class="toast-container" id="toast-container"></div>
 
+  <!-- Keyboard Shortcut Hint -->
+  <div class="shortcut-hint" onclick="showKeyboardShortcuts()">
+    <i class="bi bi-keyboard"></i> Shortcuts
+  </div>
+
   <!-- Main Content -->
   <div class="container">
     <!-- Welcome Section -->
     <div id="auth-section">
       <div class="card text-center">
-        <h2>Welcome to Konekt</h2>
-        <p>Join our community forum to share ideas and connect with others.</p>
+        <h2>Welcome to EdgePowered</h2>
+        <p>Where cutting-edge ideas meet community power.</p>
         <div>
           <button class="btn btn-primary" onclick="showLogin()">Sign In</button>
           <button class="btn btn-outline-primary" onclick="showRegister()" style="margin-left: 10px;">Create Account</button>
@@ -222,6 +259,12 @@
 
     <!-- Posts Section -->
     <div id="posts-section" style="display: none;">
+      <!-- Recommendations Section -->
+      <div id="recommendations-section" class="recommendation-section" style="display: none;">
+        <h5><i class="bi bi-stars"></i> Recommended for You</h5>
+        <div id="recommendations-container"></div>
+      </div>
+
       <!-- Search and Filters -->
       <div class="search-box">
         <i class="bi bi-search"></i>
@@ -230,17 +273,30 @@
                onkeyup="debouncedSearch()">
       </div>
       
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div>
-          <h4 style="display: inline-block; margin-right: 15px;">Community Posts</h4>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <h4 style="margin: 0;">Community Posts</h4>
           <select id="category-filter" onchange="loadPosts()" style="padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
             <option value="">All Categories</option>
             <option value="General">General</option>
             <option value="Engineering">Engineering</option>
             <option value="Healthcare">Healthcare</option>
           </select>
+          <select id="time-filter" onchange="loadPosts()" style="padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+            <option value="">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+          <select id="sort-by" onchange="loadPosts()" style="padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+            <option value="newest">Newest</option>
+            <option value="popular">Most Popular</option>
+            <option value="trending">Trending</option>
+          </select>
         </div>
-        <button class="btn btn-primary" onclick="showCreatePost()">New Post</button>
+        <button class="btn btn-primary" onclick="showCreatePost()">
+          <i class="bi bi-plus-circle"></i> New Post
+        </button>
       </div>
 
       <!-- Loading Spinner -->
@@ -265,7 +321,7 @@
   <!-- Enhanced Modals -->
   <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(5px);">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-      <h4>Sign In</h4>
+      <h4>Sign In to EdgePowered</h4>
       <div style="margin: 20px 0;">
         <input type="text" id="loginUsername" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
         <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px;">
@@ -277,10 +333,9 @@
     </div>
   </div>
 
-  <!-- Similar enhanced modals for register and create post -->
   <div id="registerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(5px);">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
-      <h4>Create Account</h4>
+      <h4>Join EdgePowered</h4>
       <div style="margin: 20px 0;">
         <input type="text" id="registerUsername" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
         <input type="password" id="registerPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
@@ -302,7 +357,7 @@
           <option value="Engineering">Engineering</option>
           <option value="Healthcare">Healthcare</option>
         </select>
-        <textarea id="postContent" placeholder="What would you like to share?" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px; height: 120px;"></textarea>
+        <textarea id="postContent" placeholder="What cutting-edge idea would you like to share?" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px; height: 120px;"></textarea>
       </div>
       <div style="display: flex; gap: 10px;">
         <button class="btn btn-secondary" onclick="hideModal('createPostModal')">Cancel</button>
@@ -312,13 +367,14 @@
   </div>
 
   <script>
-    // Enhanced Konekt Forum - A+ Version
+    // EdgePowered Forum - Complete A+ Version
     const API_BASE = "https://hosting-production-a352.up.railway.app/api";
     let currentUser = null;
     let allPosts = [];
     let currentPage = 1;
     let totalPages = 1;
     let searchTimeout = null;
+    let lastSeenPost = null;
 
     // Enhanced DOM functions with error handling
     function getElement(id) {
@@ -457,12 +513,23 @@
       }, 500);
     }
 
+    // Keyboard Shortcuts
+    function showKeyboardShortcuts() {
+      showToast(`
+        <strong>Keyboard Shortcuts:</strong><br>
+        Ctrl+N - New Post<br>
+        Ctrl+K - Search<br>
+        Escape - Close Modals
+      `, 'info', 6000);
+    }
+
     // Initialize app
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('🚀 Konekt Forum Starting...');
+      console.log('⚡ EdgePowered Forum Starting...');
       initTheme();
       checkAuthStatus();
       setupEventListeners();
+      initKeyboardShortcuts();
     });
 
     function setupEventListeners() {
@@ -487,6 +554,53 @@
       if (loginBtn) loginBtn.setAttribute('data-original-text', 'Sign In');
       if (registerBtn) registerBtn.setAttribute('data-original-text', 'Create Account');
       if (createPostBtn) createPostBtn.setAttribute('data-original-text', 'Publish');
+    }
+
+    function initKeyboardShortcuts() {
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+          switch(e.key) {
+            case 'n':
+              e.preventDefault();
+              if (currentUser) showCreatePost();
+              break;
+            case 'k':
+              e.preventDefault();
+              getElement('search-input').focus();
+              break;
+          }
+        }
+        
+        // Escape key closes modals
+        if (e.key === 'Escape') {
+          hideModal('loginModal');
+          hideModal('registerModal'); 
+          hideModal('createPostModal');
+        }
+      });
+    }
+
+    // Real-time Notifications
+    function initNotifications() {
+      // Check for new posts every 30 seconds
+      setInterval(async () => {
+        if (currentUser) {
+          try {
+            const data = await apiCall('/posts?limit=1');
+            if (data.success && data.data.length > 0) {
+              const latestPost = data.data[0];
+              const lastSeen = localStorage.getItem('lastSeenPost');
+              
+              if (!lastSeen || new Date(latestPost.timestamp) > new Date(lastSeen)) {
+                showToast(`New post in ${latestPost.category} by ${latestPost.username}`, 'info');
+                localStorage.setItem('lastSeenPost', latestPost.timestamp);
+              }
+            }
+          } catch (error) {
+            // Silent fail for notifications
+          }
+        }
+      }, 30000);
     }
 
     // Enhanced API call with retry logic
@@ -550,7 +664,10 @@
           currentUser = JSON.parse(userData);
           console.log('✅ User found:', currentUser.username);
           showAuthenticatedUI();
+          await loadProfile();
           await loadPosts();
+          await loadRecommendations();
+          initNotifications();
         } catch (error) {
           console.error('Auth error:', error);
           handleLogout();
@@ -558,6 +675,21 @@
       } else {
         console.log('❌ No user found');
         showUnauthenticatedUI();
+      }
+    }
+
+    async function loadProfile() {
+      try {
+        const data = await apiCall('/profile');
+        if (data.success) {
+          const reputationEl = getElement('reputation-display');
+          if (reputationEl && data.stats.reputation) {
+            reputationEl.textContent = data.stats.reputation;
+            reputationEl.style.display = 'inline-block';
+          }
+        }
+      } catch (error) {
+        // Silent fail for profile loading
       }
     }
 
@@ -573,7 +705,9 @@
       console.log('👥 Showing unauthenticated UI');
       showElement('auth-section');
       hideElement('posts-section');
+      hideElement('recommendations-section');
       setText('username-display', '');
+      hideElement('reputation-display');
       hideElement('logout-btn');
       hideElement('pagination');
     }
@@ -606,7 +740,10 @@
           setValue('loginPassword', '');
           
           showAuthenticatedUI();
-          showToast('Successfully signed in!', 'success');
+          await loadProfile();
+          await loadRecommendations();
+          initNotifications();
+          showToast('Successfully signed in to EdgePowered!', 'success');
         }
       } catch (error) {
         // Error handled in apiCall
@@ -653,7 +790,7 @@
           setValue('registerUsername', '');
           setValue('registerPassword', '');
           setValue('registerConfirmPassword', '');
-          showToast('Account created! Please sign in.', 'success');
+          showToast('EdgePowered account created! Please sign in.', 'success');
         }
       } catch (error) {
         // Error handled in apiCall
@@ -665,9 +802,10 @@
     function handleLogout() {
       localStorage.removeItem('token');
       localStorage.removeItem('userData');
+      localStorage.removeItem('lastSeenPost');
       currentUser = null;
       showUnauthenticatedUI();
-      showToast('Successfully signed out', 'success');
+      showToast('Successfully signed out from EdgePowered', 'success');
     }
 
     // Enhanced Post handlers
@@ -697,6 +835,7 @@
           hideModal('createPostModal');
           setValue('postContent', '');
           await loadPosts();
+          await loadRecommendations();
           showToast('Post published successfully!', 'success');
         }
       } catch (error) {
@@ -713,10 +852,14 @@
       try {
         const category = getValue('category-filter');
         const search = getValue('search-input');
+        const timeFilter = getValue('time-filter');
+        const sortBy = getValue('sort-by');
         
         let endpoint = `/posts?page=${page}&per_page=10`;
         if (category) endpoint += `&category=${encodeURIComponent(category)}`;
         if (search) endpoint += `&search=${encodeURIComponent(search)}`;
+        if (timeFilter) endpoint += `&time_filter=${timeFilter}`;
+        if (sortBy) endpoint += `&sort_by=${sortBy}`;
 
         const data = await apiCall(endpoint);
         
@@ -727,11 +870,49 @@
           
           displayPosts(allPosts);
           updatePagination();
+          
+          // Store last seen post for notifications
+          if (allPosts.length > 0) {
+            localStorage.setItem('lastSeenPost', allPosts[0].timestamp);
+          }
         }
       } catch (error) {
         // Error handled in apiCall
       } finally {
         hideElement('posts-loading');
+      }
+    }
+
+    async function loadRecommendations() {
+      try {
+        const data = await apiCall('/recommendations');
+        if (data.success && data.recommendations.length > 0) {
+          showElement('recommendations-section');
+          const container = getElement('recommendations-container');
+          container.innerHTML = data.recommendations.map(post => `
+            <div class="card" style="background: rgba(255,255,255,0.1); border: none; color: white; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1">
+                  <strong>${post.username}</strong>
+                  <div style="font-size: 14px; opacity: 0.9; margin-top: 4px;">
+                    ${post.category} • ${new Date(post.timestamp).toLocaleDateString()}
+                  </div>
+                </div>
+                <div style="display: flex; gap: 10px; font-size: 12px;">
+                  <span><i class="bi bi-heart"></i> ${post.likes_count || 0}</span>
+                  <span><i class="bi bi-chat"></i> ${post.comments_count || 0}</span>
+                </div>
+              </div>
+              <div style="margin-top: 8px; font-size: 14px; opacity: 0.9;">
+                ${post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content}
+              </div>
+            </div>
+          `).join('');
+        } else {
+          hideElement('recommendations-section');
+        }
+      } catch (error) {
+        hideElement('recommendations-section');
       }
     }
 
@@ -799,7 +980,7 @@
           <div class="card text-center">
             <i class="bi bi-inbox" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
             <h5>No posts found</h5>
-            <p>Be the first to start a discussion!</p>
+            <p>Be the first to start a cutting-edge discussion!</p>
             <button class="btn btn-primary" onclick="showCreatePost()">Create First Post</button>
           </div>
         `;
@@ -835,12 +1016,28 @@
             <button class="btn btn-sm btn-outline-secondary">
               <i class="bi bi-chat"></i> ${post.comments_count || 0}
             </button>
-            <button class="btn btn-sm btn-outline-secondary">
-              <i class="bi bi-share"></i> Share
+            <button class="btn btn-sm btn-outline-secondary" onclick="showPostAnalytics(${post.id})">
+              <i class="bi bi-graph-up"></i> Analytics
             </button>
           </div>
         </div>
       `).join('');
+    }
+
+    async function showPostAnalytics(postId) {
+      try {
+        const data = await apiCall(`/posts/${postId}/analytics`);
+        if (data.success) {
+          showToast(`
+            <strong>Post Analytics:</strong><br>
+            Likes: ${data.analytics.likes_count}<br>
+            Comments: ${data.analytics.total_comments}<br>
+            Unique Engagers: ${data.analytics.unique_likers + data.analytics.unique_commenters}
+          `, 'info', 6000);
+        }
+      } catch (error) {
+        // Silent fail for analytics
+      }
     }
 
     // Set up logout button
@@ -851,7 +1048,7 @@
       }
     });
 
-    console.log('🎯 Konekt Forum Enhanced Version Loaded Successfully!');
+    console.log('⚡ EdgePowered Forum Loaded Successfully!');
   </script>
 </body>
 </html>

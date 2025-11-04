@@ -12,15 +12,15 @@ app = Flask(__name__)
 CORS(app)
 
 # Enhanced Configuration
-DB_NAME = "konekt_advanced.db"
-SECRET_KEY = os.environ.get('SECRET_KEY', 'supersecret-jwt-key-advanced')
+DB_NAME = "edgepowered_forum.db"
+SECRET_KEY = os.environ.get('SECRET_KEY', 'edgepowered-super-secure-key-2024')
 RATE_LIMIT = int(os.environ.get('RATE_LIMIT', '100'))
 
 # Enhanced Logging
 if not os.path.exists('logs'):
     os.makedirs('logs')
 
-file_handler = RotatingFileHandler('logs/konekt.log', maxBytes=10240, backupCount=10)
+file_handler = RotatingFileHandler('logs/edgepowered.log', maxBytes=10240, backupCount=10)
 file_handler.setFormatter(logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
 ))
@@ -215,6 +215,23 @@ def generate_avatar_color():
     colors = ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#AF52DE', '#5856D6']
     return random.choice(colors)
 
+def calculate_reputation(user_id):
+    """Calculate user reputation based on activity"""
+    with get_db() as conn:
+        c = conn.cursor()
+        c.execute("""
+            SELECT 
+                (COUNT(DISTINCT p.id) * 5) + 
+                (COUNT(DISTINCT c.id) * 2) + 
+                (COUNT(DISTINCT l.id) * 1) as reputation
+            FROM users u
+            LEFT JOIN posts p ON u.id = p.user_id
+            LEFT JOIN comments c ON u.id = c.user_id  
+            LEFT JOIN likes l ON u.id = l.user_id
+            WHERE u.id = ?
+        """, (user_id,))
+        return c.fetchone()[0] or 0
+
 def log_user_activity(user_id, action, details=None, ip_address=None):
     with get_db() as conn:
         c = conn.cursor()
@@ -294,8 +311,8 @@ def register():
                       datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             conn.commit()
         
-        app.logger.info(f"New user registered: {username}")
-        return jsonify({"success": True, "message": "User registered successfully"})
+        app.logger.info(f"New EdgePowered user registered: {username}")
+        return jsonify({"success": True, "message": "EdgePowered account created successfully"})
     
     except sqlite3.IntegrityError:
         return jsonify({"success": False, "error": "Username already exists"}), 400
@@ -393,13 +410,15 @@ def posts():
             log_user_activity(request.user_id, "post_created", 
                             {"post_id": c.lastrowid, "category": category})
             
-            return jsonify({"success": True, "message": "Post added", "post_id": c.lastrowid}), 201
+            return jsonify({"success": True, "message": "Post added to EdgePowered", "post_id": c.lastrowid}), 201
 
         # Enhanced GET with security and performance
         page = request.args.get('page', 1, type=int)
-        per_page = min(request.args.get('per_page', 10, type=int), 50)  # Limit per_page
+        per_page = min(request.args.get('per_page', 10, type=int), 50)
         category = request.args.get('category', '')
         search = sanitize_input(request.args.get('search', ''), 50)
+        time_filter = request.args.get('time_filter', '')
+        sort_by = request.args.get('sort_by', 'newest')
         
         offset = (page - 1) * per_page
         
@@ -422,12 +441,28 @@ def posts():
             conditions.append("(p.content LIKE ? OR p.title LIKE ? OR p.tags LIKE ?)")
             params.extend([f'%{search}%', f'%{search}%', f'%{search}%'])
         
+        if time_filter:
+            if time_filter == 'today':
+                conditions.append("p.timestamp >= date('now')")
+            elif time_filter == 'week':
+                conditions.append("p.timestamp >= datetime('now', '-7 days')")
+            elif time_filter == 'month':
+                conditions.append("p.timestamp >= datetime('now', '-30 days')")
+        
         if conditions:
             where_clause = " AND " + " AND ".join(conditions)
             query += where_clause
             count_query += where_clause
         
-        query += " ORDER BY p.is_pinned DESC, p.timestamp DESC LIMIT ? OFFSET ?"
+        # Apply sorting
+        if sort_by == 'popular':
+            query += " ORDER BY p.likes_count DESC, p.comments_count DESC"
+        elif sort_by == 'trending':
+            query += " ORDER BY (p.likes_count * 0.7 + p.comments_count * 0.3) DESC"
+        else:  # newest
+            query += " ORDER BY p.is_pinned DESC, p.timestamp DESC"
+        
+        query += " LIMIT ? OFFSET ?"
         params.extend([per_page, offset])
         
         # Get total count
@@ -454,102 +489,41 @@ def posts():
             }
         })
 
-# Enhanced comments with security
-@app.route('/api/posts/<int:post_id>/comments', methods=['GET', 'POST'])
+# Post analytics endpoint
+@app.route('/api/posts/<int:post_id>/analytics')
 @token_required
-@rate_limit
-def post_comments(post_id):
+def post_analytics(post_id):
     with get_db() as conn:
         c = conn.cursor()
         
-        # Verify post exists and user can access it
-        c.execute("""SELECT p.id FROM posts p 
-                    JOIN users u ON p.user_id = u.id 
-                    WHERE p.id = ? AND u.is_active = 1""", (post_id,))
-        if not c.fetchone():
+        # Verify post exists and belongs to user or is public
+        c.execute("SELECT user_id FROM posts WHERE id = ?", (post_id,))
+        post = c.fetchone()
+        if not post:
             return jsonify({"success": False, "error": "Post not found"}), 404
         
-        if request.method == 'POST':
-            data = request.get_json()
-            valid, msg = validate_fields(data, ["content"])
-            if not valid:
-                return jsonify({"success": False, "error": msg}), 400
+        # Get post engagement metrics
+        c.execute("""
+            SELECT 
+                p.likes_count,
+                p.comments_count,
+                COUNT(DISTINCT l.user_id) as unique_likers,
+                (SELECT COUNT(*) FROM comments c2 WHERE c2.post_id = p.id) as total_comments,
+                (SELECT COUNT(DISTINCT user_id) FROM comments c3 WHERE c3.post_id = p.id) as unique_commenters
+            FROM posts p 
+            LEFT JOIN likes l ON p.id = l.post_id
+            WHERE p.id = ?
+            GROUP BY p.id
+        """, (post_id,))
+        
+        result = c.fetchone()
+        if not result:
+            return jsonify({"success": False, "error": "Analytics not available"}), 404
             
-            content = sanitize_input(data["content"], 500)
-            
-            if len(content) < 2:
-                return jsonify({"success": False, "error": "Comment must be at least 2 characters"}), 400
+        analytics = dict(result)
+        return jsonify({"success": True, "analytics": analytics})
 
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            c.execute("""INSERT INTO comments (post_id, user_id, content, timestamp) 
-                        VALUES (?, ?, ?, ?)""",
-                     (post_id, request.user_id, content, timestamp))
-            
-            # Update post comments count
-            c.execute("UPDATE posts SET comments_count = comments_count + 1 WHERE id = ?", (post_id,))
-            
-            conn.commit()
-            
-            # Log activity
-            log_user_activity(request.user_id, "comment_created", {"post_id": post_id})
-            
-            return jsonify({"success": True, "message": "Comment added"}), 201
-        
-        # GET comments for post
-        c.execute("""SELECT c.*, u.username, u.avatar_color 
-                    FROM comments c 
-                    JOIN users u ON c.user_id = u.id 
-                    WHERE c.post_id = ? AND u.is_active = 1
-                    ORDER BY c.timestamp ASC""", (post_id,))
-        comments = [dict(row) for row in c.fetchall()]
-        
-        return jsonify({"success": True, "data": comments})
-
-# Enhanced like system
-@app.route('/api/posts/<int:post_id>/like', methods=['POST'])
-@token_required
-@rate_limit
-def like_post(post_id):
-    with get_db() as conn:
-        c = conn.cursor()
-        
-        # Verify post exists
-        c.execute("SELECT id FROM posts WHERE id = ?", (post_id,))
-        if not c.fetchone():
-            return jsonify({"success": False, "error": "Post not found"}), 404
-        
-        # Check if already liked
-        c.execute("SELECT id FROM likes WHERE user_id = ? AND post_id = ?", (request.user_id, post_id))
-        existing_like = c.fetchone()
-        
-        if existing_like:
-            # Unlike
-            c.execute("DELETE FROM likes WHERE id = ?", (existing_like["id"],))
-            c.execute("UPDATE posts SET likes_count = likes_count - 1 WHERE id = ?", (post_id,))
-            action = "unliked"
-        else:
-            # Like
-            c.execute("INSERT INTO likes (user_id, post_id, timestamp) VALUES (?, ?, ?)",
-                     (request.user_id, post_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-            c.execute("UPDATE posts SET likes_count = likes_count + 1 WHERE id = ?", (post_id,))
-            action = "liked"
-        
-        conn.commit()
-        
-        # Get updated like count
-        c.execute("SELECT likes_count FROM posts WHERE id = ?", (post_id,))
-        likes_count = c.fetchone()["likes_count"]
-        
-        # Log activity
-        log_user_activity(request.user_id, f"post_{action}", {"post_id": post_id})
-        
-        return jsonify({
-            "success": True, 
-            "action": action,
-            "likes_count": likes_count
-        })
-
-# Enhanced user profile
+# Enhanced user profile with reputation
 @app.route('/api/profile', methods=['GET'])
 @token_required
 def get_profile():
@@ -574,15 +548,68 @@ def get_profile():
                     WHERE p.user_id = ?""", (request.user_id,))
         like_count = c.fetchone()["like_count"]
         
+        # Calculate reputation
+        reputation = calculate_reputation(request.user_id)
+        
         return jsonify({
             "success": True,
             "profile": dict(user),
             "stats": {
                 "posts": post_count,
                 "comments": comment_count,
-                "likes_received": like_count
+                "likes_received": like_count,
+                "reputation": reputation
             }
         })
+
+# Recommendations endpoint
+@app.route('/api/recommendations')
+@token_required
+def get_recommendations():
+    """Get personalized post recommendations based on user activity"""
+    with get_db() as conn:
+        c = conn.cursor()
+        
+        # Get user's most engaged categories
+        c.execute("""
+            SELECT p.category, COUNT(*) as engagement
+            FROM posts p
+            LEFT JOIN likes l ON p.id = l.post_id AND l.user_id = ?
+            LEFT JOIN comments c ON p.id = c.post_id AND c.user_id = ?
+            WHERE l.id IS NOT NULL OR c.id IS NOT NULL
+            GROUP BY p.category
+            ORDER BY engagement DESC
+            LIMIT 2
+        """, (request.user_id, request.user_id))
+        
+        top_categories = [row['category'] for row in c.fetchall()]
+        
+        # Get recommended posts
+        if top_categories:
+            placeholders = ','.join(['?'] * len(top_categories))
+            c.execute(f"""
+                SELECT p.*, u.username, u.avatar_color
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                WHERE p.category IN ({placeholders})
+                AND p.user_id != ?
+                AND u.is_active = 1
+                ORDER BY (p.likes_count * 0.5 + p.comments_count * 0.3) DESC
+                LIMIT 5
+            """, top_categories + [request.user_id])
+        else:
+            # Fallback to popular posts
+            c.execute("""
+                SELECT p.*, u.username, u.avatar_color
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                WHERE u.is_active = 1
+                ORDER BY (p.likes_count * 0.5 + p.comments_count * 0.3) DESC
+                LIMIT 5
+            """)
+        
+        recommendations = [dict(row) for row in c.fetchall()]
+        return jsonify({"success": True, "recommendations": recommendations})
 
 # Enhanced search with security
 @app.route('/api/search')
@@ -625,6 +652,40 @@ def search():
             "users": users
         })
 
+# Performance metrics endpoint
+@app.route('/api/performance/metrics')
+@token_required
+def performance_metrics():
+    """Get performance metrics for admin users"""
+    with get_db() as conn:
+        c = conn.cursor()
+        
+        # Database performance
+        c.execute("SELECT COUNT(*) as total_posts FROM posts")
+        total_posts = c.fetchone()[0]
+        
+        c.execute("SELECT COUNT(*) as active_users FROM users WHERE last_login > datetime('now', '-7 days')")
+        active_users = c.fetchone()[0]
+        
+        # Response times (simplified)
+        c.execute("""
+            SELECT 
+                AVG((julianday('now') - julianday(timestamp)) * 24 * 60) as avg_post_age_minutes
+            FROM posts 
+            WHERE timestamp > datetime('now', '-1 day')
+        """)
+        avg_post_age = c.fetchone()[0] or 0
+        
+        return jsonify({
+            "success": True,
+            "metrics": {
+                "total_posts": total_posts,
+                "active_users": active_users,
+                "engagement_rate": (active_users / max(total_posts, 1)) * 100,
+                "avg_post_age_minutes": round(avg_post_age, 2)
+            }
+        })
+
 # Enhanced error handlers
 @app.errorhandler(404)
 def not_found(e): 
@@ -660,7 +721,7 @@ def cleanup_old_sessions():
             c.execute("DELETE FROM user_activity WHERE timestamp < datetime('now', '-90 days')")
             conn.commit()
         
-        app.logger.info("Cleanup completed successfully")
+        app.logger.info("EdgePowered cleanup completed successfully")
         return jsonify({"success": True, "message": "Cleanup completed"})
     
     except Exception as e:
