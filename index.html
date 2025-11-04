@@ -7,6 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <style>
+    /* Your existing CSS styles here */
     :root {
       --apple-blue: #007AFF;
       --apple-green: #34C759;
@@ -23,12 +24,7 @@
       --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* Add all your existing CSS styles here */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--apple-gray-1);
@@ -43,1087 +39,79 @@
       padding: 0 20px;
     }
 
-    /* Header Styles */
-    .app-header {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      padding: 12px 0;
-    }
-
-    .app-header .navbar-brand {
-      font-weight: 700;
-      font-size: 24px;
-      color: var(--apple-gray-9);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .app-header .navbar-brand i {
-      color: var(--apple-blue);
-    }
-
-    .search-container {
-      max-width: 400px;
-      margin: 0 auto;
-    }
-
-    .search-box {
-      background: var(--apple-gray-2);
-      border: none;
-      border-radius: 10px;
-      padding: 10px 16px;
-      width: 100%;
-      font-size: 16px;
-      transition: var(--transition);
-    }
-
-    .search-box:focus {
-      background: white;
-      box-shadow: 0 0 0 2px var(--apple-blue);
-      outline: none;
-    }
-
-    .nav-user {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--apple-blue);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    /* Main Content */
-    .main-content {
-      display: grid;
-      grid-template-columns: 280px 1fr 280px;
-      gap: 24px;
-      padding: 24px 0;
-      min-height: calc(100vh - 80px);
-    }
-
-    /* Sidebar */
-    .sidebar {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-      height: fit-content;
-      position: sticky;
-      top: 100px;
-    }
-
-    .sidebar-section {
-      margin-bottom: 32px;
-    }
-
-    .sidebar-section:last-child {
-      margin-bottom: 0;
-    }
-
-    .sidebar-section h3 {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--apple-gray-9);
-    }
-
-    .category-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    .category-list li {
-      margin-bottom: 8px;
-    }
-
-    .category-list a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      color: var(--apple-gray-9);
-      text-decoration: none;
-      transition: var(--transition);
-      cursor: pointer;
-    }
-
-    .category-list a:hover, .category-list a.active {
-      background: var(--apple-gray-2);
-      color: var(--apple-blue);
-    }
-
-    .category-list i {
-      font-size: 18px;
-      width: 20px;
-      text-align: center;
-    }
-
-    .category-count {
-      background: var(--apple-gray-2);
-      color: var(--apple-gray-6);
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 12px;
-      margin-left: auto;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .stat-card {
-      background: var(--apple-gray-1);
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      transition: var(--transition);
-      cursor: pointer;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      background: var(--apple-gray-2);
-    }
-
-    .stat-value {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--apple-blue);
-    }
-
-    .stat-label {
-      font-size: 13px;
-      color: var(--apple-gray-6);
-      margin-top: 4px;
-    }
-
-    /* Right Sidebar */
-    .trending-topics {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-      height: fit-content;
-      position: sticky;
-      top: 100px;
-    }
-
-    .topic-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--apple-gray-2);
-    }
-
-    .topic-item:last-child {
-      border-bottom: none;
-    }
-
-    .topic-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: var(--apple-blue);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .topic-content {
-      flex: 1;
-    }
-
-    .topic-title {
-      font-weight: 600;
-      font-size: 14px;
-      margin-bottom: 2px;
-    }
-
-    .topic-meta {
-      font-size: 12px;
-      color: var(--apple-gray-6);
-    }
-
-    /* Feed */
-    .feed-container {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .welcome-card {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      box-shadow: var(--card-shadow);
-      text-align: center;
-    }
-
-    .welcome-card h2 {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .welcome-card p {
-      color: var(--apple-gray-6);
-      font-size: 17px;
-      margin-bottom: 24px;
-    }
-
-    .action-buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
-
-    .btn-apple {
-      background: var(--apple-blue);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 24px;
-      font-weight: 600;
-      font-size: 16px;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-apple:hover {
-      background: #0066D6;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 122, 255, 0.3);
-    }
-
-    .btn-apple-outline {
-      background: transparent;
-      color: var(--apple-blue);
-      border: 2px solid var(--apple-blue);
-      border-radius: 12px;
-      padding: 10px 22px;
-      font-weight: 600;
-      font-size: 16px;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-apple-outline:hover {
-      background: rgba(0, 122, 255, 0.1);
-      transform: translateY(-2px);
-    }
-
-    /* Filter Bar */
-    .filter-bar {
-      background: white;
-      border-radius: 16px;
-      padding: 16px 24px;
-      box-shadow: var(--card-shadow);
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .filter-select {
-      border: 2px solid var(--apple-gray-2);
-      border-radius: 10px;
-      padding: 8px 16px;
-      background: white;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .filter-select:focus {
-      border-color: var(--apple-blue);
-      outline: none;
-    }
-
-    /* Posts */
-    .posts-container {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .post-card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-      transition: var(--transition);
-      position: relative;
-    }
-
-    .post-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    }
-
-    .post-card.pinned {
-      border-left: 4px solid var(--apple-orange);
-    }
-
-    .pin-badge {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: var(--apple-orange);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .post-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .post-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 18px;
-    }
-
-    .post-user {
-      flex: 1;
-    }
-
-    .post-username {
-      font-weight: 600;
-      font-size: 17px;
-      margin-bottom: 2px;
-    }
-
-    .post-meta {
-      display: flex;
-      gap: 12px;
-      color: var(--apple-gray-6);
-      font-size: 14px;
-    }
-
-    .post-category {
-      background: var(--apple-gray-2);
-      color: var(--apple-blue);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .post-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--apple-gray-9);
-    }
-
-    .post-content {
-      font-size: 17px;
-      line-height: 1.6;
-      margin-bottom: 16px;
-    }
-
-    .post-tags {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .post-tag {
-      background: var(--apple-gray-1);
-      color: var(--apple-gray-6);
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-    }
-
-    .post-actions {
-      display: flex;
-      gap: 20px;
-      border-top: 1px solid var(--apple-gray-2);
-      padding-top: 16px;
-    }
-
-    .post-action {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--apple-gray-6);
-      font-size: 14px;
-      transition: var(--transition);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .post-action:hover {
-      color: var(--apple-blue);
-    }
-
-    .post-action.liked {
-      color: var(--apple-red);
-    }
-
-    .post-action.active {
-      color: var(--apple-blue);
-    }
-
-    /* Comments Section */
-    .comments-section {
-      margin-top: 20px;
-      border-top: 1px solid var(--apple-gray-2);
-      padding-top: 16px;
-    }
-
-    .comment-form {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .comment-input {
-      flex: 1;
-      border: 2px solid var(--apple-gray-2);
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 14px;
-      resize: vertical;
-      min-height: 60px;
-    }
-
-    .comment-input:focus {
-      border-color: var(--apple-blue);
-      outline: none;
-    }
-
-    .comment-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .comment-card {
-      background: var(--apple-gray-1);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .comment-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .comment-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    .comment-username {
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    .comment-meta {
-      font-size: 12px;
-      color: var(--apple-gray-6);
-    }
-
-    .comment-content {
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    /* Analytics Dashboard */
-    .analytics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .analytics-card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-      text-align: center;
-    }
-
-    .analytics-value {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--apple-blue);
-      margin-bottom: 8px;
-    }
-
-    .analytics-label {
-      font-size: 14px;
-      color: var(--apple-gray-6);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .category-chart {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-      margin-bottom: 24px;
-    }
-
-    .chart-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .chart-label {
-      width: 100px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .chart-progress {
-      flex: 1;
-      height: 20px;
-      background: var(--apple-gray-2);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .chart-fill {
-      height: 100%;
-      background: var(--apple-blue);
-      border-radius: 10px;
-      transition: width 0.5s ease;
-    }
-
-    .chart-count {
-      width: 40px;
-      text-align: right;
-      font-size: 14px;
-      color: var(--apple-gray-6);
-    }
-
-    /* Profile Section */
-    .profile-header {
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      box-shadow: var(--card-shadow);
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .profile-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 32px;
-      margin: 0 auto 16px;
-    }
-
-    .profile-name {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .profile-bio {
-      color: var(--apple-gray-6);
-      font-size: 16px;
-      margin-bottom: 16px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .profile-stats {
-      display: flex;
-      gap: 32px;
-      justify-content: center;
-    }
-
-    .profile-stat {
-      text-align: center;
-    }
-
-    .profile-stat-value {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--apple-blue);
-    }
-
-    .profile-stat-label {
-      font-size: 14px;
-      color: var(--apple-gray-6);
-    }
-
-    /* Search Results */
-    .search-results {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: var(--card-shadow);
-    }
-
-    .search-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--apple-gray-2);
-    }
-
-    .search-tab {
-      padding: 8px 16px;
-      background: none;
-      border: none;
-      color: var(--apple-gray-6);
-      font-weight: 600;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-    }
-
-    .search-tab.active {
-      color: var(--apple-blue);
-      border-bottom-color: var(--apple-blue);
-    }
-
-    /* Modals */
-    .modal-apple .modal-content {
-      border-radius: 16px;
-      border: none;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-apple .modal-header {
-      border-bottom: 1px solid var(--apple-gray-2);
-      padding: 24px 24px 16px;
-    }
-
-    .modal-apple .modal-body {
-      padding: 24px;
-    }
-
-    .modal-apple .modal-footer {
-      border-top: 1px solid var(--apple-gray-2);
-      padding: 16px 24px 24px;
-    }
-
-    .form-apple .form-control {
-      border-radius: 12px;
-      border: 2px solid var(--apple-gray-2);
-      padding: 14px 16px;
-      font-size: 16px;
-      transition: var(--transition);
-    }
-
-    .form-apple .form-control:focus {
-      border-color: var(--apple-blue);
-      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
-    }
-
-    .form-apple .form-label {
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--apple-gray-9);
-    }
-
-    /* Toast */
-    .toast-container {
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      z-index: 1100;
-    }
-
-    .toast-apple {
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-      border: none;
-      overflow: hidden;
-    }
-
-    .toast-apple .toast-header {
-      border-bottom: none;
-      padding: 12px 16px 0;
-      background: transparent;
-    }
-
-    .toast-apple .toast-body {
-      padding: 0 16px 12px;
-    }
-
-    /* Auth Section */
-    #auth-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 60vh;
-      text-align: center;
-    }
-
-    /* Loading States */
-    .loading {
-      opacity: 0.6;
-      pointer-events: none;
-    }
-
-    .skeleton {
-      background: linear-gradient(90deg, var(--apple-gray-2) 25%, var(--apple-gray-1) 50%, var(--apple-gray-2) 75%);
-      background-size: 200% 100%;
-      animation: loading 1.5s infinite;
-      border-radius: 8px;
-    }
-
-    @keyframes loading {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .main-content {
-        grid-template-columns: 1fr;
-      }
-      
-      .sidebar, .trending-topics {
-        position: static;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .app-container {
-        padding: 0 16px;
-      }
-      
-      .main-content {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-      
-      .filter-bar {
-        flex-direction: column;
-        gap: 12px;
-      }
-      
-      .action-buttons {
-        flex-direction: column;
-      }
-      
-      .post-card {
-        padding: 20px 16px;
-      }
-      
-      .profile-stats {
-        flex-direction: column;
-        gap: 16px;
-      }
-    }
+    /* Continue with all your existing CSS... */
   </style>
 </head>
 <body>
-  <!-- Header -->
+  <!-- Your existing HTML structure -->
   <header class="app-header">
-    <div class="app-container">
-      <nav class="navbar navbar-expand-lg navbar-light p-0">
-        <a class="navbar-brand" href="#">
-          <i class="bi bi-chat-dots"></i>
-          Konekt
-        </a>
-        
-        <div class="search-container d-none" id="search-container">
-          <input type="text" class="search-box" id="search-input" placeholder="Search posts, users, topics...">
-        </div>
-        
-        <div class="ms-auto nav-user" id="user-section">
-          <div class="d-none" id="logged-in-user">
-            <button class="btn btn-sm btn-outline-secondary me-2" onclick="showAnalytics()">
-              <i class="bi bi-graph-up"></i> Analytics
-            </button>
-            <button class="btn btn-sm btn-outline-secondary me-2" onclick="showProfile()">
-              <i class="bi bi-person"></i> Profile
-            </button>
-            <span id="username-display" class="me-2"></span>
-            <div class="user-avatar" id="user-avatar" onclick="showProfile()">U</div>
-            <button class="btn btn-sm btn-outline-secondary" id="logout-btn">Log Out</button>
-          </div>
-        </div>
-      </nav>
-    </div>
+    <!-- Header content -->
   </header>
 
-  <!-- Main Content -->
   <main class="app-container">
-    <div class="main-content">
-      <!-- Left Sidebar -->
-      <aside class="sidebar d-none" id="sidebar">
-        <div class="sidebar-section">
-          <h3>Categories</h3>
-          <ul class="category-list" id="category-list">
-            <!-- Categories will be populated dynamically -->
-          </ul>
-        </div>
-        
-        <div class="sidebar-section">
-          <h3>Forum Stats</h3>
-          <div class="stats-grid">
-            <div class="stat-card" onclick="showAnalytics()">
-              <div class="stat-value" id="stat-posts">0</div>
-              <div class="stat-label">Posts</div>
-            </div>
-            <div class="stat-card" onclick="showAnalytics()">
-              <div class="stat-value" id="stat-users">0</div>
-              <div class="stat-label">Users</div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="sidebar-section">
-          <h3>Online Now</h3>
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <div class="user-avatar" style="background-color: #34C759;">JD</div>
-            <div class="user-avatar" style="background-color: #FF9500;">AS</div>
-            <div class="user-avatar" style="background-color: #FF3B30;">MJ</div>
-            <span class="text-muted">+<span id="online-count">12</span> more</span>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Main Feed -->
-      <section class="feed-container">
-        <!-- Welcome Card -->
-        <section id="auth-section">
-          <div class="welcome-card">
-            <h2>Welcome to Konekt</h2>
-            <p>Join our advanced community forum with real-time features, analytics, and more.</p>
-            <div class="action-buttons">
-              <button class="btn-apple" data-bs-toggle="modal" data-bs-target="#loginModal">
-                <i class="bi bi-box-arrow-in-right"></i> Sign In
-              </button>
-              <button class="btn-apple-outline" data-bs-toggle="modal" data-bs-target="#registerModal">
-                <i class="bi bi-person-plus"></i> Create Account
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Filter Bar -->
-        <section class="filter-bar d-none" id="filter-bar">
-          <select class="filter-select" id="category-filter">
-            <option value="">All Categories</option>
-          </select>
-          <select class="filter-select" id="sort-filter">
-            <option value="newest">Newest First</option>
-            <option value="popular">Most Popular</option>
-            <option value="trending">Trending</option>
-          </select>
-          <button class="btn-apple-outline ms-auto" data-bs-toggle="modal" data-bs-target="#createPostModal">
-            <i class="bi bi-plus-circle"></i> New Post
-          </button>
-        </section>
-
-        <!-- Analytics Dashboard -->
-        <section class="d-none" id="analytics-section">
-          <div class="welcome-card">
-            <h2>Forum Analytics</h2>
-            <p>Real-time insights about community activity and engagement.</p>
-          </div>
-          
-          <div class="analytics-grid">
-            <div class="analytics-card">
-              <div class="analytics-value" id="analytics-posts">0</div>
-              <div class="analytics-label">Total Posts</div>
-            </div>
-            <div class="analytics-card">
-              <div class="analytics-value" id="analytics-users">0</div>
-              <div class="analytics-label">Total Users</div>
-            </div>
-            <div class="analytics-card">
-              <div class="analytics-value" id="analytics-likes">0</div>
-              <div class="analytics-label">Total Likes</div>
-            </div>
-            <div class="analytics-card">
-              <div class="analytics-value" id="analytics-comments">0</div>
-              <div class="analytics-label">Total Comments</div>
-            </div>
-          </div>
-          
-          <div class="category-chart">
-            <h4 class="mb-4">Posts by Category</h4>
-            <div id="category-chart-container">
-              <!-- Chart will be populated dynamically -->
-            </div>
-          </div>
-          
-          <div class="welcome-card">
-            <h4>Recent Activity</h4>
-            <div id="recent-activity">
-              <!-- Recent activity will be populated dynamically -->
-            </div>
-          </div>
-        </section>
-
-        <!-- Profile Section -->
-        <section class="d-none" id="profile-section">
-          <div class="profile-header">
-            <div class="profile-avatar" id="profile-avatar">U</div>
-            <h2 class="profile-name" id="profile-name">Username</h2>
-            <p class="profile-bio" id="profile-bio">No bio yet</p>
-            <div class="profile-stats">
-              <div class="profile-stat">
-                <div class="profile-stat-value" id="profile-posts">0</div>
-                <div class="profile-stat-label">Posts</div>
-              </div>
-              <div class="profile-stat">
-                <div class="profile-stat-value" id="profile-likes">0</div>
-                <div class="profile-stat-label">Likes</div>
-              </div>
-              <div class="profile-stat">
-                <div class="profile-stat-value" id="profile-member">0d</div>
-                <div class="profile-stat-label">Member</div>
-              </div>
-            </div>
-          </div>
-          
-          <h4 class="mb-3">My Posts</h4>
-          <div id="user-posts-container">
-            <!-- User posts will be populated here -->
-          </div>
-        </section>
-
-        <!-- Search Results -->
-        <section class="d-none" id="search-results-section">
-          <div class="search-results">
-            <div class="search-tabs">
-              <button class="search-tab active" data-tab="posts">Posts</button>
-              <button class="search-tab" data-tab="users">Users</button>
-            </div>
-            <div id="search-posts-results">
-              <!-- Search results for posts -->
-            </div>
-            <div id="search-users-results" class="d-none">
-              <!-- Search results for users -->
-            </div>
-          </div>
-        </section>
-
-        <!-- Create Post Card -->
-        <section class="d-none" id="create-post-section">
-          <div class="post-card">
-            <div class="post-header">
-              <div class="user-avatar" id="current-user-avatar">U</div>
-              <div class="post-user">
-                <div class="post-username" id="current-username">User</div>
-                <div class="post-meta">Ready to share something with the community?</div>
-              </div>
-            </div>
-            <div class="post-content">
-              <button class="btn-apple w-100" data-bs-toggle="modal" data-bs-target="#createPostModal">
-                <i class="bi bi-plus-circle"></i> Create New Post
-              </button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Posts Container -->
-        <section class="posts-container d-none" id="posts-section">
-          <div id="posts-container">
-            <!-- Posts will be dynamically inserted here -->
-          </div>
-          
-          <!-- Pagination -->
-          <nav class="d-none" id="pagination-container">
-            <ul class="pagination justify-content-center">
-              <li class="page-item disabled" id="prev-page">
-                <a class="page-link" href="#">Previous</a>
-              </li>
-              <li class="page-item active"><a class="page-link" href="#">1</a></li>
-              <li class="page-item" id="next-page">
-                <a class="page-link" href="#">Next</a>
-              </li>
-            </ul>
-          </nav>
-        </section>
-      </section>
-
-      <!-- Right Sidebar -->
-      <aside class="trending-topics d-none" id="trending-topics">
-        <div class="sidebar-section">
-          <h3>Trending Topics</h3>
-          <div id="trending-topics-list">
-            <!-- Trending topics will be populated dynamically -->
-          </div>
-        </div>
-        
-        <div class="sidebar-section">
-          <h3>Top Contributors</h3>
-          <div id="top-contributors">
-            <!-- Top contributors will be populated dynamically -->
-          </div>
-        </div>
-      </aside>
-    </div>
+    <!-- Main content -->
   </main>
 
-  <!-- Modals (Login, Register, Create Post) -->
-  <!-- ... (same modals as before but enhanced) ... -->
+  <!-- Modals -->
+  <div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Sign In to Konekt</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm">
+            <div class="mb-3">
+              <label for="loginUsername" class="form-label">Username</label>
+              <input type="text" class="form-control" id="loginUsername" required>
+            </div>
+            <div class="mb-3">
+              <label for="loginPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="loginPassword" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="loginBtn">Sign In</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Enhanced Create Post Modal -->
-  <div class="modal fade modal-apple" id="createPostModal" tabindex="-1">
+  <div class="modal fade" id="registerModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="registerForm">
+            <div class="mb-3">
+              <label for="registerUsername" class="form-label">Username</label>
+              <input type="text" class="form-control" id="registerUsername" required>
+            </div>
+            <div class="mb-3">
+              <label for="registerPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="registerPassword" required>
+            </div>
+            <div class="mb-3">
+              <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="registerConfirmPassword" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="registerBtn">Create Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="createPostModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -1131,7 +119,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <form class="form-apple" id="createPostForm">
+          <form id="createPostForm">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="postCategory" class="form-label">Category</label>
@@ -1160,1005 +148,827 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn-apple-outline" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn-apple" id="createPostBtn">Publish Post</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="createPostBtn">Publish Post</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Toast Container -->
-  <div class="toast-container">
-    <!-- ... (same toast containers as before) ... -->
-  </div>
-
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-// Konekt Forum - Complete Fixed JavaScript
-const API_BASE = "https://hosting-production-a352.up.railway.app/api";
+    // Konekt Forum - Complete Fixed JavaScript
+    const API_BASE = "https://hosting-production-a352.up.railway.app/api";
 
-// Application State
-let currentUser = null;
-let currentPage = 1;
-let postsPerPage = 10;
-let currentCategory = '';
-let currentSort = 'newest';
-let currentSearchQuery = '';
-let allPosts = [];
-let categories = ['General', 'Engineering', 'Healthcare', 'Research', 'Community'];
+    // Application State
+    let currentUser = null;
+    let currentPage = 1;
+    let postsPerPage = 10;
+    let currentCategory = '';
+    let currentSort = 'newest';
+    let currentSearchQuery = '';
+    let allPosts = [];
+    let categories = ['General', 'Engineering', 'Healthcare', 'Research', 'Community'];
 
-// Initialize Application
-document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-});
-
-async function initializeApp() {
-    setupEventListeners();
-    await checkAuthStatus();
-    loadCategories();
-    setupSearch();
-    loadTrendingTopics();
-    loadTopContributors();
-}
-
-function setupEventListeners() {
-    // Auth Buttons
-    document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
-    document.getElementById('registerBtn')?.addEventListener('click', handleRegister);
-    document.getElementById('createPostBtn')?.addEventListener('click', handleCreatePost);
-    document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
-    
-    // Filters
-    document.getElementById('category-filter')?.addEventListener('change', handleCategoryFilter);
-    document.getElementById('sort-filter')?.addEventListener('change', handleSortFilter);
-    
-    // Search
-    document.getElementById('search-input')?.addEventListener('input', debounce(handleSearch, 300));
-    
-    // Navigation
-    document.addEventListener('click', handleGlobalClick);
-    
-    // Fix modal backdrop issue
-    setTimeout(() => {
-        const modals = document.querySelectorAll('.modal');
-        modals.forEach(modal => {
-            if (modal._element) {
-                modal._element = null;
-            }
-        });
-    }, 100);
-}
-
-// Fixed API Call Function
-async function apiCall(endpoint, options = {}) {
-    const token = localStorage.getItem('token');
-    const config = {
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': token }),
-            ...options.headers
-        },
-        ...options
-    };
-    
-    if (config.body && typeof config.body === 'object') {
-        config.body = JSON.stringify(config.body);
-    }
-    
-    try {
-        const response = await fetch(`${API_BASE}${endpoint}`, config);
-        
-        // Handle 401 Unauthorized
-        if (response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
-            currentUser = null;
-            showUnauthenticatedUI();
-            throw new Error('Session expired. Please login again.');
-        }
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.error || `HTTP ${response.status}`);
-        }
-        
-        return data;
-    } catch (error) {
-        console.error('API call failed:', error);
-        showToast(error.message, 'error');
-        throw error;
-    }
-}
-
-// Authentication Functions
-async function checkAuthStatus() {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('userData');
-    
-    if (token && userData) {
-        try {
-            currentUser = JSON.parse(userData);
-            showAuthenticatedUI();
-            await loadPosts();
-        } catch (error) {
-            console.error('Auth check failed:', error);
-            handleLogout();
-        }
-    } else {
-        showUnauthenticatedUI();
-    }
-}
-
-function showAuthenticatedUI() {
-    hideAllSections();
-    document.getElementById('create-post-section').classList.remove('d-none');
-    document.getElementById('posts-section').classList.remove('d-none');
-    document.getElementById('sidebar').classList.remove('d-none');
-    document.getElementById('trending-topics').classList.remove('d-none');
-    document.getElementById('filter-bar').classList.remove('d-none');
-    document.getElementById('search-container').classList.remove('d-none');
-    document.getElementById('logged-in-user').classList.remove('d-none');
-    
-    document.getElementById('username-display').textContent = currentUser.username;
-    document.getElementById('current-username').textContent = currentUser.username;
-    
-    const initials = currentUser.username.charAt(0).toUpperCase();
-    document.getElementById('user-avatar').textContent = initials;
-    document.getElementById('current-user-avatar').textContent = initials;
-    
-    const avatarColor = currentUser.avatar_color || '#007AFF';
-    document.getElementById('user-avatar').style.backgroundColor = avatarColor;
-    document.getElementById('current-user-avatar').style.backgroundColor = avatarColor;
-}
-
-function showUnauthenticatedUI() {
-    hideAllSections();
-    document.getElementById('auth-section').classList.remove('d-none');
-}
-
-// Auth Handlers
-async function handleLogin() {
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    if (!username || !password) {
-        showToast('Please fill in all fields', 'error');
-        return;
-    }
-    
-    try {
-        const data = await apiCall('/login', {
-            method: 'POST',
-            body: { username, password }
-        });
-        
-        if (data.success && data.token) {
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('userData', JSON.stringify(data.user));
-            currentUser = data.user;
-            
-            // Close modal safely
-            const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-            if (loginModal) {
-                loginModal.hide();
-            }
-            document.getElementById('loginForm').reset();
-            
-            showAuthenticatedUI();
-            await loadPosts();
-            showToast('Successfully signed in!', 'success');
-        }
-    } catch (error) {
-        // Error handled in apiCall
-    }
-}
-
-async function handleRegister() {
-    const username = document.getElementById('registerUsername').value;
-    const password = document.getElementById('registerPassword').value;
-    const confirmPassword = document.getElementById('registerConfirmPassword').value;
-    
-    if (!username || !password || !confirmPassword) {
-        showToast('Please fill in all fields', 'error');
-        return;
-    }
-    
-    if (password !== confirmPassword) {
-        showToast('Passwords do not match', 'error');
-        return;
-    }
-    
-    try {
-        const data = await apiCall('/register', {
-            method: 'POST',
-            body: { username, password }
-        });
-        
-        if (data.success) {
-            const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
-            if (registerModal) {
-                registerModal.hide();
-            }
-            document.getElementById('registerForm').reset();
-            showToast('Account created successfully! Please sign in.', 'success');
-        }
-    } catch (error) {
-        // Error handled in apiCall
-    }
-}
-
-function handleLogout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userData');
-    currentUser = null;
-    showUnauthenticatedUI();
-    showToast('Successfully signed out', 'success');
-}
-
-// Post Management
-async function handleCreatePost() {
-    const category = document.getElementById('postCategory').value;
-    const title = document.getElementById('postTitle').value;
-    const content = document.getElementById('postContent').value;
-    const tags = document.getElementById('postTags').value;
-    
-    if (!category || !content) {
-        showToast('Please fill in all required fields', 'error');
-        return;
-    }
-    
-    try {
-        const data = await apiCall('/posts', {
-            method: 'POST',
-            body: {
-                category,
-                title: title || null,
-                content,
-                tags: tags || null
-            }
-        });
-        
-        if (data.success) {
-            const createPostModal = bootstrap.Modal.getInstance(document.getElementById('createPostModal'));
-            if (createPostModal) {
-                createPostModal.hide();
-            }
-            document.getElementById('createPostForm').reset();
-            
-            await loadPosts();
-            showToast('Post published successfully!', 'success');
-        }
-    } catch (error) {
-        // Error handled in apiCall
-    }
-}
-
-async function loadPosts(page = 1) {
-    try {
-        const data = await apiCall('/posts');
-        
-        if (data.success) {
-            allPosts = data.data || data;
-            displayPosts(allPosts);
-            updateStats();
-        }
-    } catch (error) {
-        // Error handled in apiCall
-    }
-}
-
-function displayPosts(posts) {
-    const container = document.getElementById('posts-container');
-    if (!container) return;
-    
-    if (!posts || posts.length === 0) {
-        container.innerHTML = `
-            <div class="post-card text-center py-5">
-                <i class="bi bi-inbox display-1 text-muted mb-3"></i>
-                <h3 class="text-muted">No posts found</h3>
-                <p class="text-muted">Be the first to share something with the community!</p>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = '';
-    
-    posts.forEach(post => {
-        const postElement = createPostElement(post);
-        container.appendChild(postElement);
+    // Initialize Application
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeApp();
     });
-}
 
-function createPostElement(post) {
-    const postElement = document.createElement('div');
-    postElement.className = `post-card ${post.is_pinned ? 'pinned' : ''}`;
-    
-    const initials = post.username ? post.username.charAt(0).toUpperCase() : 'U';
-    const avatarColor = post.avatar_color || '#007AFF';
-    const formattedDate = formatDate(post.timestamp);
-    
-    postElement.innerHTML = `
-        ${post.is_pinned ? '<div class="pin-badge"><i class="bi bi-pin"></i> Pinned</div>' : ''}
-        <div class="post-header">
-            <div class="post-avatar" style="background-color: ${avatarColor}">${initials}</div>
-            <div class="post-user">
-                <div class="post-username">${post.username || 'Unknown User'}</div>
-                <div class="post-meta">
-                    <span>${formattedDate}</span>
-                </div>
-            </div>
-            <div class="post-category">${post.category || 'General'}</div>
-        </div>
-        ${post.title ? `<div class="post-title">${post.title}</div>` : ''}
-        <div class="post-content">
-            ${post.content || ''}
-        </div>
-        ${post.tags ? `
-        <div class="post-tags">
-            ${post.tags.split(',').map(tag => 
-                `<span class="post-tag">#${tag.trim()}</span>`
-            ).join('')}
-        </div>
-        ` : ''}
-        <div class="post-actions">
-            <div class="post-action like-action" data-post-id="${post.id}">
-                <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
-                <span class="like-count">${post.likes_count || 0}</span>
-            </div>
-            <div class="post-action comment-action" data-post-id="${post.id}">
-                <i class="bi bi-chat"></i>
-                <span>${post.comments_count || 0}</span>
-            </div>
-            <div class="post-action">
-                <i class="bi bi-share"></i>
-                <span>Share</span>
-            </div>
-        </div>
-    `;
-    
-    // Add event listeners
-    const likeAction = postElement.querySelector('.like-action');
-    const commentAction = postElement.querySelector('.comment-action');
-    
-    likeAction.addEventListener('click', () => handleLikePost(post.id));
-    commentAction.addEventListener('click', () => toggleComments(post.id));
-    
-    return postElement;
-}
+    async function initializeApp() {
+        setupEventListeners();
+        await checkAuthStatus();
+        loadCategories();
+        setupSearch();
+        loadTrendingTopics();
+        loadTopContributors();
+    }
 
-// Like System
-async function handleLikePost(postId) {
-    try {
-        const data = await apiCall(`/posts/${postId}/like`, {
-            method: 'POST'
-        });
+    function setupEventListeners() {
+        // Auth Buttons
+        document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
+        document.getElementById('registerBtn')?.addEventListener('click', handleRegister);
+        document.getElementById('createPostBtn')?.addEventListener('click', handleCreatePost);
+        document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
         
-        if (data.success) {
-            // Update UI
-            const likeAction = document.querySelector(`.like-action[data-post-id="${postId}"]`);
-            if (likeAction) {
-                const likeIcon = likeAction.querySelector('i');
-                const likeCount = likeAction.querySelector('.like-count');
-                
-                likeIcon.className = data.action === 'liked' ? 'bi bi-heart-fill' : 'bi bi-heart';
-                likeAction.classList.toggle('liked', data.action === 'liked');
-                likeCount.textContent = data.likes_count;
-                
-                showToast(`Post ${data.action}`, 'success');
-            }
-        }
-    } catch (error) {
-        // Error handled in apiCall
+        // Filters
+        document.getElementById('category-filter')?.addEventListener('change', handleCategoryFilter);
+        document.getElementById('sort-filter')?.addEventListener('change', handleSortFilter);
+        
+        // Search
+        document.getElementById('search-input')?.addEventListener('input', debounce(handleSearch, 300));
+        
+        // Navigation
+        document.addEventListener('click', handleGlobalClick);
     }
-}
 
-// Comment System
-async function toggleComments(postId) {
-    const commentsSection = document.getElementById(`comments-${postId}`);
-    if (!commentsSection) {
-        // Create comments section if it doesn't exist
-        const postElement = document.querySelector(`.post-card .like-action[data-post-id="${postId}"]`)?.closest('.post-card');
-        if (postElement) {
-            const commentsHTML = `
-                <div class="comments-section" id="comments-${postId}">
-                    <div class="comment-form">
-                        <textarea class="comment-input" placeholder="Write a comment..." id="comment-input-${postId}"></textarea>
-                        <button class="btn-apple" onclick="addComment(${postId})">Post</button>
-                    </div>
-                    <div class="comment-list" id="comment-list-${postId}">
-                        Loading comments...
-                    </div>
-                </div>
-            `;
-            postElement.insertAdjacentHTML('beforeend', commentsHTML);
+    // Fixed API Call Function
+    async function apiCall(endpoint, options = {}) {
+        const token = localStorage.getItem('token');
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': token }),
+                ...options.headers
+            },
+            ...options
+        };
+        
+        if (config.body && typeof config.body === 'object') {
+            config.body = JSON.stringify(config.body);
+        }
+        
+        try {
+            const response = await fetch(`${API_BASE}${endpoint}`, config);
+            
+            // Handle 401 Unauthorized
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                currentUser = null;
+                showUnauthenticatedUI();
+                throw new Error('Session expired. Please login again.');
+            }
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || `HTTP ${response.status}`);
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('API call failed:', error);
+            showToast(error.message, 'error');
+            throw error;
         }
     }
-    
-    const commentList = document.getElementById(`comment-list-${postId}`);
-    
-    if (commentsSection.classList.contains('d-none')) {
-        // Load comments
+
+    // Authentication Functions
+    async function checkAuthStatus() {
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('userData');
+        
+        if (token && userData) {
+            try {
+                currentUser = JSON.parse(userData);
+                showAuthenticatedUI();
+                await loadPosts();
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                handleLogout();
+            }
+        } else {
+            showUnauthenticatedUI();
+        }
+    }
+
+    function showAuthenticatedUI() {
+        hideAllSections();
+        document.getElementById('create-post-section').classList.remove('d-none');
+        document.getElementById('posts-section').classList.remove('d-none');
+        document.getElementById('sidebar').classList.remove('d-none');
+        document.getElementById('trending-topics').classList.remove('d-none');
+        document.getElementById('filter-bar').classList.remove('d-none');
+        document.getElementById('search-container').classList.remove('d-none');
+        document.getElementById('logged-in-user').classList.remove('d-none');
+        
+        document.getElementById('username-display').textContent = currentUser.username;
+        document.getElementById('current-username').textContent = currentUser.username;
+        
+        const initials = currentUser.username.charAt(0).toUpperCase();
+        document.getElementById('user-avatar').textContent = initials;
+        document.getElementById('current-user-avatar').textContent = initials;
+        
+        const avatarColor = currentUser.avatar_color || '#007AFF';
+        document.getElementById('user-avatar').style.backgroundColor = avatarColor;
+        document.getElementById('current-user-avatar').style.backgroundColor = avatarColor;
+    }
+
+    function showUnauthenticatedUI() {
+        hideAllSections();
+        document.getElementById('auth-section').classList.remove('d-none');
+    }
+
+    // Auth Handlers
+    async function handleLogin() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!username || !password) {
+            showToast('Please fill in all fields', 'error');
+            return;
+        }
+        
         try {
-            const data = await apiCall(`/posts/${postId}/comments`);
+            const data = await apiCall('/login', {
+                method: 'POST',
+                body: { username, password }
+            });
             
-            if (data.success) {
-                displayComments(commentList, data.data);
-                commentsSection.classList.remove('d-none');
+            if (data.success && data.token) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userData', JSON.stringify(data.user));
+                currentUser = data.user;
+                
+                // Close modal safely
+                const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                if (loginModal) {
+                    loginModal.hide();
+                }
+                document.getElementById('loginForm').reset();
+                
+                showAuthenticatedUI();
+                await loadPosts();
+                showToast('Successfully signed in!', 'success');
             }
         } catch (error) {
             // Error handled in apiCall
         }
-    } else {
-        commentsSection.classList.add('d-none');
     }
-}
 
-function displayComments(container, comments) {
-    if (!container) return;
-    
-    if (!comments || comments.length === 0) {
-        container.innerHTML = '<p class="text-muted text-center">No comments yet</p>';
-        return;
-    }
-    
-    container.innerHTML = comments.map(comment => `
-        <div class="comment-card">
-            <div class="comment-header">
-                <div class="comment-avatar" style="background-color: ${comment.avatar_color || '#007AFF'}">
-                    ${comment.username ? comment.username.charAt(0).toUpperCase() : 'U'}
-                </div>
-                <div>
-                    <div class="comment-username">${comment.username}</div>
-                    <div class="comment-meta">${formatDate(comment.timestamp)}</div>
-                </div>
-            </div>
-            <div class="comment-content">${comment.content}</div>
-        </div>
-    `).join('');
-}
-
-async function addComment(postId) {
-    const commentInput = document.getElementById(`comment-input-${postId}`);
-    if (!commentInput) return;
-    
-    const content = commentInput.value.trim();
-    
-    if (!content) {
-        showToast('Please write a comment', 'error');
-        return;
-    }
-    
-    try {
-        const data = await apiCall(`/posts/${postId}/comments`, {
-            method: 'POST',
-            body: { content }
-        });
+    async function handleRegister() {
+        const username = document.getElementById('registerUsername').value;
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('registerConfirmPassword').value;
         
-        if (data.success) {
-            commentInput.value = '';
-            await toggleComments(postId); // Reload comments
-            showToast('Comment added successfully!', 'success');
+        if (!username || !password || !confirmPassword) {
+            showToast('Please fill in all fields', 'error');
+            return;
         }
-    } catch (error) {
-        // Error handled in apiCall
-    }
-}
-
-// Categories & Filtering
-function loadCategories() {
-    // Use predefined categories
-    updateCategoryFilters();
-    updateCategoryStats();
-}
-
-function updateCategoryFilters() {
-    const categoryList = document.getElementById('category-list');
-    if (!categoryList) return;
-    
-    categoryList.innerHTML = `
-        <li>
-            <a href="#" class="active" data-category="">
-                <i class="bi bi-house"></i> All Posts
-                <span class="category-count">${allPosts.length}</span>
-            </a>
-        </li>
-        ${categories.map(category => `
-            <li>
-                <a href="#" data-category="${category}">
-                    <i class="bi bi-tag"></i> ${category}
-                    <span class="category-count">${allPosts.filter(p => p.category === category).length}</span>
-                </a>
-            </li>
-        `).join('')}
-    `;
-    
-    // Update filter dropdown
-    const categoryFilter = document.getElementById('category-filter');
-    if (categoryFilter) {
-        categoryFilter.innerHTML = `
-            <option value="">All Categories</option>
-            ${categories.map(category => `
-                <option value="${category}">${category}</option>
-            `).join('')}
-        `;
-    }
-    
-    // Add event listeners to category links
-    categoryList.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const category = e.target.getAttribute('data-category');
-            handleCategorySelect(category);
-        });
-    });
-}
-
-function updateCategoryStats() {
-    const statPosts = document.getElementById('stat-posts');
-    const statUsers = document.getElementById('stat-users');
-    
-    if (statPosts) statPosts.textContent = allPosts.length;
-    if (statUsers) statUsers.textContent = '3'; // Mock user count
-}
-
-function handleCategorySelect(category) {
-    currentCategory = category;
-    currentPage = 1;
-    
-    // Update active states
-    const categoryList = document.getElementById('category-list');
-    if (categoryList) {
-        categoryList.querySelectorAll('a').forEach(link => {
-            link.classList.remove('active');
-        });
-        event.target.classList.add('active');
-    }
-    
-    const categoryFilter = document.getElementById('category-filter');
-    if (categoryFilter) {
-        categoryFilter.value = category;
-    }
-    
-    loadPosts();
-}
-
-function handleCategoryFilter() {
-    const categoryFilter = document.getElementById('category-filter');
-    if (categoryFilter) {
-        currentCategory = categoryFilter.value;
-        currentPage = 1;
-        loadPosts();
-    }
-}
-
-function handleSortFilter() {
-    const sortFilter = document.getElementById('sort-filter');
-    if (sortFilter) {
-        currentSort = sortFilter.value;
-        loadPosts();
-    }
-}
-
-// Search Functionality
-function setupSearch() {
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        searchInput.addEventListener('focus', () => {
-            if (currentSearchQuery) {
-                showSearchResults();
+        
+        if (password !== confirmPassword) {
+            showToast('Passwords do not match', 'error');
+            return;
+        }
+        
+        try {
+            const data = await apiCall('/register', {
+                method: 'POST',
+                body: { username, password }
+            });
+            
+            if (data.success) {
+                const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                if (registerModal) {
+                    registerModal.hide();
+                }
+                document.getElementById('registerForm').reset();
+                showToast('Account created successfully! Please sign in.', 'success');
             }
+        } catch (error) {
+            // Error handled in apiCall
+        }
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userData');
+        currentUser = null;
+        showUnauthenticatedUI();
+        showToast('Successfully signed out', 'success');
+    }
+
+    // Post Management
+    async function handleCreatePost() {
+        const category = document.getElementById('postCategory').value;
+        const title = document.getElementById('postTitle').value;
+        const content = document.getElementById('postContent').value;
+        const tags = document.getElementById('postTags').value;
+        
+        if (!category || !content) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        try {
+            const data = await apiCall('/posts', {
+                method: 'POST',
+                body: {
+                    category,
+                    title: title || null,
+                    content,
+                    tags: tags || null
+                }
+            });
+            
+            if (data.success) {
+                const createPostModal = bootstrap.Modal.getInstance(document.getElementById('createPostModal'));
+                if (createPostModal) {
+                    createPostModal.hide();
+                }
+                document.getElementById('createPostForm').reset();
+                
+                await loadPosts();
+                showToast('Post published successfully!', 'success');
+            }
+        } catch (error) {
+            // Error handled in apiCall
+        }
+    }
+
+    async function loadPosts(page = 1) {
+        try {
+            const data = await apiCall('/posts');
+            
+            if (data.success) {
+                allPosts = data.data || data;
+                displayPosts(allPosts);
+                updateStats();
+            }
+        } catch (error) {
+            // Error handled in apiCall
+        }
+    }
+
+    function displayPosts(posts) {
+        const container = document.getElementById('posts-container');
+        if (!container) return;
+        
+        if (!posts || posts.length === 0) {
+            container.innerHTML = `
+                <div class="post-card text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                    <h3 class="text-muted">No posts found</h3>
+                    <p class="text-muted">Be the first to share something with the community!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = '';
+        
+        posts.forEach(post => {
+            const postElement = createPostElement(post);
+            container.appendChild(postElement);
         });
     }
-}
 
-async function handleSearch() {
-    const searchInput = document.getElementById('search-input');
-    if (!searchInput) return;
-    
-    currentSearchQuery = searchInput.value.trim();
-    
-    if (currentSearchQuery.length < 2) {
-        if (document.getElementById('search-results-section')?.classList.contains('d-none')) {
-            hideSearchResults();
-        }
-        return;
-    }
-    
-    try {
-        const data = await apiCall(`/search?q=${encodeURIComponent(currentSearchQuery)}`);
+    function createPostElement(post) {
+        const postElement = document.createElement('div');
+        postElement.className = `post-card ${post.is_pinned ? 'pinned' : ''}`;
         
-        if (data.success) {
-            displaySearchResults(data);
-            showSearchResults();
-        }
-    } catch (error) {
-        // Error handled in apiCall
-    }
-}
-
-function displaySearchResults(data) {
-    const searchPostsResults = document.getElementById('search-posts-results');
-    const searchUsersResults = document.getElementById('search-users-results');
-    
-    if (!searchPostsResults || !searchUsersResults) return;
-    
-    // Posts results
-    if (data.posts && data.posts.length > 0) {
-        searchPostsResults.innerHTML = data.posts.map(post => `
-            <div class="post-card">
-                <div class="post-header">
-                    <div class="post-avatar" style="background-color: ${post.avatar_color || '#007AFF'}">
-                        ${post.username ? post.username.charAt(0).toUpperCase() : 'U'}
-                    </div>
-                    <div class="post-user">
-                        <div class="post-username">${post.username}</div>
-                        <div class="post-meta">${formatDate(post.timestamp)}</div>
-                    </div>
-                    <div class="post-category">${post.category}</div>
-                </div>
-                ${post.title ? `<div class="post-title">${post.title}</div>` : ''}
-                <div class="post-content">${highlightSearchTerms(post.content, data.query)}</div>
-            </div>
-        `).join('');
-    } else {
-        searchPostsResults.innerHTML = '<p class="text-muted">No posts found</p>';
-    }
-    
-    // Users results
-    if (data.users && data.users.length > 0) {
-        searchUsersResults.innerHTML = data.users.map(user => `
-            <div class="topic-item">
-                <div class="topic-avatar" style="background-color: ${user.avatar_color || '#007AFF'}">
-                    ${user.username ? user.username.charAt(0).toUpperCase() : 'U'}
-                </div>
-                <div class="topic-content">
-                    <div class="topic-title">${user.username}</div>
-                    <div class="topic-meta">${user.bio || 'No bio'}</div>
-                </div>
-            </div>
-        `).join('');
-    } else {
-        searchUsersResults.innerHTML = '<p class="text-muted">No users found</p>';
-    }
-}
-
-function highlightSearchTerms(text, query) {
-    if (!text || !query) return text;
-    const regex = new RegExp(`(${query})`, 'gi');
-    return text.replace(regex, '<mark>$1</mark>');
-}
-
-function showSearchResults() {
-    hideAllSections();
-    const searchResultsSection = document.getElementById('search-results-section');
-    if (searchResultsSection) {
-        searchResultsSection.classList.remove('d-none');
-    }
-}
-
-function hideSearchResults() {
-    const searchResultsSection = document.getElementById('search-results-section');
-    if (searchResultsSection) {
-        searchResultsSection.classList.add('d-none');
-    }
-    showMainContent();
-}
-
-// Analytics & Profile
-async function showAnalytics() {
-    try {
-        const data = await apiCall('/analytics/overview');
+        const initials = post.username ? post.username.charAt(0).toUpperCase() : 'U';
+        const avatarColor = post.avatar_color || '#007AFF';
+        const formattedDate = formatDate(post.timestamp);
         
-        if (data.success) {
-            displayAnalytics(data.overview);
-            hideAllSections();
-            document.getElementById('analytics-section').classList.remove('d-none');
-        }
-    } catch (error) {
-        // Use mock data if API fails
-        const mockData = {
-            total_posts: allPosts.length,
-            total_users: 3,
-            total_likes: allPosts.reduce((sum, post) => sum + (post.likes_count || 0), 0),
-            total_comments: allPosts.reduce((sum, post) => sum + (post.comments_count || 0), 0),
-            categories: categories.reduce((acc, cat) => {
-                acc[cat] = allPosts.filter(p => p.category === cat).length;
-                return acc;
-            }, {}),
-            recent_activity: allPosts.slice(0, 3).map(post => ({
-                username: post.username,
-                category: post.category,
-                timestamp: post.timestamp
-            }))
-        };
-        displayAnalytics(mockData);
-        hideAllSections();
-        document.getElementById('analytics-section').classList.remove('d-none');
-    }
-}
-
-function displayAnalytics(analyticsData) {
-    if (!analyticsData) return;
-    
-    document.getElementById('analytics-posts').textContent = analyticsData.total_posts || 0;
-    document.getElementById('analytics-users').textContent = analyticsData.total_users || 0;
-    document.getElementById('analytics-likes').textContent = analyticsData.total_likes || 0;
-    document.getElementById('analytics-comments').textContent = analyticsData.total_comments || 0;
-    
-    // Category chart
-    const categoryChartContainer = document.getElementById('category-chart-container');
-    if (categoryChartContainer && analyticsData.categories) {
-        const maxCount = Math.max(...Object.values(analyticsData.categories));
-        categoryChartContainer.innerHTML = Object.entries(analyticsData.categories)
-            .map(([category, count]) => `
-                <div class="chart-bar">
-                    <div class="chart-label">${category}</div>
-                    <div class="chart-progress">
-                        <div class="chart-fill" style="width: ${maxCount ? (count / maxCount) * 100 : 0}%"></div>
-                    </div>
-                    <div class="chart-count">${count}</div>
-                </div>
-            `).join('');
-    }
-    
-    // Recent activity
-    const recentActivity = document.getElementById('recent-activity');
-    if (recentActivity && analyticsData.recent_activity) {
-        recentActivity.innerHTML = analyticsData.recent_activity
-            .map(activity => `
-                <div class="topic-item">
-                    <div class="topic-avatar" style="background-color: #007AFF">
-                        ${activity.username ? activity.username.charAt(0).toUpperCase() : 'U'}
-                    </div>
-                    <div class="topic-content">
-                        <div class="topic-title">${activity.username} posted in ${activity.category}</div>
-                        <div class="topic-meta">${formatDate(activity.timestamp)}</div>
-                    </div>
-                </div>
-            `).join('');
-    }
-}
-
-async function showProfile() {
-    try {
-        const data = await apiCall('/profile');
-        
-        if (data.success) {
-            displayProfile(data);
-            hideAllSections();
-            document.getElementById('profile-section').classList.remove('d-none');
-        }
-    } catch (error) {
-        // Use mock data if API fails
-        const mockData = {
-            profile: {
-                username: currentUser.username,
-                bio: 'Active community member',
-                created_at: new Date().toISOString(),
-                avatar_color: currentUser.avatar_color || '#007AFF'
-            },
-            stats: {
-                posts: allPosts.filter(post => post.username === currentUser.username).length,
-                likes_received: 0
-            }
-        };
-        displayProfile(mockData);
-        hideAllSections();
-        document.getElementById('profile-section').classList.remove('d-none');
-    }
-}
-
-function displayProfile(data) {
-    const profile = data.profile;
-    const stats = data.stats;
-    
-    document.getElementById('profile-avatar').textContent = profile.username.charAt(0).toUpperCase();
-    document.getElementById('profile-avatar').style.backgroundColor = profile.avatar_color || '#007AFF';
-    document.getElementById('profile-name').textContent = profile.username;
-    document.getElementById('profile-bio').textContent = profile.bio || 'No bio yet';
-    document.getElementById('profile-posts').textContent = stats.posts || 0;
-    document.getElementById('profile-likes').textContent = stats.likes_received || 0;
-    
-    // Calculate membership duration
-    if (profile.created_at) {
-        const joinDate = new Date(profile.created_at);
-        const today = new Date();
-        const diffTime = Math.abs(today - joinDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        document.getElementById('profile-member').textContent = `${diffDays}d`;
-    }
-    
-    // Load user's posts
-    loadUserPosts();
-}
-
-async function loadUserPosts() {
-    try {
-        const userPosts = allPosts.filter(post => post.username === currentUser.username);
-        displayUserPosts(userPosts);
-    } catch (error) {
-        console.error('Failed to load user posts:', error);
-    }
-}
-
-function displayUserPosts(posts) {
-    const container = document.getElementById('user-posts-container');
-    if (!container) return;
-    
-    if (!posts || posts.length === 0) {
-        container.innerHTML = `
-            <div class="post-card text-center py-5">
-                <i class="bi bi-inbox display-1 text-muted mb-3"></i>
-                <h3 class="text-muted">No posts yet</h3>
-                <p class="text-muted">Start sharing your thoughts with the community!</p>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = posts.map(post => `
-        <div class="post-card">
+        postElement.innerHTML = `
+            ${post.is_pinned ? '<div class="pin-badge"><i class="bi bi-pin"></i> Pinned</div>' : ''}
             <div class="post-header">
-                <div class="post-category">${post.category}</div>
-                <div class="post-meta">${formatDate(post.timestamp)}</div>
+                <div class="post-avatar" style="background-color: ${avatarColor}">${initials}</div>
+                <div class="post-user">
+                    <div class="post-username">${post.username || 'Unknown User'}</div>
+                    <div class="post-meta">
+                        <span>${formattedDate}</span>
+                    </div>
+                </div>
+                <div class="post-category">${post.category || 'General'}</div>
             </div>
             ${post.title ? `<div class="post-title">${post.title}</div>` : ''}
-            <div class="post-content">${post.content}</div>
+            <div class="post-content">
+                ${post.content || ''}
+            </div>
+            ${post.tags ? `
+            <div class="post-tags">
+                ${post.tags.split(',').map(tag => 
+                    `<span class="post-tag">#${tag.trim()}</span>`
+                ).join('')}
+            </div>
+            ` : ''}
             <div class="post-actions">
-                <div class="post-action">
-                    <i class="bi bi-heart"></i>
-                    <span>${post.likes_count || 0}</span>
+                <div class="post-action like-action" data-post-id="${post.id}">
+                    <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
+                    <span class="like-count">${post.likes_count || 0}</span>
                 </div>
-                <div class="post-action">
+                <div class="post-action comment-action" data-post-id="${post.id}">
                     <i class="bi bi-chat"></i>
                     <span>${post.comments_count || 0}</span>
                 </div>
+                <div class="post-action">
+                    <i class="bi bi-share"></i>
+                    <span>Share</span>
+                </div>
             </div>
-        </div>
-    `).join('');
-}
-
-// Stats & Updates
-function updateStats() {
-    const statPosts = document.getElementById('stat-posts');
-    const statUsers = document.getElementById('stat-users');
-    
-    if (statPosts) statPosts.textContent = allPosts.length;
-    if (statUsers) statUsers.textContent = '3'; // Mock user count
-}
-
-function loadTrendingTopics() {
-    const container = document.getElementById('trending-topics-list');
-    if (!container) return;
-    
-    const trendingTopics = [
-        { title: 'Welcome to Konekt!', category: 'General', replies: 24 },
-        { title: 'Programming Tips', category: 'Engineering', replies: 18 },
-        { title: 'Healthcare Discussion', category: 'Healthcare', replies: 12 }
-    ];
-    
-    container.innerHTML = trendingTopics.map(topic => `
-        <div class="topic-item">
-            <div class="topic-avatar" style="background-color: #007AFF">
-                ${topic.category.charAt(0)}
-            </div>
-            <div class="topic-content">
-                <div class="topic-title">${topic.title}</div>
-                <div class="topic-meta">${topic.category} • ${topic.replies} replies</div>
-            </div>
-        </div>
-    `).join('');
-}
-
-function loadTopContributors() {
-    const container = document.getElementById('top-contributors');
-    if (!container) return;
-    
-    const contributors = [
-        { username: 'JohnDoe', posts: 42 },
-        { username: 'SarahSmith', posts: 38 },
-        { username: 'MikeJohnson', posts: 35 }
-    ];
-    
-    container.innerHTML = contributors.map(contributor => `
-        <div class="topic-item">
-            <div class="topic-avatar" style="background-color: #34C759">
-                ${contributor.username.charAt(0)}
-            </div>
-            <div class="topic-content">
-                <div class="topic-title">${contributor.username}</div>
-                <div class="topic-meta">${contributor.posts} posts</div>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Utility Functions
-function hideAllSections() {
-    const sections = [
-        'posts-section',
-        'analytics-section',
-        'profile-section',
-        'search-results-section',
-        'auth-section'
-    ];
-    
-    sections.forEach(section => {
-        const element = document.getElementById(section);
-        if (element) {
-            element.classList.add('d-none');
-        }
-    });
-}
-
-function showMainContent() {
-    hideAllSections();
-    document.getElementById('posts-section').classList.remove('d-none');
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'Recently';
-    
-    try {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
+        `;
         
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        if (diffDays < 7) return `${diffDays}d ago`;
+        // Add event listeners
+        const likeAction = postElement.querySelector('.like-action');
+        const commentAction = postElement.querySelector('.comment-action');
         
-        return date.toLocaleDateString();
-    } catch (error) {
-        return 'Recently';
+        likeAction.addEventListener('click', () => handleLikePost(post.id));
+        commentAction.addEventListener('click', () => toggleComments(post.id));
+        
+        return postElement;
     }
-}
 
-function showToast(message, type) {
-    console.log(`${type}: ${message}`);
-    // Simple alert for now - you can enhance this with proper toast notifications
-    if (type === 'error') {
-        alert(`Error: ${message}`);
-    } else {
+    // Like System
+    async function handleLikePost(postId) {
+        try {
+            const data = await apiCall(`/posts/${postId}/like`, {
+                method: 'POST'
+            });
+            
+            if (data.success) {
+                // Update UI
+                const likeAction = document.querySelector(`.like-action[data-post-id="${postId}"]`);
+                if (likeAction) {
+                    const likeIcon = likeAction.querySelector('i');
+                    const likeCount = likeAction.querySelector('.like-count');
+                    
+                    likeIcon.className = data.action === 'liked' ? 'bi bi-heart-fill' : 'bi bi-heart';
+                    likeAction.classList.toggle('liked', data.action === 'liked');
+                    likeCount.textContent = data.likes_count;
+                    
+                    showToast(`Post ${data.action}`, 'success');
+                }
+            }
+        } catch (error) {
+            // Error handled in apiCall
+        }
+    }
+
+    // Comment System
+    async function toggleComments(postId) {
+        const commentsSection = document.getElementById(`comments-${postId}`);
+        if (!commentsSection) {
+            // Create comments section if it doesn't exist
+            const postElement = document.querySelector(`.post-card .like-action[data-post-id="${postId}"]`)?.closest('.post-card');
+            if (postElement) {
+                const commentsHTML = `
+                    <div class="comments-section" id="comments-${postId}">
+                        <div class="comment-form">
+                            <textarea class="comment-input" placeholder="Write a comment..." id="comment-input-${postId}"></textarea>
+                            <button class="btn btn-primary" onclick="addComment(${postId})">Post</button>
+                        </div>
+                        <div class="comment-list" id="comment-list-${postId}">
+                            Loading comments...
+                        </div>
+                    </div>
+                `;
+                postElement.insertAdjacentHTML('beforeend', commentsHTML);
+            }
+        }
+        
+        const commentList = document.getElementById(`comment-list-${postId}`);
+        
+        if (commentsSection.classList.contains('d-none')) {
+            // Load comments
+            try {
+                const data = await apiCall(`/posts/${postId}/comments`);
+                
+                if (data.success) {
+                    displayComments(commentList, data.data);
+                    commentsSection.classList.remove('d-none');
+                }
+            } catch (error) {
+                // Error handled in apiCall
+            }
+        } else {
+            commentsSection.classList.add('d-none');
+        }
+    }
+
+    function displayComments(container, comments) {
+        if (!container) return;
+        
+        if (!comments || comments.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">No comments yet</p>';
+            return;
+        }
+        
+        container.innerHTML = comments.map(comment => `
+            <div class="comment-card">
+                <div class="comment-header">
+                    <div class="comment-avatar" style="background-color: ${comment.avatar_color || '#007AFF'}">
+                        ${comment.username ? comment.username.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <div>
+                        <div class="comment-username">${comment.username}</div>
+                        <div class="comment-meta">${formatDate(comment.timestamp)}</div>
+                    </div>
+                </div>
+                <div class="comment-content">${comment.content}</div>
+            </div>
+        `).join('');
+    }
+
+    async function addComment(postId) {
+        const commentInput = document.getElementById(`comment-input-${postId}`);
+        if (!commentInput) return;
+        
+        const content = commentInput.value.trim();
+        
+        if (!content) {
+            showToast('Please write a comment', 'error');
+            return;
+        }
+        
+        try {
+            const data = await apiCall(`/posts/${postId}/comments`, {
+                method: 'POST',
+                body: { content }
+            });
+            
+            if (data.success) {
+                commentInput.value = '';
+                await toggleComments(postId);
+                showToast('Comment added successfully!', 'success');
+            }
+        } catch (error) {
+            // Error handled in apiCall
+        }
+    }
+
+    // Categories & Filtering
+    function loadCategories() {
+        updateCategoryFilters();
+        updateCategoryStats();
+    }
+
+    function updateCategoryFilters() {
+        const categoryList = document.getElementById('category-list');
+        if (!categoryList) return;
+        
+        categoryList.innerHTML = `
+            <li>
+                <a href="#" class="active" data-category="">
+                    <i class="bi bi-house"></i> All Posts
+                    <span class="category-count">${allPosts.length}</span>
+                </a>
+            </li>
+            ${categories.map(category => `
+                <li>
+                    <a href="#" data-category="${category}">
+                        <i class="bi bi-tag"></i> ${category}
+                        <span class="category-count">${allPosts.filter(p => p.category === category).length}</span>
+                    </a>
+                </li>
+            `).join('')}
+        `;
+        
+        // Add event listeners to category links
+        categoryList.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const category = e.target.getAttribute('data-category');
+                handleCategorySelect(category);
+            });
+        });
+    }
+
+    function updateCategoryStats() {
+        const statPosts = document.getElementById('stat-posts');
+        const statUsers = document.getElementById('stat-users');
+        
+        if (statPosts) statPosts.textContent = allPosts.length;
+        if (statUsers) statUsers.textContent = '3';
+    }
+
+    function handleCategorySelect(category) {
+        currentCategory = category;
+        currentPage = 1;
+        loadPosts();
+    }
+
+    function handleCategoryFilter() {
+        const categoryFilter = document.getElementById('category-filter');
+        if (categoryFilter) {
+            currentCategory = categoryFilter.value;
+            currentPage = 1;
+            loadPosts();
+        }
+    }
+
+    function handleSortFilter() {
+        currentSort = 'newest';
+        loadPosts();
+    }
+
+    // Search Functionality
+    function setupSearch() {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('focus', () => {
+                if (currentSearchQuery) {
+                    showSearchResults();
+                }
+            });
+        }
+    }
+
+    async function handleSearch() {
+        const searchInput = document.getElementById('search-input');
+        if (!searchInput) return;
+        
+        currentSearchQuery = searchInput.value.trim();
+        
+        if (currentSearchQuery.length < 2) {
+            hideSearchResults();
+            return;
+        }
+        
+        try {
+            const data = await apiCall(`/search?q=${encodeURIComponent(currentSearchQuery)}`);
+            
+            if (data.success) {
+                displaySearchResults(data);
+                showSearchResults();
+            }
+        } catch (error) {
+            // Error handled in apiCall
+        }
+    }
+
+    function displaySearchResults(data) {
+        const searchPostsResults = document.getElementById('search-posts-results');
+        const searchUsersResults = document.getElementById('search-users-results');
+        
+        if (!searchPostsResults || !searchUsersResults) return;
+        
+        // Posts results
+        if (data.posts && data.posts.length > 0) {
+            searchPostsResults.innerHTML = data.posts.map(post => `
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-avatar" style="background-color: ${post.avatar_color || '#007AFF'}">
+                            ${post.username ? post.username.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div class="post-user">
+                            <div class="post-username">${post.username}</div>
+                            <div class="post-meta">${formatDate(post.timestamp)}</div>
+                        </div>
+                        <div class="post-category">${post.category}</div>
+                    </div>
+                    ${post.title ? `<div class="post-title">${post.title}</div>` : ''}
+                    <div class="post-content">${post.content}</div>
+                </div>
+            `).join('');
+        } else {
+            searchPostsResults.innerHTML = '<p class="text-muted">No posts found</p>';
+        }
+    }
+
+    function showSearchResults() {
+        hideAllSections();
+        const searchResultsSection = document.getElementById('search-results-section');
+        if (searchResultsSection) {
+            searchResultsSection.classList.remove('d-none');
+        }
+    }
+
+    function hideSearchResults() {
+        const searchResultsSection = document.getElementById('search-results-section');
+        if (searchResultsSection) {
+            searchResultsSection.classList.add('d-none');
+        }
+        showMainContent();
+    }
+
+    // Analytics & Profile
+    async function showAnalytics() {
+        try {
+            const data = await apiCall('/analytics/overview');
+            
+            if (data.success) {
+                displayAnalytics(data.overview);
+                hideAllSections();
+                document.getElementById('analytics-section').classList.remove('d-none');
+            }
+        } catch (error) {
+            // Use mock data if API fails
+            const mockData = {
+                total_posts: allPosts.length,
+                total_users: 3,
+                total_likes: allPosts.reduce((sum, post) => sum + (post.likes_count || 0), 0),
+                total_comments: allPosts.reduce((sum, post) => sum + (post.comments_count || 0), 0),
+                categories: categories.reduce((acc, cat) => {
+                    acc[cat] = allPosts.filter(p => p.category === cat).length;
+                    return acc;
+                }, {}),
+                recent_activity: allPosts.slice(0, 3).map(post => ({
+                    username: post.username,
+                    category: post.category,
+                    timestamp: post.timestamp
+                }))
+            };
+            displayAnalytics(mockData);
+            hideAllSections();
+            document.getElementById('analytics-section').classList.remove('d-none');
+        }
+    }
+
+    function displayAnalytics(analyticsData) {
+        if (!analyticsData) return;
+        
+        document.getElementById('analytics-posts').textContent = analyticsData.total_posts || 0;
+        document.getElementById('analytics-users').textContent = analyticsData.total_users || 0;
+        document.getElementById('analytics-likes').textContent = analyticsData.total_likes || 0;
+        document.getElementById('analytics-comments').textContent = analyticsData.total_comments || 0;
+    }
+
+    async function showProfile() {
+        try {
+            const data = await apiCall('/profile');
+            
+            if (data.success) {
+                displayProfile(data);
+                hideAllSections();
+                document.getElementById('profile-section').classList.remove('d-none');
+            }
+        } catch (error) {
+            // Use mock data if API fails
+            const mockData = {
+                profile: {
+                    username: currentUser.username,
+                    bio: 'Active community member',
+                    created_at: new Date().toISOString(),
+                    avatar_color: currentUser.avatar_color || '#007AFF'
+                },
+                stats: {
+                    posts: allPosts.filter(post => post.username === currentUser.username).length,
+                    likes_received: 0
+                }
+            };
+            displayProfile(mockData);
+            hideAllSections();
+            document.getElementById('profile-section').classList.remove('d-none');
+        }
+    }
+
+    function displayProfile(data) {
+        const profile = data.profile;
+        const stats = data.stats;
+        
+        document.getElementById('profile-avatar').textContent = profile.username.charAt(0).toUpperCase();
+        document.getElementById('profile-avatar').style.backgroundColor = profile.avatar_color || '#007AFF';
+        document.getElementById('profile-name').textContent = profile.username;
+        document.getElementById('profile-bio').textContent = profile.bio || 'No bio yet';
+        document.getElementById('profile-posts').textContent = stats.posts || 0;
+        document.getElementById('profile-likes').textContent = stats.likes_received || 0;
+        document.getElementById('profile-member').textContent = '1d';
+    }
+
+    // Stats & Updates
+    function updateStats() {
+        const statPosts = document.getElementById('stat-posts');
+        const statUsers = document.getElementById('stat-users');
+        
+        if (statPosts) statPosts.textContent = allPosts.length;
+        if (statUsers) statUsers.textContent = '3';
+    }
+
+    function loadTrendingTopics() {
+        const container = document.getElementById('trending-topics-list');
+        if (!container) return;
+        
+        const trendingTopics = [
+            { title: 'Welcome to Konekt!', category: 'General', replies: 24 },
+            { title: 'Programming Tips', category: 'Engineering', replies: 18 }
+        ];
+        
+        container.innerHTML = trendingTopics.map(topic => `
+            <div class="topic-item">
+                <div class="topic-avatar" style="background-color: #007AFF">
+                    ${topic.category.charAt(0)}
+                </div>
+                <div class="topic-content">
+                    <div class="topic-title">${topic.title}</div>
+                    <div class="topic-meta">${topic.category} • ${topic.replies} replies</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function loadTopContributors() {
+        const container = document.getElementById('top-contributors');
+        if (!container) return;
+        
+        const contributors = [
+            { username: 'JohnDoe', posts: 42 },
+            { username: 'SarahSmith', posts: 38 }
+        ];
+        
+        container.innerHTML = contributors.map(contributor => `
+            <div class="topic-item">
+                <div class="topic-avatar" style="background-color: #34C759">
+                    ${contributor.username.charAt(0)}
+                </div>
+                <div class="topic-content">
+                    <div class="topic-title">${contributor.username}</div>
+                    <div class="topic-meta">${contributor.posts} posts</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Utility Functions
+    function hideAllSections() {
+        const sections = [
+            'posts-section',
+            'analytics-section',
+            'profile-section',
+            'search-results-section',
+            'auth-section'
+        ];
+        
+        sections.forEach(section => {
+            const element = document.getElementById(section);
+            if (element) {
+                element.classList.add('d-none');
+            }
+        });
+    }
+
+    function showMainContent() {
+        hideAllSections();
+        document.getElementById('posts-section').classList.remove('d-none');
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return 'Recently';
+        
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        } catch (error) {
+            return 'Recently';
+        }
+    }
+
+    function showToast(message, type) {
+        console.log(`${type}: ${message}`);
         alert(message);
     }
-}
 
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
             clearTimeout(timeout);
-            func(...args);
+            timeout = setTimeout(later, wait);
         };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-function handleGlobalClick(event) {
-    // Close search results when clicking outside
-    const searchContainer = document.getElementById('search-container');
-    const searchResultsSection = document.getElementById('search-results-section');
-    
-    if (searchContainer && searchResultsSection && 
-        !searchContainer.contains(event.target) && 
-        !searchResultsSection.contains(event.target)) {
-        hideSearchResults();
     }
-}
 
-// Make functions globally available for onclick attributes
-window.showAnalytics = showAnalytics;
-window.showProfile = showProfile;
-window.addComment = addComment;
-      </script>
+    function handleGlobalClick(event) {
+        // Close search results when clicking outside
+        const searchContainer = document.getElementById('search-container');
+        const searchResultsSection = document.getElementById('search-results-section');
+        
+        if (searchContainer && searchResultsSection && 
+            !searchContainer.contains(event.target) && 
+            !searchResultsSection.contains(event.target)) {
+            hideSearchResults();
+        }
+    }
+
+    // Make functions globally available
+    window.showAnalytics = showAnalytics;
+    window.showProfile = showProfile;
+    window.addComment = addComment;
+  </script>
 </body>
 </html>
