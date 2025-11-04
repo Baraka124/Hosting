@@ -7,6 +7,7 @@ import re
 from functools import wraps
 import logging
 from logging.handlers import RotatingFileHandler
+import html
 
 app = Flask(__name__)
 CORS(app)
@@ -129,6 +130,16 @@ def init_db():
                 ip_address TEXT,
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
             );
+
+            -- Categories table for better category management
+            CREATE TABLE IF NOT EXISTS categories(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE NOT NULL,
+                description TEXT,
+                color TEXT DEFAULT '#007AFF',
+                is_active BOOLEAN DEFAULT 1,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
         """)
         
         # Create indexes
@@ -140,7 +151,23 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_likes_user_post ON likes(user_id, post_id);
             CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
             CREATE INDEX IF NOT EXISTS idx_user_activity_user_id ON user_activity(user_id);
+            CREATE INDEX IF NOT EXISTS idx_posts_search ON posts(content);
         """)
+        
+        # Insert default categories
+        default_categories = [
+            ('General', 'General discussions and topics', '#007AFF'),
+            ('Technology', 'Tech news, programming, and gadgets', '#34C759'),
+            ('Science', 'Scientific discoveries and discussions', '#FF9500'),
+            ('Entertainment', 'Movies, games, and entertainment', '#AF52DE'),
+            ('Sports', 'Sports news and discussions', '#FF3B30'),
+            ('Politics', 'Political discussions and news', '#5856D6')
+        ]
+        
+        c.executemany("""
+            INSERT OR IGNORE INTO categories (name, description, color) 
+            VALUES (?, ?, ?)
+        """, default_categories)
         
         conn.commit()
         app.logger.info("Database schema initialized successfully")
@@ -225,15 +252,25 @@ def validate_fields(data, required):
             return False, f"Missing field: {field}"
     return True, None
 
-def sanitize_input(text, max_length=1000):
-    """Sanitize user input"""
+def sanitize_input(text, max_length=5000):
+    """Sanitize user input for rich text content"""
     if not text:
         return text
     
-    # Remove dangerous patterns
+    # Allow safe HTML tags for rich text
+    allowed_tags = ['b', 'i', 'u', 'strong', 'em', 'ul', 'ol', 'li', 'br', 'p', 'div']
+    allowed_attrs = {
+        '*': ['class', 'style'],
+        'a': ['href', 'title'],
+        'img': ['src', 'alt', 'width', 'height']
+    }
+    
+    # Remove dangerous patterns but keep safe HTML
     text = re.sub(r'<script.*?>.*?</script>', '', text, flags=re.IGNORECASE | re.DOTALL)
     text = re.sub(r'javascript:', '', text, flags=re.IGNORECASE)
     text = re.sub(r'on\w+=', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'vbscript:', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'expression\(', '', text, flags=re.IGNORECASE)
     
     # Limit length
     if len(text) > max_length:
@@ -273,7 +310,28 @@ def log_user_activity(user_id, action, details=None):
     finally:
         conn.close()
 
-# ---------- Routes ----------
+def format_timestamp(timestamp):
+    """Format timestamp for frontend display"""
+    if not timestamp:
+        return "Recently"
+    
+    try:
+        post_time = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+        now = datetime.now(post_time.tzinfo) if post_time.tzinfo else datetime.now()
+        diff = now - post_time
+        
+        if diff.days > 0:
+            return f"{diff.days}d ago"
+        elif diff.seconds > 3600:
+            return f"{diff.seconds // 3600}h ago"
+        elif diff.seconds > 60:
+            return f"{diff.seconds // 60}m ago"
+        else:
+            return "Just now"
+    except:
+        return timestamp
+
+# ---------- Enhanced Routes ----------
 @app.route('/')
 def serve_index():
     return send_from_directory('.', 'index.html')
@@ -292,9 +350,12 @@ def health_check():
         c.execute("SELECT COUNT(*) as post_count FROM posts")
         post_count = c.fetchone()[0]
         
+        c.execute("SELECT COUNT(*) as active_users FROM users WHERE last_login > datetime('now', '-7 days')")
+        active_users = c.fetchone()[0]
+        
     except Exception as e:
         db_status = f"unhealthy: {str(e)}"
-        user_count = post_count = 0
+        user_count = post_count = active_users = 0
     finally:
         conn.close()
     
@@ -302,8 +363,86 @@ def health_check():
         "status": "healthy",
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "database": db_status,
-        "stats": {"users": user_count, "posts": post_count}
+        "stats": {
+            "users": user_count, 
+            "posts": post_count,
+            "active_users": active_users
+        }
     })
+
+@app.route('/api/stats')
+@token_required
+def get_stats():
+    """Get comprehensive forum statistics"""
+    conn = get_db()
+    try:
+        c = conn.cursor()
+        
+        # User stats
+        c.execute("""
+            SELECT 
+                COUNT(*) as total_users,
+                COUNT(CASE WHEN last_login > datetime('now', '-7 days') THEN 1 END) as active_week,
+                COUNT(CASE WHEN last_login > datetime('now', '-1 day') THEN 1 END) as active_today
+            FROM users 
+            WHERE is_active = 1
+        """)
+        user_stats = dict(c.fetchone())
+        
+        # Post stats
+        c.execute("""
+            SELECT 
+                COUNT(*) as total_posts,
+                COUNT(CASE WHEN timestamp > datetime('now', '-7 days') THEN 1 END) as posts_week,
+                COUNT(CASE WHEN timestamp > datetime('now', '-1 day') THEN 1 END) as posts_today
+            FROM posts
+        """)
+        post_stats = dict(c.fetchone())
+        
+        # Category stats
+        c.execute("""
+            SELECT category, COUNT(*) as count 
+            FROM posts 
+            GROUP BY category 
+            ORDER BY count DESC 
+            LIMIT 10
+        """)
+        top_categories = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({
+            "success": True,
+            "stats": {
+                "users": user_stats,
+                "posts": post_stats,
+                "top_categories": top_categories
+            }
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Stats retrieval error: {e}")
+        return jsonify({"success": False, "error": "Failed to retrieve stats"}), 500
+    finally:
+        conn.close()
+
+@app.route('/api/categories')
+def get_categories():
+    """Get all available categories"""
+    conn = get_db()
+    try:
+        c = conn.cursor()
+        c.execute("SELECT name, description, color FROM categories WHERE is_active = 1 ORDER BY name")
+        categories = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({
+            "success": True,
+            "categories": categories
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Categories retrieval error: {e}")
+        return jsonify({"success": False, "error": "Failed to retrieve categories"}), 500
+    finally:
+        conn.close()
 
 @app.route('/api/register', methods=['POST'])
 @rate_limit
@@ -381,6 +520,13 @@ def login():
         "exp": datetime.utcnow() + timedelta(hours=24)
     }, SECRET_KEY, algorithm="HS256")
 
+    # Update last login
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("UPDATE users SET last_login = datetime('now') WHERE id = ?", (user["id"],))
+    conn.commit()
+    conn.close()
+
     log_user_activity(user["id"], "login")
 
     return jsonify({
@@ -392,6 +538,44 @@ def login():
             "avatar_color": user["avatar_color"]
         }
     })
+
+@app.route('/api/profile', methods=['GET'])
+@token_required
+def get_profile():
+    """Get user profile information"""
+    conn = get_db()
+    try:
+        c = conn.cursor()
+        c.execute("""
+            SELECT username, email, full_name, avatar_color, bio, created_at, reputation
+            FROM users WHERE id = ?
+        """, (request.user_id,))
+        user = c.fetchone()
+        
+        if not user:
+            return jsonify({"success": False, "error": "User not found"}), 404
+        
+        # Get user stats
+        c.execute("SELECT COUNT(*) as post_count FROM posts WHERE user_id = ?", (request.user_id,))
+        post_count = c.fetchone()["post_count"]
+        
+        c.execute("SELECT COUNT(*) as like_count FROM likes WHERE user_id = ?", (request.user_id,))
+        like_count = c.fetchone()["like_count"]
+        
+        return jsonify({
+            "success": True,
+            "profile": {
+                **dict(user),
+                "post_count": post_count,
+                "like_count": like_count
+            }
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Profile retrieval error: {e}")
+        return jsonify({"success": False, "error": "Failed to retrieve profile"}), 500
+    finally:
+        conn.close()
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 @token_required
@@ -407,14 +591,19 @@ def posts():
             return jsonify({"success": False, "error": msg}), 400
         
         category = sanitize_input(data["category"], 50)
-        content = sanitize_input(data["content"], 1000)
+        content = sanitize_input(data["content"], 5000)  # Increased for rich text
         
-        if len(content) < 10:
+        if len(content.strip()) < 10:
             return jsonify({"success": False, "error": "Content must be at least 10 characters"}), 400
 
+        # Validate category exists
         conn = get_db()
+        c = conn.cursor()
+        c.execute("SELECT name FROM categories WHERE name = ? AND is_active = 1", (category,))
+        if not c.fetchone():
+            return jsonify({"success": False, "error": "Invalid category"}), 400
+
         try:
-            c = conn.cursor()
             c.execute("""INSERT INTO posts (user_id, category, content) 
                         VALUES (?, ?, ?)""",
                      (request.user_id, category, content))
@@ -435,14 +624,14 @@ def posts():
         finally:
             conn.close()
 
-    # GET posts
+    # GET posts with enhanced filtering and search
     conn = get_db()
     try:
         c = conn.cursor()
         page = request.args.get('page', 1, type=int)
         per_page = min(request.args.get('per_page', 10, type=int), 50)
         category = request.args.get('category', '')
-        search = sanitize_input(request.args.get('search', ''), 50)
+        search = sanitize_input(request.args.get('search', ''), 100)
         
         offset = (page - 1) * per_page
         
@@ -462,11 +651,13 @@ def posts():
             params.append(category)
         
         if search:
-            query += " AND (p.content LIKE ? OR p.title LIKE ?)"
-            count_query += " AND (p.content LIKE ? OR p.title LIKE ?)"
-            params.extend([f'%{search}%', f'%{search}%'])
+            # Enhanced search across multiple fields
+            query += " AND (p.content LIKE ? OR u.username LIKE ?)"
+            count_query += " AND (p.content LIKE ? OR u.username LIKE ?)"
+            search_term = f'%{search}%'
+            params.extend([search_term, search_term])
         
-        query += " ORDER BY p.timestamp DESC LIMIT ? OFFSET ?"
+        query += " ORDER BY p.is_pinned DESC, p.timestamp DESC LIMIT ? OFFSET ?"
         params.extend([per_page, offset])
         
         # Get total count
@@ -477,10 +668,11 @@ def posts():
         c.execute(query, params)
         rows = [dict(row) for row in c.fetchall()]
         
-        # Check if user liked each post
+        # Check if user liked each post and format timestamps
         for post in rows:
             c.execute("SELECT id FROM likes WHERE user_id = ? AND post_id = ?", (request.user_id, post['id']))
             post['user_has_liked'] = c.fetchone() is not None
+            post['formatted_timestamp'] = format_timestamp(post['timestamp'])
         
         return jsonify({
             "success": True, 
@@ -499,6 +691,64 @@ def posts():
     finally:
         conn.close()
 
+@app.route('/api/posts/<int:post_id>', methods=['GET', 'DELETE'])
+@token_required
+@rate_limit
+def single_post(post_id):
+    """Get or delete a specific post"""
+    conn = get_db()
+    try:
+        c = conn.cursor()
+        
+        if request.method == 'DELETE':
+            # Verify post ownership
+            c.execute("SELECT user_id FROM posts WHERE id = ?", (post_id,))
+            post = c.fetchone()
+            
+            if not post:
+                return jsonify({"success": False, "error": "Post not found"}), 404
+            
+            if post["user_id"] != request.user_id:
+                return jsonify({"success": False, "error": "Not authorized to delete this post"}), 403
+            
+            c.execute("DELETE FROM posts WHERE id = ?", (post_id,))
+            conn.commit()
+            
+            log_user_activity(request.user_id, "post_deleted", {"post_id": post_id})
+            
+            return jsonify({"success": True, "message": "Post deleted successfully"})
+        
+        # GET single post
+        c.execute("""
+            SELECT p.*, u.username, u.avatar_color 
+            FROM posts p 
+            JOIN users u ON p.user_id = u.id 
+            WHERE p.id = ? AND u.is_active = 1
+        """, (post_id,))
+        
+        post = c.fetchone()
+        if not post:
+            return jsonify({"success": False, "error": "Post not found"}), 404
+        
+        post_dict = dict(post)
+        
+        # Check if user liked the post
+        c.execute("SELECT id FROM likes WHERE user_id = ? AND post_id = ?", (request.user_id, post_id))
+        post_dict['user_has_liked'] = c.fetchone() is not None
+        post_dict['formatted_timestamp'] = format_timestamp(post_dict['timestamp'])
+        
+        # Increment view count
+        c.execute("UPDATE posts SET view_count = view_count + 1 WHERE id = ?", (post_id,))
+        conn.commit()
+        
+        return jsonify({"success": True, "data": post_dict})
+        
+    except Exception as e:
+        app.logger.error(f"Single post operation error: {e}")
+        return jsonify({"success": False, "error": "Operation failed"}), 500
+    finally:
+        conn.close()
+
 @app.route('/api/posts/<int:post_id>/like', methods=['POST'])
 @token_required
 @rate_limit
@@ -508,8 +758,9 @@ def like_post(post_id):
         c = conn.cursor()
         
         # Verify post exists
-        c.execute("SELECT id FROM posts WHERE id = ?", (post_id,))
-        if not c.fetchone():
+        c.execute("SELECT id, user_id FROM posts WHERE id = ?", (post_id,))
+        post = c.fetchone()
+        if not post:
             return jsonify({"success": False, "error": "Post not found"}), 404
         
         # Check if already liked
@@ -521,12 +772,20 @@ def like_post(post_id):
             c.execute("DELETE FROM likes WHERE id = ?", (existing_like["id"],))
             c.execute("UPDATE posts SET likes_count = likes_count - 1 WHERE id = ?", (post_id,))
             action = "unliked"
+            
+            # Update user reputation (simplified)
+            if post["user_id"] != request.user_id:
+                c.execute("UPDATE users SET reputation = reputation - 1 WHERE id = ?", (post["user_id"],))
         else:
             # Like
             c.execute("INSERT INTO likes (user_id, post_id) VALUES (?, ?)",
                      (request.user_id, post_id))
             c.execute("UPDATE posts SET likes_count = likes_count + 1 WHERE id = ?", (post_id,))
             action = "liked"
+            
+            # Update user reputation (simplified)
+            if post["user_id"] != request.user_id:
+                c.execute("UPDATE users SET reputation = reputation + 1 WHERE id = ?", (post["user_id"],))
         
         conn.commit()
         
@@ -545,6 +804,103 @@ def like_post(post_id):
     except Exception as e:
         app.logger.error(f"Like operation error: {e}")
         return jsonify({"success": False, "error": "Like operation failed"}), 500
+    finally:
+        conn.close()
+
+@app.route('/api/comments', methods=['POST'])
+@token_required
+@rate_limit
+def create_comment():
+    """Create a new comment"""
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "error": "No data provided"}), 400
+        
+    valid, msg = validate_fields(data, ["post_id", "content"])
+    if not valid:
+        return jsonify({"success": False, "error": msg}), 400
+    
+    post_id = data["post_id"]
+    content = sanitize_input(data["content"], 1000)
+    parent_comment_id = data.get("parent_comment_id")
+    
+    if len(content) < 1:
+        return jsonify({"success": False, "error": "Comment cannot be empty"}), 400
+
+    conn = get_db()
+    try:
+        c = conn.cursor()
+        
+        # Verify post exists
+        c.execute("SELECT id FROM posts WHERE id = ?", (post_id,))
+        if not c.fetchone():
+            return jsonify({"success": False, "error": "Post not found"}), 404
+        
+        # Insert comment
+        c.execute("""
+            INSERT INTO comments (post_id, user_id, content, parent_comment_id) 
+            VALUES (?, ?, ?, ?)
+        """, (post_id, request.user_id, content, parent_comment_id))
+        
+        # Update post comment count
+        c.execute("UPDATE posts SET comments_count = comments_count + 1 WHERE id = ?", (post_id,))
+        
+        comment_id = c.lastrowid
+        conn.commit()
+        
+        log_user_activity(request.user_id, "comment_created", {"post_id": post_id, "comment_id": comment_id})
+        
+        return jsonify({
+            "success": True, 
+            "message": "Comment created successfully", 
+            "comment_id": comment_id
+        }), 201
+        
+    except Exception as e:
+        app.logger.error(f"Comment creation error: {e}")
+        return jsonify({"success": False, "error": "Failed to create comment"}), 500
+    finally:
+        conn.close()
+
+@app.route('/api/posts/<int:post_id>/comments', methods=['GET'])
+@token_required
+@rate_limit
+def get_comments(post_id):
+    """Get comments for a post"""
+    conn = get_db()
+    try:
+        c = conn.cursor()
+        
+        # Verify post exists
+        c.execute("SELECT id FROM posts WHERE id = ?", (post_id,))
+        if not c.fetchone():
+            return jsonify({"success": False, "error": "Post not found"}), 404
+        
+        # Get comments with user info
+        c.execute("""
+            SELECT c.*, u.username, u.avatar_color 
+            FROM comments c 
+            JOIN users u ON c.user_id = u.id 
+            WHERE c.post_id = ? AND c.is_deleted = 0 AND u.is_active = 1
+            ORDER BY c.timestamp ASC
+        """, (post_id,))
+        
+        comments = [dict(row) for row in c.fetchall()]
+        
+        # Check if user liked each comment and format timestamps
+        for comment in comments:
+            c.execute("SELECT id FROM likes WHERE user_id = ? AND comment_id = ?", (request.user_id, comment['id']))
+            comment['user_has_liked'] = c.fetchone() is not None
+            comment['formatted_timestamp'] = format_timestamp(comment['timestamp'])
+        
+        return jsonify({
+            "success": True, 
+            "data": comments
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Comments retrieval error: {e}")
+        return jsonify({"success": False, "error": "Failed to retrieve comments"}), 500
     finally:
         conn.close()
 
