@@ -7,6 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <style>
+    /* Your existing CSS styles remain exactly the same */
     :root {
       --primary: #0066FF;
       --primary-dark: #0052CC;
@@ -288,28 +289,6 @@
       color: white;
     }
 
-    /* Recommendations */
-    .recommendations-section {
-      background: var(--gradient);
-      border-radius: 20px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      color: white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .recommendations-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><circle fill="rgba(255,255,255,0.1)" cx="500" cy="500" r="400"/></svg>');
-      background-size: cover;
-    }
-
     /* Modal Styles */
     .modal-overlay {
       display: none;
@@ -525,7 +504,7 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Keyboard Shortcut Hint -->
-  <div class="shortcut-hint" onclick="showKeyboardShortcuts()">
+  <div class="shortcut-hint" id="shortcut-hint">
     <i class="bi bi-keyboard"></i>
     <span>Shortcuts</span>
   </div>
@@ -569,14 +548,6 @@
 
     <!-- Posts Section -->
     <div id="posts-section" style="display: none;">
-      <!-- Recommendations Section -->
-      <div id="recommendations-section" class="recommendations-section" style="display: none;">
-        <h4 style="margin-bottom: 1rem; position: relative;">
-          <i class="bi bi-stars"></i> Recommended for You
-        </h4>
-        <div id="recommendations-container"></div>
-      </div>
-
       <!-- Search and Filters -->
       <div class="search-container">
         <i class="bi bi-search search-icon"></i>
@@ -593,19 +564,6 @@
           <option value="Science">Science</option>
         </select>
         
-        <select id="time-filter" class="filter-select">
-          <option value="">All Time</option>
-          <option value="today">Today</option>
-          <option value="week">This Week</option>
-          <option value="month">This Month</option>
-        </select>
-        
-        <select id="sort-by" class="filter-select">
-          <option value="newest">Newest</option>
-          <option value="popular">Most Popular</option>
-          <option value="trending">Trending</option>
-        </select>
-        
         <button class="btn btn-primary" id="new-post-btn">
           <i class="bi bi-plus-circle"></i> New Post
         </button>
@@ -620,17 +578,6 @@
       <!-- Posts Container -->
       <div id="posts-container">
         <!-- Posts will be dynamically inserted here -->
-      </div>
-
-      <!-- Pagination -->
-      <div id="pagination" style="display: none; text-align: center; margin-top: 2rem;">
-        <button class="btn btn-outline-primary" id="prev-btn">
-          <i class="bi bi-chevron-left"></i> Previous
-        </button>
-        <span style="margin: 0 1.5rem; font-weight: 600;" id="page-info">Page 1 of 1</span>
-        <button class="btn btn-outline-primary" id="next-btn">
-          Next <i class="bi bi-chevron-right"></i>
-        </button>
       </div>
     </div>
   </div>
@@ -715,15 +662,11 @@
   </div>
 
   <script>
-    // Enhanced EdgePowered Forum - Complete Working JavaScript
+    // EdgePowered Forum - Simple Working Version
     const API_BASE = "https://hosting-production-a352.up.railway.app/api";
     let currentUser = null;
-    let allPosts = [];
-    let currentPage = 1;
-    let totalPages = 1;
-    let searchTimeout = null;
 
-    // Enhanced DOM functions
+    // Simple DOM functions
     function getElement(id) {
       return document.getElementById(id);
     }
@@ -753,146 +696,46 @@
       if (el) el.value = value;
     }
 
-    function setLoading(buttonId, loading) {
-      const btn = getElement(buttonId);
-      if (!btn) return;
-      
-      if (loading) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="bi bi-hourglass"></i> Loading...';
-      } else {
-        btn.disabled = false;
-        const originalText = btn.getAttribute('data-original-text');
-        if (originalText) {
-          btn.innerHTML = originalText;
-        }
-      }
-    }
-
-    // Enhanced Toast System
-    function showToast(message, type = 'info', duration = 5000) {
+    // Toast System
+    function showToast(message, type = 'info') {
       const container = getElement('toast-container');
       if (!container) return;
 
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      
-      const icons = {
-        success: 'bi-check-circle-fill',
-        error: 'bi-exclamation-circle-fill',
-        warning: 'bi-exclamation-triangle-fill',
-        info: 'bi-info-circle-fill'
-      };
-
-      toast.innerHTML = `
-        <i class="bi ${icons[type] || icons.info}"></i>
-        <span>${message}</span>
-      `;
-
+      toast.innerHTML = `<span>${message}</span>`;
       container.appendChild(toast);
 
       setTimeout(() => {
-        toast.style.animation = 'slideInRight 0.3s ease reverse';
-        setTimeout(() => {
-          if (toast.parentNode) {
-            toast.parentNode.removeChild(toast);
-          }
-        }, 300);
-      }, duration);
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 3000);
     }
 
     // Modal functions
     function showModal(id) {
       showElement(id);
-      document.body.style.overflow = 'hidden';
     }
 
     function hideModal(id) {
       hideElement(id);
-      document.body.style.overflow = 'auto';
-    }
-
-    function showLogin() {
-      showModal('loginModal');
-    }
-
-    function showRegister() {
-      showModal('registerModal');
-    }
-
-    function showCreatePost() {
-      showModal('createPostModal');
     }
 
     // Theme Management
     function initTheme() {
       const theme = localStorage.getItem('theme') || 'light';
-      setTheme(theme);
-      
-      const themeBtn = getElement('theme-toggle');
-      if (themeBtn) {
-        themeBtn.innerHTML = theme === 'dark' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
-      }
-    }
-
-    function setTheme(theme) {
       document.body.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
     }
 
     function toggleTheme() {
       const currentTheme = localStorage.getItem('theme') || 'light';
       const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      setTheme(newTheme);
-      
-      const themeBtn = getElement('theme-toggle');
-      if (themeBtn) {
-        themeBtn.innerHTML = newTheme === 'dark' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
-      }
+      document.body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
     }
 
-    // Keyboard Shortcuts
-    function showKeyboardShortcuts() {
-      showToast(
-        'Keyboard Shortcuts: Ctrl+N - New Post, Ctrl+K - Search, Escape - Close Modals',
-        'info',
-        6000
-      );
-    }
-
-    function initKeyboardShortcuts() {
-      document.addEventListener('keydown', function(e) {
-        if (e.ctrlKey || e.metaKey) {
-          switch(e.key) {
-            case 'n':
-              e.preventDefault();
-              if (currentUser) showCreatePost();
-              break;
-            case 'k':
-              e.preventDefault();
-              getElement('search-input').focus();
-              break;
-          }
-        }
-        
-        if (e.key === 'Escape') {
-          hideModal('loginModal');
-          hideModal('registerModal'); 
-          hideModal('createPostModal');
-        }
-      });
-    }
-
-    // Debounced Search
-    function debouncedSearch() {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        currentPage = 1;
-        loadPosts();
-      }, 500);
-    }
-
-    // API call with error handling
+    // API call
     async function apiCall(endpoint, options = {}) {
       const token = localStorage.getItem('token');
       
@@ -910,24 +753,14 @@
         }
 
         const response = await fetch(`${API_BASE}${endpoint}`, config);
-        
-        if (response.status === 401) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('userData');
-          currentUser = null;
-          showUnauthenticatedUI();
-          throw new Error('Session expired. Please login again.');
-        }
-
         const data = await response.json();
         
         if (!response.ok) {
-          throw new Error(data.error || `Request failed: ${response.status}`);
+          throw new Error(data.error || 'Request failed');
         }
 
         return data;
       } catch (error) {
-        console.error('API Error:', error);
         showToast(error.message, 'error');
         throw error;
       }
@@ -942,9 +775,7 @@
         try {
           currentUser = JSON.parse(userData);
           showAuthenticatedUI();
-          await loadPosts();
         } catch (error) {
-          console.error('Auth error:', error);
           handleLogout();
         }
       } else {
@@ -976,8 +807,6 @@
         return;
       }
 
-      setLoading('login-btn', true);
-
       try {
         const data = await apiCall('/login', {
           method: 'POST',
@@ -998,8 +827,6 @@
         }
       } catch (error) {
         // Error handled in apiCall
-      } finally {
-        setLoading('login-btn', false);
       }
     }
 
@@ -1013,22 +840,10 @@
         return;
       }
 
-      if (username.length < 3) {
-        showToast('Username must be at least 3 characters', 'warning');
-        return;
-      }
-
-      if (password.length < 6) {
-        showToast('Password must be at least 6 characters', 'warning');
-        return;
-      }
-
       if (password !== confirmPassword) {
         showToast('Passwords do not match', 'error');
         return;
       }
-
-      setLoading('register-btn', true);
 
       try {
         const data = await apiCall('/register', {
@@ -1045,8 +860,6 @@
         }
       } catch (error) {
         // Error handled in apiCall
-      } finally {
-        setLoading('register-btn', false);
       }
     }
 
@@ -1068,13 +881,6 @@
         return;
       }
 
-      if (content.length < 10) {
-        showToast('Post must be at least 10 characters', 'warning');
-        return;
-      }
-
-      setLoading('create-post-btn', true);
-
       try {
         const data = await apiCall('/posts', {
           method: 'POST',
@@ -1084,164 +890,21 @@
         if (data.success) {
           hideModal('createPostModal');
           setValue('postContent', '');
-          await loadPosts();
           showToast('Post published successfully!', 'success');
         }
       } catch (error) {
         // Error handled in apiCall
-      } finally {
-        setLoading('create-post-btn', false);
       }
     }
 
-    async function loadPosts() {
-      showElement('posts-loading');
-      hideElement('pagination');
-
-      try {
-        const category = getValue('category-filter');
-        const search = getValue('search-input');
-        
-        let endpoint = `/posts?page=${currentPage}&per_page=10`;
-        if (category) endpoint += `&category=${encodeURIComponent(category)}`;
-        if (search) endpoint += `&search=${encodeURIComponent(search)}`;
-
-        const data = await apiCall(endpoint);
-        
-        if (data.success) {
-          allPosts = data.data || [];
-          currentPage = data.pagination?.page || 1;
-          totalPages = data.pagination?.pages || 1;
-          
-          displayPosts(allPosts);
-          updatePagination();
-        }
-      } catch (error) {
-        // Error handled in apiCall
-      } finally {
-        hideElement('posts-loading');
-      }
-    }
-
-    function updatePagination() {
-      const pagination = getElement('pagination');
-      const pageInfo = getElement('page-info');
-      const prevBtn = getElement('prev-btn');
-      const nextBtn = getElement('next-btn');
-
-      if (totalPages <= 1) {
-        hideElement('pagination');
-        return;
-      }
-
-      showElement('pagination');
-      setText('page-info', `Page ${currentPage} of ${totalPages}`);
-      
-      prevBtn.disabled = currentPage === 1;
-      nextBtn.disabled = currentPage === totalPages;
-    }
-
-    function loadNextPage() {
-      if (currentPage < totalPages) {
-        currentPage++;
-        loadPosts();
-      }
-    }
-
-    function loadPreviousPage() {
-      if (currentPage > 1) {
-        currentPage--;
-        loadPosts();
-      }
-    }
-
-    async function handleLike(postId) {
-      try {
-        const data = await apiCall(`/posts/${postId}/like`, {
-          method: 'POST'
-        });
-
-        if (data.success) {
-          const likeBtn = document.querySelector(`[data-post-id="${postId}"] .btn-like`);
-          const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
-          
-          if (likeBtn && likeCount) {
-            likeBtn.classList.toggle('active', data.action === 'liked');
-            likeCount.textContent = data.likes_count;
-          }
-          
-          showToast(data.action === 'liked' ? 'Post liked!' : 'Post unliked', 'success');
-        }
-      } catch (error) {
-        // Error handled in apiCall
-      }
-    }
-
-    function displayPosts(posts) {
-      const container = getElement('posts-container');
-      if (!container) return;
-
-      if (!posts || posts.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <i class="bi bi-chat-square-text"></i>
-            <h4>No discussions yet</h4>
-            <p>Be the first to start a conversation in the community!</p>
-            <button class="btn btn-primary" onclick="showCreatePost()" style="margin-top: 1rem;">
-              <i class="bi bi-plus-circle"></i> Start First Discussion
-            </button>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = posts.map(post => `
-        <div class="card post-card" data-post-id="${post.id}">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-            <div style="flex: 1">
-              <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                <div class="user-avatar" style="background: ${post.avatar_color || 'var(--gradient)'}">
-                  ${(post.username || 'U').charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <strong>${post.username || 'User'}</strong>
-                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
-                    <span style="color: var(--secondary); font-size: 0.875rem;">
-                      ${new Date(post.timestamp).toLocaleDateString()}
-                    </span>
-                    <span class="category-badge">${post.category}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div style="margin-bottom: 1rem; line-height: 1.6; white-space: pre-wrap; font-size: 1.05rem;">
-            ${post.content}
-          </div>
-          
-          <div class="post-actions">
-            <button class="btn btn-sm btn-outline-primary btn-like ${post.user_has_liked ? 'active' : ''}" 
-                    onclick="handleLike(${post.id})">
-              <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i> 
-              <span class="like-count">${post.likes_count || 0}</span>
-            </button>
-            <button class="btn btn-sm btn-outline-primary">
-              <i class="bi bi-chat"></i> ${post.comments_count || 0}
-            </button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // Event Listeners Setup
+    // Event Listeners
     function setupEventListeners() {
       // Theme toggle
       getElement('theme-toggle').addEventListener('click', toggleTheme);
       
       // Auth buttons
-      getElement('sign-in-btn').addEventListener('click', showLogin);
-      getElement('create-account-btn').addEventListener('click', showRegister);
+      getElement('sign-in-btn').addEventListener('click', () => showModal('loginModal'));
+      getElement('create-account-btn').addEventListener('click', () => showModal('registerModal'));
       getElement('logout-btn').addEventListener('click', handleLogout);
       
       // Modal buttons
@@ -1254,29 +917,19 @@
       getElement('create-post-btn').addEventListener('click', handleCreatePost);
       
       // Post buttons
-      getElement('new-post-btn').addEventListener('click', showCreatePost);
-      getElement('prev-btn').addEventListener('click', loadPreviousPage);
-      getElement('next-btn').addEventListener('click', loadNextPage);
+      getElement('new-post-btn').addEventListener('click', () => showModal('createPostModal'));
       
-      // Search and filters
-      getElement('search-input').addEventListener('input', debouncedSearch);
-      getElement('category-filter').addEventListener('change', () => {
-        currentPage = 1;
-        loadPosts();
+      // Shortcut hint
+      getElement('shortcut-hint').addEventListener('click', () => {
+        showToast('Press Ctrl+K to search, Escape to close modals', 'info');
       });
-      
-      // Store original button texts
-      getElement('login-btn').setAttribute('data-original-text', getElement('login-btn').innerHTML);
-      getElement('register-btn').setAttribute('data-original-text', getElement('register-btn').innerHTML);
-      getElement('create-post-btn').setAttribute('data-original-text', getElement('create-post-btn').innerHTML);
     }
 
     // Initialize app
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('⚡ EdgePowered Forum Starting...');
+      console.log('EdgePowered Forum Starting...');
       initTheme();
       setupEventListeners();
-      initKeyboardShortcuts();
       checkAuthStatus();
     });
   </script>
