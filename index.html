@@ -716,24 +716,611 @@
   </div>
 
   <script>
-    // Enhanced EdgePowered JavaScript with modern UI interactions
-    // (Keep all your existing JavaScript functionality from previous version)
-    // The CSS above provides the visual enhancements
-    
-    // Add smooth theme transitions
-    function setTheme(theme) {
-      document.body.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
+<script>
+    // Enhanced EdgePowered Forum - Complete JavaScript
+    const API_BASE = "https://hosting-production-a352.up.railway.app/api";
+    let currentUser = null;
+    let allPosts = [];
+    let currentPage = 1;
+    let totalPages = 1;
+    let searchTimeout = null;
+    let lastSeenPost = null;
+
+    // Enhanced DOM functions with error handling
+    function getElement(id) {
+      const el = document.getElementById(id);
+      if (!el) console.warn(`Element with id '${id}' not found`);
+      return el;
+    }
+
+    function showElement(id) {
+      const el = getElement(id);
+      if (el) el.style.display = 'block';
+    }
+
+    function hideElement(id) {
+      const el = getElement(id);
+      if (el) el.style.display = 'none';
+    }
+
+    function setText(id, text) {
+      const el = getElement(id);
+      if (el) el.textContent = text;
+    }
+
+    function getValue(id) {
+      const el = getElement(id);
+      return el ? el.value.trim() : '';
+    }
+
+    function setValue(id, value) {
+      const el = getElement(id);
+      if (el) el.value = value;
+    }
+
+    function setLoading(buttonId, loading) {
+      const btn = getElement(buttonId);
+      if (!btn) return;
       
-      const themeBtn = getElement('theme-toggle');
-      if (themeBtn) {
-        themeBtn.innerHTML = theme === 'dark' ? 
-          '<i class="bi bi-sun"></i>' : 
-          '<i class="bi bi-moon"></i>';
+      if (loading) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-hourglass"></i> Loading...';
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = btn.getAttribute('data-original-text') || btn.textContent;
       }
     }
 
-    // Enhanced empty state for posts
+    // Enhanced Toast System
+    function showToast(message, type = 'info', duration = 5000) {
+      const container = getElement('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: 'bi-check-circle-fill',
+        error: 'bi-exclamation-circle-fill',
+        warning: 'bi-exclamation-triangle-fill',
+        info: 'bi-info-circle-fill'
+      };
+
+      toast.innerHTML = `
+        <i class="bi ${icons[type] || icons.info}"></i>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.animation = 'slideInRight 0.3s ease reverse';
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300);
+      }, duration);
+    }
+
+    // Enhanced Modal functions
+    function showModal(id) {
+      showElement(id);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hideModal(id) {
+      hideElement(id);
+      document.body.style.overflow = 'auto';
+    }
+
+    function showLogin() {
+      showModal('loginModal');
+    }
+
+    function showRegister() {
+      showModal('registerModal');
+    }
+
+    function showCreatePost() {
+      showModal('createPostModal');
+    }
+
+    // Theme Management
+    function initTheme() {
+      const theme = localStorage.getItem('theme') || 'light';
+      setTheme(theme);
+      
+      const themeBtn = getElement('theme-toggle');
+      if (themeBtn) {
+        themeBtn.innerHTML = theme === 'dark' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+        themeBtn.onclick = toggleTheme;
+      }
+    }
+
+    function setTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    function toggleTheme() {
+      const currentTheme = localStorage.getItem('theme') || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+      
+      const themeBtn = getElement('theme-toggle');
+      if (themeBtn) {
+        themeBtn.innerHTML = newTheme === 'dark' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+      }
+    }
+
+    // Keyboard Shortcuts
+    function showKeyboardShortcuts() {
+      showToast(`
+        <strong>Keyboard Shortcuts:</strong><br>
+        Ctrl+N - New Post<br>
+        Ctrl+K - Search<br>
+        Escape - Close Modals
+      `, 'info', 6000);
+    }
+
+    function initKeyboardShortcuts() {
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+          switch(e.key) {
+            case 'n':
+              e.preventDefault();
+              if (currentUser) showCreatePost();
+              break;
+            case 'k':
+              e.preventDefault();
+              getElement('search-input').focus();
+              break;
+          }
+        }
+        
+        // Escape key closes modals
+        if (e.key === 'Escape') {
+          hideModal('loginModal');
+          hideModal('registerModal'); 
+          hideModal('createPostModal');
+        }
+      });
+    }
+
+    // Debounced Search
+    function debouncedSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        currentPage = 1;
+        loadPosts();
+      }, 500);
+    }
+
+    // Real-time Notifications
+    function initNotifications() {
+      // Check for new posts every 30 seconds
+      setInterval(async () => {
+        if (currentUser) {
+          try {
+            const data = await apiCall('/posts?limit=1');
+            if (data.success && data.data.length > 0) {
+              const latestPost = data.data[0];
+              const lastSeen = localStorage.getItem('lastSeenPost');
+              
+              if (!lastSeen || new Date(latestPost.timestamp) > new Date(lastSeen)) {
+                showToast(`New post in ${latestPost.category} by ${latestPost.username}`, 'info');
+                localStorage.setItem('lastSeenPost', latestPost.timestamp);
+              }
+            }
+          } catch (error) {
+            // Silent fail for notifications
+          }
+        }
+      }, 30000);
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('⚡ EdgePowered Forum Starting...');
+      initTheme();
+      checkAuthStatus();
+      setupEventListeners();
+      initKeyboardShortcuts();
+    });
+
+    function setupEventListeners() {
+      // Enter key support in modals
+      document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          if (getElement('loginModal').style.display !== 'none') {
+            handleLogin();
+          } else if (getElement('registerModal').style.display !== 'none') {
+            handleRegister();
+          } else if (getElement('createPostModal').style.display !== 'none') {
+            handleCreatePost();
+          }
+        }
+      });
+
+      // Store original button texts
+      const loginBtn = getElement('login-btn');
+      const registerBtn = getElement('register-btn');
+      const createPostBtn = getElement('create-post-btn');
+      
+      if (loginBtn) loginBtn.setAttribute('data-original-text', 'Sign In');
+      if (registerBtn) registerBtn.setAttribute('data-original-text', 'Create Account');
+      if (createPostBtn) createPostBtn.setAttribute('data-original-text', 'Publish');
+    }
+
+    // Enhanced API call with retry logic
+    async function apiCall(endpoint, options = {}, retries = 3) {
+      const token = localStorage.getItem('token');
+      
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token && { 'Authorization': token }),
+            },
+            ...options
+          };
+
+          if (config.body && typeof config.body === 'object') {
+            config.body = JSON.stringify(config.body);
+          }
+
+          console.log(`📡 API Call: ${endpoint} (Attempt ${attempt}/${retries})`);
+          const response = await fetch(`${API_BASE}${endpoint}`, config);
+          
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+            currentUser = null;
+            showUnauthenticatedUI();
+            throw new Error('Session expired. Please login again.');
+          }
+
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || `Request failed: ${response.status}`);
+          }
+
+          return data;
+        } catch (error) {
+          console.error(`API Error (Attempt ${attempt}/${retries}):`, error);
+          
+          if (attempt === retries) {
+            showToast(error.message, 'error');
+            throw error;
+          }
+          
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+
+    // Enhanced Authentication
+    async function checkAuthStatus() {
+      console.log('🔐 Checking auth status...');
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('userData');
+      
+      if (token && userData) {
+        try {
+          currentUser = JSON.parse(userData);
+          console.log('✅ User found:', currentUser.username);
+          showAuthenticatedUI();
+          await loadProfile();
+          await loadPosts();
+          await loadRecommendations();
+          initNotifications();
+        } catch (error) {
+          console.error('Auth error:', error);
+          handleLogout();
+        }
+      } else {
+        console.log('❌ No user found');
+        showUnauthenticatedUI();
+      }
+    }
+
+    async function loadProfile() {
+      try {
+        const data = await apiCall('/profile');
+        if (data.success) {
+          const reputationEl = getElement('reputation-display');
+          if (reputationEl && data.stats.reputation) {
+            reputationEl.textContent = data.stats.reputation;
+            reputationEl.style.display = 'inline-block';
+          }
+        }
+      } catch (error) {
+        // Silent fail for profile loading
+      }
+    }
+
+    function showAuthenticatedUI() {
+      console.log('👤 Showing authenticated UI');
+      hideElement('auth-section');
+      showElement('posts-section');
+      setText('username-display', currentUser.username);
+      showElement('logout-btn');
+    }
+
+    function showUnauthenticatedUI() {
+      console.log('👥 Showing unauthenticated UI');
+      showElement('auth-section');
+      hideElement('posts-section');
+      hideElement('recommendations-section');
+      setText('username-display', '');
+      hideElement('reputation-display');
+      hideElement('logout-btn');
+      hideElement('pagination');
+    }
+
+    // Enhanced Auth handlers
+    async function handleLogin() {
+      const username = getValue('loginUsername');
+      const password = getValue('loginPassword');
+
+      if (!username || !password) {
+        showToast('Please fill in all fields', 'warning');
+        return;
+      }
+
+      setLoading('login-btn', true);
+
+      try {
+        const data = await apiCall('/login', {
+          method: 'POST',
+          body: { username, password }
+        });
+
+        if (data.success && data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userData', JSON.stringify(data.user));
+          currentUser = data.user;
+
+          hideModal('loginModal');
+          setValue('loginUsername', '');
+          setValue('loginPassword', '');
+          
+          showAuthenticatedUI();
+          await loadProfile();
+          await loadRecommendations();
+          initNotifications();
+          showToast('Successfully signed in to EdgePowered!', 'success');
+        }
+      } catch (error) {
+        // Error handled in apiCall
+      } finally {
+        setLoading('login-btn', false);
+      }
+    }
+
+    async function handleRegister() {
+      const username = getValue('registerUsername');
+      const password = getValue('registerPassword');
+      const confirmPassword = getValue('registerConfirmPassword');
+
+      if (!username || !password || !confirmPassword) {
+        showToast('Please fill in all fields', 'warning');
+        return;
+      }
+
+      if (username.length < 3) {
+        showToast('Username must be at least 3 characters', 'warning');
+        return;
+      }
+
+      if (password.length < 6) {
+        showToast('Password must be at least 6 characters', 'warning');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
+
+      setLoading('register-btn', true);
+
+      try {
+        const data = await apiCall('/register', {
+          method: 'POST',
+          body: { username, password }
+        });
+
+        if (data.success) {
+          hideModal('registerModal');
+          setValue('registerUsername', '');
+          setValue('registerPassword', '');
+          setValue('registerConfirmPassword', '');
+          showToast('EdgePowered account created! Please sign in.', 'success');
+        }
+      } catch (error) {
+        // Error handled in apiCall
+      } finally {
+        setLoading('register-btn', false);
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('lastSeenPost');
+      currentUser = null;
+      showUnauthenticatedUI();
+      showToast('Successfully signed out from EdgePowered', 'success');
+    }
+
+    // Enhanced Post handlers
+    async function handleCreatePost() {
+      const category = getValue('postCategory');
+      const content = getValue('postContent');
+
+      if (!category || !content) {
+        showToast('Please fill in all fields', 'warning');
+        return;
+      }
+
+      if (content.length < 10) {
+        showToast('Post must be at least 10 characters', 'warning');
+        return;
+      }
+
+      setLoading('create-post-btn', true);
+
+      try {
+        const data = await apiCall('/posts', {
+          method: 'POST',
+          body: { category, content }
+        });
+
+        if (data.success) {
+          hideModal('createPostModal');
+          setValue('postContent', '');
+          await loadPosts();
+          await loadRecommendations();
+          showToast('Post published successfully!', 'success');
+        }
+      } catch (error) {
+        // Error handled in apiCall
+      } finally {
+        setLoading('create-post-btn', false);
+      }
+    }
+
+    async function loadPosts(page = 1) {
+      showElement('posts-loading');
+      hideElement('pagination');
+
+      try {
+        const category = getValue('category-filter');
+        const search = getValue('search-input');
+        const timeFilter = getValue('time-filter');
+        const sortBy = getValue('sort-by');
+        
+        let endpoint = `/posts?page=${page}&per_page=10`;
+        if (category) endpoint += `&category=${encodeURIComponent(category)}`;
+        if (search) endpoint += `&search=${encodeURIComponent(search)}`;
+        if (timeFilter) endpoint += `&time_filter=${timeFilter}`;
+        if (sortBy) endpoint += `&sort_by=${sortBy}`;
+
+        const data = await apiCall(endpoint);
+        
+        if (data.success) {
+          allPosts = data.data || [];
+          currentPage = data.pagination?.page || 1;
+          totalPages = data.pagination?.pages || 1;
+          
+          displayPosts(allPosts);
+          updatePagination();
+          
+          // Store last seen post for notifications
+          if (allPosts.length > 0) {
+            localStorage.setItem('lastSeenPost', allPosts[0].timestamp);
+          }
+        }
+      } catch (error) {
+        // Error handled in apiCall
+      } finally {
+        hideElement('posts-loading');
+      }
+    }
+
+    async function loadRecommendations() {
+      try {
+        const data = await apiCall('/recommendations');
+        if (data.success && data.recommendations.length > 0) {
+          showElement('recommendations-section');
+          const container = getElement('recommendations-container');
+          container.innerHTML = data.recommendations.map(post => `
+            <div class="card" style="background: rgba(255,255,255,0.1); border: none; color: white; margin-bottom: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1">
+                  <strong>${post.username}</strong>
+                  <div style="font-size: 14px; opacity: 0.9; margin-top: 4px;">
+                    ${post.category} • ${new Date(post.timestamp).toLocaleDateString()}
+                  </div>
+                </div>
+                <div style="display: flex; gap: 10px; font-size: 12px;">
+                  <span><i class="bi bi-heart"></i> ${post.likes_count || 0}</span>
+                  <span><i class="bi bi-chat"></i> ${post.comments_count || 0}</span>
+                </div>
+              </div>
+              <div style="margin-top: 8px; font-size: 14px; opacity: 0.9;">
+                ${post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content}
+              </div>
+            </div>
+          `).join('');
+        } else {
+          hideElement('recommendations-section');
+        }
+      } catch (error) {
+        hideElement('recommendations-section');
+      }
+    }
+
+    function updatePagination() {
+      const pagination = getElement('pagination');
+      const pageInfo = getElement('page-info');
+      const prevBtn = getElement('prev-btn');
+      const nextBtn = getElement('next-btn');
+
+      if (totalPages <= 1) {
+        hideElement('pagination');
+        return;
+      }
+
+      showElement('pagination');
+      setText('page-info', `Page ${currentPage} of ${totalPages}`);
+      
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.disabled = currentPage === totalPages;
+    }
+
+    function loadNextPage() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        loadPosts(currentPage);
+      }
+    }
+
+    function loadPreviousPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        loadPosts(currentPage);
+      }
+    }
+
+    async function handleLike(postId) {
+      try {
+        const data = await apiCall(`/posts/${postId}/like`, {
+          method: 'POST'
+        });
+
+        if (data.success) {
+          // Update the like count in the UI
+          const likeBtn = document.querySelector(`[data-post-id="${postId}"] .btn-like`);
+          const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
+          
+          if (likeBtn && likeCount) {
+            likeBtn.classList.toggle('active', data.action === 'liked');
+            likeCount.textContent = data.likes_count;
+          }
+          
+          showToast(data.action === 'liked' ? 'Post liked!' : 'Post unliked', 'success');
+        }
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
     function displayPosts(posts) {
       const container = getElement('posts-container');
       if (!container) return;
@@ -752,7 +1339,6 @@
         return;
       }
 
-      // Your existing posts display logic here
       container.innerHTML = posts.map(post => `
         <div class="card post-card" data-post-id="${post.id}">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
@@ -799,16 +1385,32 @@
       `).join('');
     }
 
-    // Initialize enhanced UI
+    async function showPostAnalytics(postId) {
+      try {
+        const data = await apiCall(`/posts/${postId}/analytics`);
+        if (data.success) {
+          showToast(`
+            <strong>Post Analytics:</strong><br>
+            Likes: ${data.analytics.likes_count}<br>
+            Comments: ${data.analytics.total_comments}<br>
+            Unique Engagers: ${data.analytics.unique_likers + data.analytics.unique_commenters}
+          `, 'info', 6000);
+        }
+      } catch (error) {
+        // Silent fail for analytics
+      }
+    }
+
+    // Set up logout button
     document.addEventListener('DOMContentLoaded', function() {
-      // Your existing initialization code
-      initTheme();
-      checkAuthStatus();
-      // ... rest of your JavaScript
+      const logoutBtn = getElement('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+      }
     });
 
-    // Keep all your existing JavaScript functions from the previous version
-    // They will work with the enhanced CSS above
-  </script>
+    console.log('⚡ EdgePowered Forum Loaded Successfully!');
+</script>
+      </script>
 </body>
 </html>
