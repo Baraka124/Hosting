@@ -538,10 +538,10 @@
         <h1>Welcome to EdgePowered</h1>
         <p>Where cutting-edge ideas meet community power. Join the conversation.</p>
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-          <button class="btn btn-light" onclick="showLogin()" style="border-radius: 12px; padding: 0.75rem 2rem;">
+          <button class="btn btn-light" id="sign-in-btn" style="border-radius: 12px; padding: 0.75rem 2rem;">
             <i class="bi bi-box-arrow-in-right"></i> Sign In
           </button>
-          <button class="btn btn-outline-light" onclick="showRegister()" style="border-radius: 12px; padding: 0.75rem 2rem;">
+          <button class="btn btn-outline-light" id="create-account-btn" style="border-radius: 12px; padding: 0.75rem 2rem;">
             <i class="bi bi-person-plus"></i> Create Account
           </button>
         </div>
@@ -584,7 +584,7 @@
       </div>
       
       <div class="filter-bar">
-        <select id="category-filter" class="filter-select" onchange="loadPosts()">
+        <select id="category-filter" class="filter-select">
           <option value="">All Categories</option>
           <option value="General">General</option>
           <option value="Engineering">Engineering</option>
@@ -593,20 +593,20 @@
           <option value="Science">Science</option>
         </select>
         
-        <select id="time-filter" class="filter-select" onchange="loadPosts()">
+        <select id="time-filter" class="filter-select">
           <option value="">All Time</option>
           <option value="today">Today</option>
           <option value="week">This Week</option>
           <option value="month">This Month</option>
         </select>
         
-        <select id="sort-by" class="filter-select" onchange="loadPosts()">
+        <select id="sort-by" class="filter-select">
           <option value="newest">Newest</option>
           <option value="popular">Most Popular</option>
           <option value="trending">Trending</option>
         </select>
         
-        <button class="btn btn-primary" onclick="showCreatePost()" style="margin-left: auto;">
+        <button class="btn btn-primary" id="new-post-btn">
           <i class="bi bi-plus-circle"></i> New Post
         </button>
       </div>
@@ -624,11 +624,11 @@
 
       <!-- Pagination -->
       <div id="pagination" style="display: none; text-align: center; margin-top: 2rem;">
-        <button class="btn btn-outline-primary" onclick="loadPreviousPage()" id="prev-btn">
+        <button class="btn btn-outline-primary" id="prev-btn">
           <i class="bi bi-chevron-left"></i> Previous
         </button>
         <span style="margin: 0 1.5rem; font-weight: 600;" id="page-info">Page 1 of 1</span>
-        <button class="btn btn-outline-primary" onclick="loadNextPage()" id="next-btn">
+        <button class="btn btn-outline-primary" id="next-btn">
           Next <i class="bi bi-chevron-right"></i>
         </button>
       </div>
@@ -653,15 +653,14 @@
       </div>
       
       <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-outline-primary" onclick="hideModal('loginModal')" style="flex: 1;">Cancel</button>
-        <button class="btn btn-primary" onclick="handleLogin()" id="login-btn" style="flex: 1;">
+        <button class="btn btn-outline-primary" id="cancel-login-btn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="login-btn" style="flex: 1;">
           <i class="bi bi-box-arrow-in-right"></i> Sign In
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Similar enhanced modals for register and create post -->
   <div id="registerModal" class="modal-overlay">
     <div class="modal-content">
       <div style="text-align: center; margin-bottom: 1.5rem;">
@@ -680,8 +679,8 @@
       </div>
       
       <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-outline-primary" onclick="hideModal('registerModal')" style="flex: 1;">Cancel</button>
-        <button class="btn btn-primary" onclick="handleRegister()" id="register-btn" style="flex: 1;">
+        <button class="btn btn-outline-primary" id="cancel-register-btn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="register-btn" style="flex: 1;">
           <i class="bi bi-person-plus"></i> Create Account
         </button>
       </div>
@@ -707,8 +706,8 @@
       </div>
       
       <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-outline-primary" onclick="hideModal('createPostModal')" style="flex: 1;">Cancel</button>
-        <button class="btn btn-primary" onclick="handleCreatePost()" id="create-post-btn" style="flex: 1;">
+        <button class="btn btn-outline-primary" id="cancel-post-btn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="create-post-btn" style="flex: 1;">
           <i class="bi bi-send"></i> Publish
         </button>
       </div>
@@ -716,20 +715,17 @@
   </div>
 
   <script>
-    // Enhanced EdgePowered Forum - Complete JavaScript
+    // Enhanced EdgePowered Forum - Complete Working JavaScript
     const API_BASE = "https://hosting-production-a352.up.railway.app/api";
     let currentUser = null;
     let allPosts = [];
     let currentPage = 1;
     let totalPages = 1;
     let searchTimeout = null;
-    let lastSeenPost = null;
 
-    // Enhanced DOM functions with error handling
+    // Enhanced DOM functions
     function getElement(id) {
-      const el = document.getElementById(id);
-      if (!el) console.warn(`Element with id '${id}' not found`);
-      return el;
+      return document.getElementById(id);
     }
 
     function showElement(id) {
@@ -766,7 +762,10 @@
         btn.innerHTML = '<i class="bi bi-hourglass"></i> Loading...';
       } else {
         btn.disabled = false;
-        btn.innerHTML = btn.getAttribute('data-original-text') || btn.textContent;
+        const originalText = btn.getAttribute('data-original-text');
+        if (originalText) {
+          btn.innerHTML = originalText;
+        }
       }
     }
 
@@ -802,7 +801,7 @@
       }, duration);
     }
 
-    // Enhanced Modal functions
+    // Modal functions
     function showModal(id) {
       showElement(id);
       document.body.style.overflow = 'hidden';
@@ -833,7 +832,6 @@
       const themeBtn = getElement('theme-toggle');
       if (themeBtn) {
         themeBtn.innerHTML = theme === 'dark' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
-        themeBtn.onclick = toggleTheme;
       }
     }
 
@@ -855,12 +853,11 @@
 
     // Keyboard Shortcuts
     function showKeyboardShortcuts() {
-      showToast(`
-        <strong>Keyboard Shortcuts:</strong><br>
-        Ctrl+N - New Post<br>
-        Ctrl+K - Search<br>
-        Escape - Close Modals
-      `, 'info', 6000);
+      showToast(
+        'Keyboard Shortcuts: Ctrl+N - New Post, Ctrl+K - Search, Escape - Close Modals',
+        'info',
+        6000
+      );
     }
 
     function initKeyboardShortcuts() {
@@ -878,7 +875,6 @@
           }
         }
         
-        // Escape key closes modals
         if (e.key === 'Escape') {
           hideModal('loginModal');
           hideModal('registerModal'); 
@@ -896,154 +892,67 @@
       }, 500);
     }
 
-    // Real-time Notifications
-    function initNotifications() {
-      // Check for new posts every 30 seconds
-      setInterval(async () => {
-        if (currentUser) {
-          try {
-            const data = await apiCall('/posts?limit=1');
-            if (data.success && data.data.length > 0) {
-              const latestPost = data.data[0];
-              const lastSeen = localStorage.getItem('lastSeenPost');
-              
-              if (!lastSeen || new Date(latestPost.timestamp) > new Date(lastSeen)) {
-                showToast(`New post in ${latestPost.category} by ${latestPost.username}`, 'info');
-                localStorage.setItem('lastSeenPost', latestPost.timestamp);
-              }
-            }
-          } catch (error) {
-            // Silent fail for notifications
-          }
-        }
-      }, 30000);
-    }
-
-    // Initialize app
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('⚡ EdgePowered Forum Starting...');
-      initTheme();
-      checkAuthStatus();
-      setupEventListeners();
-      initKeyboardShortcuts();
-    });
-
-    function setupEventListeners() {
-      // Enter key support in modals
-      document.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          if (getElement('loginModal').style.display !== 'none') {
-            handleLogin();
-          } else if (getElement('registerModal').style.display !== 'none') {
-            handleRegister();
-          } else if (getElement('createPostModal').style.display !== 'none') {
-            handleCreatePost();
-          }
-        }
-      });
-
-      // Store original button texts
-      const loginBtn = getElement('login-btn');
-      const registerBtn = getElement('register-btn');
-      const createPostBtn = getElement('create-post-btn');
-      
-      if (loginBtn) loginBtn.setAttribute('data-original-text', 'Sign In');
-      if (registerBtn) registerBtn.setAttribute('data-original-text', 'Create Account');
-      if (createPostBtn) createPostBtn.setAttribute('data-original-text', 'Publish');
-    }
-
-    // Enhanced API call with retry logic
-    async function apiCall(endpoint, options = {}, retries = 3) {
+    // API call with error handling
+    async function apiCall(endpoint, options = {}) {
       const token = localStorage.getItem('token');
       
-      for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-          const config = {
-            headers: {
-              'Content-Type': 'application/json',
-              ...(token && { 'Authorization': token }),
-            },
-            ...options
-          };
+      try {
+        const config = {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': token }),
+          },
+          ...options
+        };
 
-          if (config.body && typeof config.body === 'object') {
-            config.body = JSON.stringify(config.body);
-          }
-
-          console.log(`📡 API Call: ${endpoint} (Attempt ${attempt}/${retries})`);
-          const response = await fetch(`${API_BASE}${endpoint}`, config);
-          
-          if (response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
-            currentUser = null;
-            showUnauthenticatedUI();
-            throw new Error('Session expired. Please login again.');
-          }
-
-          const data = await response.json();
-          
-          if (!response.ok) {
-            throw new Error(data.error || `Request failed: ${response.status}`);
-          }
-
-          return data;
-        } catch (error) {
-          console.error(`API Error (Attempt ${attempt}/${retries}):`, error);
-          
-          if (attempt === retries) {
-            showToast(error.message, 'error');
-            throw error;
-          }
-          
-          // Wait before retry (exponential backoff)
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        if (config.body && typeof config.body === 'object') {
+          config.body = JSON.stringify(config.body);
         }
+
+        const response = await fetch(`${API_BASE}${endpoint}`, config);
+        
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userData');
+          currentUser = null;
+          showUnauthenticatedUI();
+          throw new Error('Session expired. Please login again.');
+        }
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || `Request failed: ${response.status}`);
+        }
+
+        return data;
+      } catch (error) {
+        console.error('API Error:', error);
+        showToast(error.message, 'error');
+        throw error;
       }
     }
 
-    // Enhanced Authentication
+    // Authentication
     async function checkAuthStatus() {
-      console.log('🔐 Checking auth status...');
       const token = localStorage.getItem('token');
       const userData = localStorage.getItem('userData');
       
       if (token && userData) {
         try {
           currentUser = JSON.parse(userData);
-          console.log('✅ User found:', currentUser.username);
           showAuthenticatedUI();
-          await loadProfile();
           await loadPosts();
-          await loadRecommendations();
-          initNotifications();
         } catch (error) {
           console.error('Auth error:', error);
           handleLogout();
         }
       } else {
-        console.log('❌ No user found');
         showUnauthenticatedUI();
       }
     }
 
-    async function loadProfile() {
-      try {
-        const data = await apiCall('/profile');
-        if (data.success) {
-          const reputationEl = getElement('reputation-display');
-          if (reputationEl && data.stats.reputation) {
-            reputationEl.textContent = data.stats.reputation;
-            reputationEl.style.display = 'inline-block';
-          }
-        }
-      } catch (error) {
-        // Silent fail for profile loading
-      }
-    }
-
     function showAuthenticatedUI() {
-      console.log('👤 Showing authenticated UI');
       hideElement('auth-section');
       showElement('posts-section');
       setText('username-display', currentUser.username);
@@ -1051,17 +960,13 @@
     }
 
     function showUnauthenticatedUI() {
-      console.log('👥 Showing unauthenticated UI');
       showElement('auth-section');
       hideElement('posts-section');
-      hideElement('recommendations-section');
       setText('username-display', '');
-      hideElement('reputation-display');
       hideElement('logout-btn');
-      hideElement('pagination');
     }
 
-    // Enhanced Auth handlers
+    // Auth handlers
     async function handleLogin() {
       const username = getValue('loginUsername');
       const password = getValue('loginPassword');
@@ -1089,10 +994,7 @@
           setValue('loginPassword', '');
           
           showAuthenticatedUI();
-          await loadProfile();
-          await loadRecommendations();
-          initNotifications();
-          showToast('Successfully signed in to EdgePowered!', 'success');
+          showToast('Successfully signed in!', 'success');
         }
       } catch (error) {
         // Error handled in apiCall
@@ -1139,7 +1041,7 @@
           setValue('registerUsername', '');
           setValue('registerPassword', '');
           setValue('registerConfirmPassword', '');
-          showToast('EdgePowered account created! Please sign in.', 'success');
+          showToast('Account created! Please sign in.', 'success');
         }
       } catch (error) {
         // Error handled in apiCall
@@ -1151,13 +1053,12 @@
     function handleLogout() {
       localStorage.removeItem('token');
       localStorage.removeItem('userData');
-      localStorage.removeItem('lastSeenPost');
       currentUser = null;
       showUnauthenticatedUI();
-      showToast('Successfully signed out from EdgePowered', 'success');
+      showToast('Successfully signed out', 'success');
     }
 
-    // Enhanced Post handlers
+    // Post handlers
     async function handleCreatePost() {
       const category = getValue('postCategory');
       const content = getValue('postContent');
@@ -1184,7 +1085,6 @@
           hideModal('createPostModal');
           setValue('postContent', '');
           await loadPosts();
-          await loadRecommendations();
           showToast('Post published successfully!', 'success');
         }
       } catch (error) {
@@ -1194,21 +1094,17 @@
       }
     }
 
-    async function loadPosts(page = 1) {
+    async function loadPosts() {
       showElement('posts-loading');
       hideElement('pagination');
 
       try {
         const category = getValue('category-filter');
         const search = getValue('search-input');
-        const timeFilter = getValue('time-filter');
-        const sortBy = getValue('sort-by');
         
-        let endpoint = `/posts?page=${page}&per_page=10`;
+        let endpoint = `/posts?page=${currentPage}&per_page=10`;
         if (category) endpoint += `&category=${encodeURIComponent(category)}`;
         if (search) endpoint += `&search=${encodeURIComponent(search)}`;
-        if (timeFilter) endpoint += `&time_filter=${timeFilter}`;
-        if (sortBy) endpoint += `&sort_by=${sortBy}`;
 
         const data = await apiCall(endpoint);
         
@@ -1219,49 +1115,11 @@
           
           displayPosts(allPosts);
           updatePagination();
-          
-          // Store last seen post for notifications
-          if (allPosts.length > 0) {
-            localStorage.setItem('lastSeenPost', allPosts[0].timestamp);
-          }
         }
       } catch (error) {
         // Error handled in apiCall
       } finally {
         hideElement('posts-loading');
-      }
-    }
-
-    async function loadRecommendations() {
-      try {
-        const data = await apiCall('/recommendations');
-        if (data.success && data.recommendations.length > 0) {
-          showElement('recommendations-section');
-          const container = getElement('recommendations-container');
-          container.innerHTML = data.recommendations.map(post => `
-            <div class="card" style="background: rgba(255,255,255,0.1); border: none; color: white; margin-bottom: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: start;">
-                <div style="flex: 1">
-                  <strong>${post.username}</strong>
-                  <div style="font-size: 14px; opacity: 0.9; margin-top: 4px;">
-                    ${post.category} • ${new Date(post.timestamp).toLocaleDateString()}
-                  </div>
-                </div>
-                <div style="display: flex; gap: 10px; font-size: 12px;">
-                  <span><i class="bi bi-heart"></i> ${post.likes_count || 0}</span>
-                  <span><i class="bi bi-chat"></i> ${post.comments_count || 0}</span>
-                </div>
-              </div>
-              <div style="margin-top: 8px; font-size: 14px; opacity: 0.9;">
-                ${post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content}
-              </div>
-            </div>
-          `).join('');
-        } else {
-          hideElement('recommendations-section');
-        }
-      } catch (error) {
-        hideElement('recommendations-section');
       }
     }
 
@@ -1286,14 +1144,14 @@
     function loadNextPage() {
       if (currentPage < totalPages) {
         currentPage++;
-        loadPosts(currentPage);
+        loadPosts();
       }
     }
 
     function loadPreviousPage() {
       if (currentPage > 1) {
         currentPage--;
-        loadPosts(currentPage);
+        loadPosts();
       }
     }
 
@@ -1304,7 +1162,6 @@
         });
 
         if (data.success) {
-          // Update the like count in the UI
           const likeBtn = document.querySelector(`[data-post-id="${postId}"] .btn-like`);
           const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
           
@@ -1353,7 +1210,6 @@
                       ${new Date(post.timestamp).toLocaleDateString()}
                     </span>
                     <span class="category-badge">${post.category}</span>
-                    ${post.is_pinned ? '<i class="bi bi-pin-fill" style="color: var(--warning);"></i>' : ''}
                   </div>
                 </div>
               </div>
@@ -1373,42 +1229,56 @@
             <button class="btn btn-sm btn-outline-primary">
               <i class="bi bi-chat"></i> ${post.comments_count || 0}
             </button>
-            <button class="btn btn-sm btn-outline-primary" onclick="showPostAnalytics(${post.id})">
-              <i class="bi bi-graph-up"></i> Analytics
-            </button>
-            <button class="btn btn-sm btn-outline-primary">
-              <i class="bi bi-share"></i> Share
-            </button>
           </div>
         </div>
       `).join('');
     }
 
-    async function showPostAnalytics(postId) {
-      try {
-        const data = await apiCall(`/posts/${postId}/analytics`);
-        if (data.success) {
-          showToast(`
-            <strong>Post Analytics:</strong><br>
-            Likes: ${data.analytics.likes_count}<br>
-            Comments: ${data.analytics.total_comments}<br>
-            Unique Engagers: ${data.analytics.unique_likers + data.analytics.unique_commenters}
-          `, 'info', 6000);
-        }
-      } catch (error) {
-        // Silent fail for analytics
-      }
+    // Event Listeners Setup
+    function setupEventListeners() {
+      // Theme toggle
+      getElement('theme-toggle').addEventListener('click', toggleTheme);
+      
+      // Auth buttons
+      getElement('sign-in-btn').addEventListener('click', showLogin);
+      getElement('create-account-btn').addEventListener('click', showRegister);
+      getElement('logout-btn').addEventListener('click', handleLogout);
+      
+      // Modal buttons
+      getElement('cancel-login-btn').addEventListener('click', () => hideModal('loginModal'));
+      getElement('cancel-register-btn').addEventListener('click', () => hideModal('registerModal'));
+      getElement('cancel-post-btn').addEventListener('click', () => hideModal('createPostModal'));
+      
+      getElement('login-btn').addEventListener('click', handleLogin);
+      getElement('register-btn').addEventListener('click', handleRegister);
+      getElement('create-post-btn').addEventListener('click', handleCreatePost);
+      
+      // Post buttons
+      getElement('new-post-btn').addEventListener('click', showCreatePost);
+      getElement('prev-btn').addEventListener('click', loadPreviousPage);
+      getElement('next-btn').addEventListener('click', loadNextPage);
+      
+      // Search and filters
+      getElement('search-input').addEventListener('input', debouncedSearch);
+      getElement('category-filter').addEventListener('change', () => {
+        currentPage = 1;
+        loadPosts();
+      });
+      
+      // Store original button texts
+      getElement('login-btn').setAttribute('data-original-text', getElement('login-btn').innerHTML);
+      getElement('register-btn').setAttribute('data-original-text', getElement('register-btn').innerHTML);
+      getElement('create-post-btn').setAttribute('data-original-text', getElement('create-post-btn').innerHTML);
     }
 
-    // Set up logout button
+    // Initialize app
     document.addEventListener('DOMContentLoaded', function() {
-      const logoutBtn = getElement('logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', handleLogout);
-      }
+      console.log('⚡ EdgePowered Forum Starting...');
+      initTheme();
+      setupEventListeners();
+      initKeyboardShortcuts();
+      checkAuthStatus();
     });
-
-    console.log('⚡ EdgePowered Forum Loaded Successfully!');
-</script>
+  </script>
 </body>
 </html>
