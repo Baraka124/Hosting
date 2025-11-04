@@ -81,6 +81,16 @@ def init_db():
                         FOREIGN KEY(user_id) REFERENCES users(id)
                     )""")
         
+        # User activity log
+        c.execute("""CREATE TABLE IF NOT EXISTS user_activity(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER,
+                        action TEXT NOT NULL,
+                        details TEXT,
+                        timestamp TEXT NOT NULL,
+                        FOREIGN KEY(user_id) REFERENCES users(id)
+                    )""")
+        
         conn.commit()
 
 init_db()
@@ -94,9 +104,10 @@ def token_required(func):
         try:
             decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             request.user_id = decoded["user_id"]
+            request.username = decoded["username"]
         except jwt.ExpiredSignatureError:
             return jsonify({"success": False, "error": "Token expired"}), 401
-        except Exception:
+        except Exception as e:
             return jsonify({"success": False, "error": "Invalid token"}), 401
         return func(*args, **kwargs)
     wrapper.__name__ = func.__name__
@@ -116,7 +127,7 @@ def log_user_activity(user_id, action, details=None):
     with get_db() as conn:
         c = conn.cursor()
         c.execute("INSERT INTO user_activity (user_id, action, details, timestamp) VALUES (?, ?, ?, ?)",
-                 (user_id, action, details, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                 (user_id, action, str(details) if details else None, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         conn.commit()
 
 # ---------- Routes ----------
@@ -237,27 +248,35 @@ def posts():
         count_query = "SELECT COUNT(*) FROM posts p JOIN users u ON p.user_id = u.id"
         params = []
         
+        conditions = []
         if category:
-            query += " WHERE p.category = ?"
-            count_query += " WHERE p.category = ?"
+            conditions.append("p.category = ?")
             params.append(category)
         
         if search:
-            where_clause = " WHERE " if not category else " AND "
-            query += where_clause + "(p.content LIKE ? OR p.title LIKE ?)"
-            count_query += where_clause + "(p.content LIKE ? OR p.title LIKE ?)"
+            conditions.append("(p.content LIKE ? OR p.title LIKE ?)")
             params.extend([f'%{search}%', f'%{search}%'])
+        
+        if conditions:
+            where_clause = " WHERE " + " AND ".join(conditions)
+            query += where_clause
+            count_query += where_clause
         
         query += " ORDER BY p.is_pinned DESC, p.timestamp DESC LIMIT ? OFFSET ?"
         params.extend([per_page, offset])
         
         # Get total count
-        c.execute(count_query, params[:-2] if search or category else [])
+        c.execute(count_query, params[:-2])
         total_count = c.fetchone()[0]
         
         # Get posts
         c.execute(query, params)
         rows = [dict(row) for row in c.fetchall()]
+        
+        # Check if user liked each post
+        for post in rows:
+            c.execute("SELECT id FROM likes WHERE user_id = ? AND post_id = ?", (request.user_id, post['id']))
+            post['user_has_liked'] = c.fetchone() is not None
         
         return jsonify({
             "success": True, 
@@ -368,6 +387,24 @@ def get_profile():
             }
         })
 
+# User's posts endpoint
+@app.route('/api/profile/posts')
+@token_required
+def get_user_posts():
+    with get_db() as conn:
+        c = conn.cursor()
+        c.execute("""SELECT p.*, u.username, u.avatar_color 
+                    FROM posts p 
+                    JOIN users u ON p.user_id = u.id 
+                    WHERE p.user_id = ? 
+                    ORDER BY p.timestamp DESC""", (request.user_id,))
+        posts = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({
+            "success": True,
+            "data": posts
+        })
+
 # Analytics endpoint
 @app.route('/api/analytics/overview')
 @token_required
@@ -382,6 +419,14 @@ def analytics_overview():
         # Total users
         c.execute("SELECT COUNT(*) as total_users FROM users")
         total_users = c.fetchone()["total_users"]
+        
+        # Total likes
+        c.execute("SELECT COUNT(*) as total_likes FROM likes")
+        total_likes = c.fetchone()["total_likes"]
+        
+        # Total comments
+        c.execute("SELECT COUNT(*) as total_comments FROM comments")
+        total_comments = c.fetchone()["total_comments"]
         
         # Posts by category
         c.execute("SELECT category, COUNT(*) as count FROM posts GROUP BY category")
@@ -399,6 +444,8 @@ def analytics_overview():
             "overview": {
                 "total_posts": total_posts,
                 "total_users": total_users,
+                "total_likes": total_likes,
+                "total_comments": total_comments,
                 "categories": categories,
                 "recent_activity": recent_activity
             }
@@ -436,6 +483,56 @@ def search():
             "query": query,
             "posts": posts,
             "users": users
+        })
+
+# Categories endpoint
+@app.route('/api/categories')
+def get_categories():
+    with get_db() as conn:
+        c = conn.cursor()
+        c.execute("SELECT category, COUNT(*) as count FROM posts GROUP BY category")
+        categories = {row["category"]: row["count"] for row in c.fetchall()}
+        
+        return jsonify({
+            "success": True,
+            "categories": categories
+        })
+
+# Trending topics endpoint
+@app.route('/api/trending')
+def get_trending():
+    with get_db() as conn:
+        c = conn.cursor()
+        # Get posts with most likes in last 7 days
+        c.execute("""SELECT p.*, u.username, u.avatar_color 
+                    FROM posts p 
+                    JOIN users u ON p.user_id = u.id 
+                    WHERE p.timestamp >= datetime('now', '-7 days')
+                    ORDER BY p.likes_count DESC, p.comments_count DESC 
+                    LIMIT 5""")
+        trending_posts = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({
+            "success": True,
+            "trending": trending_posts
+        })
+
+# Top contributors endpoint
+@app.route('/api/contributors')
+def get_top_contributors():
+    with get_db() as conn:
+        c = conn.cursor()
+        c.execute("""SELECT u.username, u.avatar_color, COUNT(p.id) as post_count
+                    FROM users u 
+                    LEFT JOIN posts p ON u.id = p.user_id 
+                    GROUP BY u.id 
+                    ORDER BY post_count DESC 
+                    LIMIT 5""")
+        contributors = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({
+            "success": True,
+            "contributors": contributors
         })
 
 # Error handlers
