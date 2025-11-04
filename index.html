@@ -67,15 +67,6 @@
       top: 0;
       z-index: 1000;
       backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    .header-glass {
-      background: rgba(255, 255, 255, 0.8);
-    }
-
-    [data-theme="dark"] .header-glass {
-      background: rgba(15, 17, 20, 0.8);
     }
 
     .logo {
@@ -96,28 +87,11 @@
       padding: 10px 20px;
       font-weight: 600;
       font-size: 0.875rem;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn:hover::before {
-      left: 100%;
     }
 
     .btn-primary {
@@ -131,25 +105,19 @@
       box-shadow: 0 8px 25px 0 rgba(0, 102, 255, 0.4);
     }
 
-    .btn-success {
-      background: linear-gradient(135deg, var(--success), #00b359);
-      color: white;
-    }
-
     /* Enhanced Cards */
     .card {
       background: var(--bg-primary);
       border-radius: var(--radius);
       border: 1px solid var(--border-light);
       box-shadow: var(--shadow);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s ease;
       overflow: hidden;
     }
 
     .card:hover {
       transform: translateY(-4px);
       box-shadow: var(--shadow-lg);
-      border-color: var(--primary);
     }
 
     /* Enhanced Hero Section */
@@ -164,28 +132,10 @@
       margin: 2rem 0;
     }
 
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
-
     .hero h1 {
       font-size: 3.5rem;
       font-weight: 800;
       margin-bottom: 1rem;
-      background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.9) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
     /* Enhanced Posts */
@@ -223,12 +173,7 @@
       font-weight: 700;
       font-size: 1.1rem;
       cursor: pointer;
-      transition: transform 0.2s ease;
       border: 3px solid var(--border-light);
-    }
-
-    .user-avatar:hover {
-      transform: scale(1.1);
     }
 
     .post-content {
@@ -257,21 +202,15 @@
       border-radius: var(--radius-sm);
       transition: all 0.2s ease;
       font-size: 0.875rem;
-      font-weight: 500;
     }
 
     .action-btn:hover {
       background: var(--bg-tertiary);
       color: var(--text-primary);
-      transform: translateY(-1px);
     }
 
     .action-btn.liked {
       color: var(--danger);
-    }
-
-    .action-btn.bookmarked {
-      color: var(--warning);
     }
 
     /* Enhanced Modals */
@@ -285,19 +224,13 @@
       backdrop-filter: blur(8px);
       display: none;
       z-index: 2000;
-      animation: fadeIn 0.2s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
 
     .modal-content {
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.95);
+      transform: translate(-50%, -50%);
       background: var(--bg-primary);
       border-radius: var(--radius);
       padding: 2rem;
@@ -307,13 +240,6 @@
       overflow-y: auto;
       z-index: 2001;
       box-shadow: var(--shadow-lg);
-      animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    @keyframes modalSlideIn {
-      to {
-        transform: translate(-50%, -50%) scale(1);
-      }
     }
 
     /* Enhanced Loading States */
@@ -360,12 +286,13 @@
       align-items: center;
       gap: 1rem;
       min-width: 300px;
-      animation: toastSlideIn 0.3s ease;
-      transform: translateX(100%);
-      animation: toastSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      animation: toastSlideIn 0.5s ease forwards;
     }
 
     @keyframes toastSlideIn {
+      from {
+        transform: translateX(100%);
+      }
       to {
         transform: translateX(0);
       }
@@ -391,17 +318,12 @@
       color: var(--text-primary);
       font-size: 0.875rem;
       transition: all 0.2s ease;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.3-4.3'%3E%3C/path%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: 1rem center;
-      background-size: 16px;
     }
 
     .search-input:focus {
       outline: none;
       border-color: var(--primary);
       background-color: var(--bg-primary);
-      box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
     }
 
     /* Enhanced Features Grid */
@@ -439,7 +361,7 @@
       font-size: 2rem;
     }
 
-    /* Enhanced Responsive Design */
+    /* Responsive Design */
     @media (max-width: 768px) {
       .hero h1 {
         font-size: 2.5rem;
@@ -447,88 +369,12 @@
       
       .features-grid {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
-      }
-      
-      .post-header {
-        padding: 1.25rem 1.25rem 0.75rem;
-      }
-      
-      .post-content {
-        padding: 0 1.25rem 1.25rem;
       }
       
       .modal-content {
         width: 95%;
-        margin: 1rem;
         padding: 1.5rem;
       }
-      
-      .header .btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .hero {
-        padding: 3rem 1rem;
-      }
-      
-      .hero h1 {
-        font-size: 2rem;
-      }
-      
-      .post-actions {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: stretch;
-      }
-      
-      .action-group {
-        justify-content: space-between;
-      }
-    }
-
-    /* Dark theme enhancements */
-    [data-theme="dark"] .search-input {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8f98' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.3-4.3'%3E%3C/path%3E%3C/svg%3E");
-    }
-
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--bg-secondary);
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--text-muted);
-    }
-
-    /* Focus states for accessibility */
-    .btn:focus-visible,
-    .action-btn:focus-visible,
-    .search-input:focus-visible {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
-    }
-
-    /* Enhanced animations */
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-
-    .pulse {
-      animation: pulse 2s infinite;
     }
 
     /* Quick actions bar */
@@ -557,17 +403,11 @@
       background: var(--bg-tertiary);
       transform: translateY(-1px);
     }
-
-    .action-chip.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
   </style>
 </head>
 <body>
   <!-- Enhanced Header -->
-  <header class="header header-glass">
+  <header class="header">
     <div class="container">
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
         <div class="logo">
@@ -578,14 +418,11 @@
         <div style="display: flex; align-items: center; gap: 1rem;">
           <!-- Quick Actions -->
           <div class="quick-actions" id="quick-actions" style="display: none;">
-            <div class="action-chip" onclick="uiManager.showModal('createPostModal')">
+            <div class="action-chip" onclick="safeCall(() => uiManager.showModal('createPostModal'))">
               <i class="bi bi-plus-lg"></i> New Post
             </div>
-            <div class="action-chip" onclick="enhancedSearch.focusSearch()">
+            <div class="action-chip" onclick="safeCall(() => enhancedSearch.focusSearch())">
               <i class="bi bi-search"></i> Search
-            </div>
-            <div class="action-chip" onclick="uiManager.notificationManager.togglePanel()">
-              <i class="bi bi-bell"></i> Notifications
             </div>
           </div>
 
@@ -596,7 +433,7 @@
 
           <!-- User Section -->
           <div id="user-section">
-            <button class="btn btn-primary" id="login-btn-main" style="display: block;">
+            <button class="btn btn-primary" id="login-btn-main">
               <i class="bi bi-box-arrow-in-right"></i> Sign In
             </button>
             <div id="authenticated-ui" style="display: none;">
@@ -725,6 +562,27 @@
     </div>
   </div>
 
+  <div id="registerModal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h4 style="margin-bottom: 0.5rem;">Create Account</h4>
+        <p style="color: var(--text-secondary);">Join our community</p>
+      </div>
+      
+      <div style="margin: 2rem 0;">
+        <input type="text" id="registerUsername" placeholder="Username" class="form-control mb-3" style="padding: 1rem;">
+        <input type="email" id="registerEmail" placeholder="Email" class="form-control mb-3" style="padding: 1rem;">
+        <input type="password" id="registerPassword" placeholder="Password" class="form-control mb-3" style="padding: 1rem;">
+        <input type="password" id="registerConfirmPassword" placeholder="Confirm Password" class="form-control" style="padding: 1rem;">
+      </div>
+      
+      <div style="display: flex; gap: 1rem;">
+        <button class="btn btn-outline-primary" id="cancel-register-btn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="register-btn" style="flex: 1;">Create Account</button>
+      </div>
+    </div>
+  </div>
+
   <div id="createPostModal" class="modal-overlay">
     <div class="modal-content">
       <div style="text-align: center; margin-bottom: 2rem;">
@@ -757,728 +615,834 @@
   </div>
 
   <script>
-// 🚀 Enhanced EdgePowered Forum - Ultra Fast & Responsive
-console.log('🚀 EdgePowered Enhanced Forum Loading...');
+    // 🚀 Enhanced EdgePowered Forum - Error-Proof Version
+    console.log('🚀 EdgePowered Enhanced Forum Loading...');
 
-// Configuration
-const API_BASE = "https://hosting-production-a352.up.railway.app/api";
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+    // Global error handler
+    window.addEventListener('error', function(e) {
+      console.error('Global error:', e.error);
+    });
 
-// Ultra Fast State Manager with Memory Optimization
-class UltraStateManager {
-  constructor() {
-    this.state = {
-      user: null,
-      posts: [],
-      ui: {
-        loading: false,
-        theme: localStorage.getItem('theme') || 'light',
-        currentPage: 1,
-        hasMore: true,
-        filters: { category: '', search: '' }
-      }
-    };
-    this.listeners = new Set();
-    this.debounceTimers = new Map();
-    this.cache = new Map(); // Initialize cache
-  }
-
-  setState(newState) {
-    const oldState = this.state;
-    this.state = { ...this.state, ...newState };
-    
-    if (JSON.stringify(oldState) !== JSON.stringify(this.state)) {
-      this.notifyListeners();
-    }
-  }
-
-  subscribe(listener) {
-    this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
-  }
-
-  notifyListeners() {
-    this.listeners.forEach(listener => {
+    // Safe function caller
+    function safeCall(fn, fallback = null) {
       try {
-        listener(this.state);
+        return fn();
       } catch (error) {
-        console.error('Listener error:', error);
-      }
-    });
-  }
-
-  debounce(key, fn, delay = 300) {
-    clearTimeout(this.debounceTimers.get(key));
-    this.debounceTimers.set(key, setTimeout(fn, delay));
-  }
-
-  cacheData(key, data, duration = CACHE_DURATION) {
-    this.cache.set(key, {
-      data,
-      timestamp: Date.now(),
-      duration
-    });
-  }
-
-  getCachedData(key) {
-    if (!this.cache) {
-      this.cache = new Map(); // Safety initialization
-    }
-    const cached = this.cache.get(key);
-    if (cached && Date.now() - cached.timestamp < cached.duration) {
-      return cached.data;
-    }
-    this.cache.delete(key);
-    return null;
-  }
-
-  updateFilters(newFilters) {
-    this.setState({
-      ui: {
-        ...this.state.ui,
-        filters: { ...this.state.ui.filters, ...newFilters },
-        currentPage: 1
-      },
-      posts: []
-    });
-  }
-}
-
-const appState = new UltraStateManager();
-
-// 🚀 Ultra Fast API Manager
-class UltraAPIManager {
-  constructor() {
-    this.pendingRequests = new Map();
-    this.requestQueue = [];
-    this.maxConcurrent = 3;
-    this.activeRequests = 0;
-  }
-
-  async call(endpoint, options = {}) {
-    const requestKey = `${endpoint}-${JSON.stringify(options.body || {})}`;
-    
-    // Safe cache check
-    const cached = appState.getCachedData(requestKey);
-    if (cached && options.method?.toUpperCase() === 'GET') {
-      return cached;
-    }
-
-    if (this.pendingRequests.has(requestKey)) {
-      return this.pendingRequests.get(requestKey);
-    }
-
-    const promise = this.executeRequest(endpoint, options, requestKey);
-    this.pendingRequests.set(requestKey, promise);
-
-    try {
-      const result = await promise;
-      appState.cacheData(requestKey, result);
-      return result;
-    } finally {
-      this.pendingRequests.delete(requestKey);
-    }
-  }
-
-  async executeRequest(endpoint, options, key) {
-    if (this.activeRequests >= this.maxConcurrent) {
-      await new Promise(resolve => {
-        this.requestQueue.push(resolve);
-      });
-    }
-
-    this.activeRequests++;
-
-    try {
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': token }),
-        },
-        ...options
-      };
-
-      if (config.body) {
-        config.body = JSON.stringify(config.body);
-      }
-
-      const response = await fetch(API_BASE + endpoint, config);
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || `HTTP ${response.status}`);
-      }
-
-      return data;
-    } catch (error) {
-      console.error(`API Error [${endpoint}]:`, error);
-      throw error;
-    } finally {
-      this.activeRequests--;
-      if (this.requestQueue.length > 0) {
-        const next = this.requestQueue.shift();
-        next();
+        console.error('Function call error:', error);
+        return fallback;
       }
     }
-  }
-}
 
-const apiManager = new UltraAPIManager();
-
-// 🚀 Instant Posts Manager
-class InstantPostsManager {
-  constructor() {
-    this.isLoading = false;
-    this.lastLoadTime = 0;
-    this.loadThrottle = 500;
-  }
-
-  async loadPosts(force = false) {
-    const now = Date.now();
-    if (this.isLoading || (now - this.lastLoadTime < this.loadThrottle && !force)) {
-      return;
-    }
-
-    this.isLoading = true;
-    this.lastLoadTime = now;
-    
-    this.showSkeletonPosts();
-
-    try {
-      const { currentPage, filters } = appState.state.ui;
-      const params = new URLSearchParams({
-        page: currentPage,
-        per_page: 8,
-        ...(filters.category && { category: filters.category }),
-        ...(filters.search && { search: filters.search })
-      });
-
-      const data = await apiManager.call(`/posts?${params}`);
-      
-      if (data.success) {
-        const posts = currentPage === 1 ? 
-          data.data : 
-          [...appState.state.posts, ...data.data];
-        
-        appState.setState({ 
-          posts,
-          ui: { 
-            ...appState.state.ui, 
-            loading: false,
-            hasMore: currentPage < data.pagination.pages
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Posts load error:', error);
-      uiManager.showToast('Failed to load posts', 'error');
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  showSkeletonPosts() {
-    const container = document.getElementById('posts-container');
-    if (!container) return;
-    
-    const count = appState.state.posts.length === 0 ? 3 : 2;
-    
-    container.innerHTML = Array.from({ length: count }, () => `
-      <div class="card post-card">
-        <div class="post-header">
-          <div class="skeleton skeleton-avatar"></div>
-          <div style="flex: 1;">
-            <div class="skeleton skeleton-block" style="width: 40%; height: 1.25rem;"></div>
-            <div class="skeleton skeleton-block" style="width: 60%; height: 0.875rem;"></div>
-          </div>
-        </div>
-        <div style="padding: 0 1.5rem 1.5rem;">
-          <div class="skeleton skeleton-block"></div>
-          <div class="skeleton skeleton-block" style="width: 80%;"></div>
-          <div class="skeleton skeleton-block" style="width: 60%;"></div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  async createPost(category, content) {
-    if (!content.trim() || content === '<br>') {
-      uiManager.showToast('Please enter some content', 'warning');
-      return false;
-    }
-
-    try {
-      const data = await apiManager.call('/posts', {
-        method: 'POST',
-        body: { category, content }
-      });
-
-      if (data.success) {
-        const newPost = {
-          id: data.post_id,
-          content,
-          category,
-          user_id: appState.state.user.id,
-          username: appState.state.user.username,
-          avatar_color: appState.state.user.avatar_color,
-          timestamp: new Date().toISOString(),
-          likes_count: 0,
-          comments_count: 0,
-          user_has_liked: false,
-          formatted_timestamp: 'Just now'
-        };
-
-        appState.setState({
-          posts: [newPost, ...appState.state.posts]
-        });
-
-        uiManager.showToast('Post published successfully!', 'success');
-        return true;
-      }
-    } catch (error) {
-      console.error('Create post error:', error);
-      uiManager.showToast('Failed to create post', 'error');
-      return false;
-    }
-  }
-
-  async likePost(postId) {
-    try {
-      const data = await apiManager.call(`/posts/${postId}/like`, {
-        method: 'POST'
-      });
-
-      if (data.success) {
-        const posts = appState.state.posts.map(post => {
-          if (post.id === postId) {
-            return {
-              ...post,
-              likes_count: data.likes_count,
-              user_has_liked: data.action === 'liked'
-            };
-          }
-          return post;
-        });
-
-        appState.setState({ posts });
-      }
-    } catch (error) {
-      console.error('Like error:', error);
-    }
-  }
-}
-
-// 🚀 Enhanced UI Manager
-class EnhancedUIManager {
-  constructor() {
-    this.postsManager = new InstantPostsManager();
-    this.setupEventListeners();
-    this.initializeApp();
-  }
-
-  setupEventListeners() {
-    // Safe event listener binding
-    const safeAddEventListener = (id, event, handler) => {
+    // Safe element getter
+    function safeGetElement(id) {
       const element = document.getElementById(id);
-      if (element) {
-        element.addEventListener(event, handler);
+      if (!element) {
+        console.warn(`Element with id '${id}' not found`);
       }
-    };
+      return element;
+    }
 
-    // Auth
-    safeAddEventListener('sign-in-btn', 'click', () => this.showModal('loginModal'));
-    safeAddEventListener('create-account-btn', 'click', () => this.showModal('registerModal'));
-    safeAddEventListener('login-btn-main', 'click', () => this.showModal('loginModal'));
-    safeAddEventListener('logout-btn', 'click', () => this.logout());
+    // Configuration
+    const API_BASE = "https://hosting-production-a352.up.railway.app/api";
+    const CACHE_DURATION = 5 * 60 * 1000;
 
-    // Posts
-    safeAddEventListener('new-post-btn', 'click', () => this.showModal('createPostModal'));
-    safeAddEventListener('create-post-btn', 'click', () => this.handleCreatePost());
-    safeAddEventListener('load-more-btn', 'click', () => this.loadMorePosts());
-
-    // Modals
-    safeAddEventListener('cancel-login-btn', 'click', () => this.hideModal('loginModal'));
-    safeAddEventListener('cancel-post-btn', 'click', () => this.hideModal('createPostModal'));
-    safeAddEventListener('login-btn', 'click', () => this.handleLogin());
-
-    // Filters
-    safeAddEventListener('category-filter', 'change', (e) => {
-      appState.updateFilters({ category: e.target.value });
-      this.postsManager.loadPosts(true);
-    });
-
-    safeAddEventListener('search-input', 'input', (e) => {
-      appState.debounce('search', () => {
-        appState.updateFilters({ search: e.target.value });
-        this.postsManager.loadPosts(true);
-      }, 500);
-    });
-
-    safeAddEventListener('clear-filters-btn', 'click', () => {
-      const categoryFilter = document.getElementById('category-filter');
-      const searchInput = document.getElementById('search-input');
-      if (categoryFilter) categoryFilter.value = '';
-      if (searchInput) searchInput.value = '';
-      appState.updateFilters({ category: '', search: '' });
-      this.postsManager.loadPosts(true);
-    });
-
-    // Theme
-    safeAddEventListener('theme-toggle', 'click', () => this.toggleTheme());
-
-    // Global click handlers
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('modal-overlay')) {
-        this.hideModal(e.target.id);
+    // Ultra Fast State Manager
+    class UltraStateManager {
+      constructor() {
+        this.state = {
+          user: null,
+          posts: [],
+          ui: {
+            loading: false,
+            theme: localStorage.getItem('theme') || 'light',
+            currentPage: 1,
+            hasMore: true,
+            filters: { category: '', search: '' }
+          }
+        };
+        this.listeners = new Set();
+        this.debounceTimers = new Map();
+        this.cache = new Map();
       }
-    });
 
-    // Enter key for login
-    safeAddEventListener('loginPassword', 'keypress', (e) => {
-      if (e.key === 'Enter') this.handleLogin();
-    });
-  }
-
-  initializeApp() {
-    // Set theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.body.setAttribute('data-theme', savedTheme);
-    this.updateThemeIcon(savedTheme);
-
-    // Check auth
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('userData');
-    
-    if (token && userData) {
-      try {
-        const user = JSON.parse(userData);
-        appState.setState({ user });
-        this.showAuthenticatedUI();
-        this.postsManager.loadPosts();
-      } catch (error) {
-        this.clearAuth();
-      }
-    }
-  }
-
-  async handleLogin() {
-    const usernameInput = document.getElementById('loginUsername');
-    const passwordInput = document.getElementById('loginPassword');
-    
-    if (!usernameInput || !passwordInput) return;
-    
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!username || !password) {
-      this.showToast('Please fill in all fields', 'warning');
-      return;
-    }
-
-    this.showToast('Signing in...', 'info');
-
-    try {
-      const data = await apiManager.call('/login', {
-        method: 'POST',
-        body: { username, password }
-      });
-
-      if (data.success && data.token) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userData', JSON.stringify(data.user));
-        appState.setState({ user: data.user });
-
-        this.hideModal('loginModal');
-        this.clearLoginForm();
-        this.showAuthenticatedUI();
-        this.showToast('Welcome back!', 'success');
-        this.postsManager.loadPosts();
-      }
-    } catch (error) {
-      this.showToast('Invalid credentials', 'error');
-    }
-  }
-
-  async handleCreatePost() {
-    const categorySelect = document.getElementById('postCategory');
-    const contentDiv = document.getElementById('postContent');
-    
-    if (!categorySelect || !contentDiv) return;
-    
-    const category = categorySelect.value;
-    const content = contentDiv.innerHTML;
-
-    const success = await this.postsManager.createPost(category, content);
-    if (success) {
-      this.hideModal('createPostModal');
-      if (contentDiv) contentDiv.innerHTML = '';
-    }
-  }
-
-  showAuthenticatedUI() {
-    this.toggleElement('auth-section', 'none');
-    this.toggleElement('posts-section', 'block');
-    this.toggleElement('quick-actions', 'flex');
-    this.toggleElement('login-btn-main', 'none');
-    this.toggleElement('authenticated-ui', 'block');
-    
-    const usernameDisplay = document.getElementById('username-display');
-    if (usernameDisplay) {
-      usernameDisplay.textContent = appState.state.user.username;
-    }
-  }
-
-  showUnauthenticatedUI() {
-    this.toggleElement('auth-section', 'block');
-    this.toggleElement('posts-section', 'none');
-    this.toggleElement('quick-actions', 'none');
-    this.toggleElement('login-btn-main', 'block');
-    this.toggleElement('authenticated-ui', 'none');
-  }
-
-  toggleElement(id, display) {
-    const element = document.getElementById(id);
-    if (element) {
-      element.style.display = display;
-    }
-  }
-
-  logout() {
-    this.clearAuth();
-    this.showUnauthenticatedUI();
-    this.showToast('Signed out successfully', 'success');
-  }
-
-  clearAuth() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userData');
-    appState.setState({ 
-      user: null, 
-      posts: [],
-      cache: new Map()
-    });
-  }
-
-  clearLoginForm() {
-    const usernameInput = document.getElementById('loginUsername');
-    const passwordInput = document.getElementById('loginPassword');
-    if (usernameInput) usernameInput.value = '';
-    if (passwordInput) passwordInput.value = '';
-  }
-
-  showModal(id) {
-    const modal = document.getElementById(id);
-    if (!modal) {
-      console.error(`Modal with id '${id}' not found`);
-      return;
-    }
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-  }
-
-  hideModal(id) {
-    const modal = document.getElementById(id);
-    if (!modal) {
-      console.error(`Modal with id '${id}' not found`);
-      return;
-    }
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-  }
-
-  toggleTheme() {
-    const newTheme = appState.state.ui.theme === 'light' ? 'dark' : 'light';
-    appState.setState({ 
-      ui: { ...appState.state.ui, theme: newTheme }
-    });
-    localStorage.setItem('theme', newTheme);
-    document.body.setAttribute('data-theme', newTheme);
-    this.updateThemeIcon(newTheme);
-  }
-
-  updateThemeIcon(theme) {
-    const themeIcon = document.querySelector('#theme-toggle i');
-    if (themeIcon) {
-      themeIcon.className = theme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
-    }
-  }
-
-  loadMorePosts() {
-    const { currentPage, hasMore } = appState.state.ui;
-    if (hasMore) {
-      appState.setState({
-        ui: { ...appState.state.ui, currentPage: currentPage + 1 }
-      });
-      this.postsManager.loadPosts();
-    }
-  }
-
-  showToast(message, type = 'info') {
-    const toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) return;
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-      <i class="bi bi-${this.getToastIcon(type)}"></i>
-      <span>${message}</span>
-    `;
-    
-    toastContainer.appendChild(toast);
-    
-    setTimeout(() => {
-      toast.style.animation = 'toastSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) reverse forwards';
-      setTimeout(() => {
-        if (toast.parentElement) {
-          toast.remove();
+      setState(newState) {
+        try {
+          const oldState = this.state;
+          this.state = { ...this.state, ...newState };
+          
+          if (JSON.stringify(oldState) !== JSON.stringify(this.state)) {
+            this.notifyListeners();
+          }
+        } catch (error) {
+          console.error('State update error:', error);
         }
-      }, 500);
-    }, 3000);
-  }
+      }
 
-  getToastIcon(type) {
-    const icons = {
-      success: 'check-circle',
-      error: 'exclamation-circle',
-      warning: 'exclamation-triangle',
-      info: 'info-circle'
-    };
-    return icons[type] || 'info-circle';
-  }
+      subscribe(listener) {
+        this.listeners.add(listener);
+        return () => this.listeners.delete(listener);
+      }
 
-  renderPosts(posts) {
-    const container = document.getElementById('posts-container');
-    if (!container) return;
-    
-    if (posts.length === 0) {
-      container.innerHTML = `
-        <div class="card text-center" style="padding: 3rem;">
-          <i class="bi bi-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
-          <h5 style="color: var(--text-secondary);">No posts found</h5>
-          <p style="color: var(--text-muted);">Be the first to start a discussion!</p>
-        </div>
-      `;
-      return;
-    }
+      notifyListeners() {
+        this.listeners.forEach(listener => {
+          try {
+            listener(this.state);
+          } catch (error) {
+            console.error('Listener error:', error);
+          }
+        });
+      }
 
-    container.innerHTML = posts.map(post => `
-      <div class="card post-card" data-post-id="${post.id}">
-        <div class="post-header">
-          <div class="user-avatar" style="background-color: ${post.avatar_color}">
-            ${post.username.charAt(0).toUpperCase()}
-          </div>
-          <div style="flex: 1;">
-            <strong style="display: block; margin-bottom: 0.25rem; cursor: pointer;">${post.username}</strong>
-            <span style="color: var(--text-muted); font-size: 0.875rem;">
-              ${post.formatted_timestamp} • ${post.category}
-            </span>
-          </div>
-        </div>
-        <div class="post-content">${post.content}</div>
-        <div class="post-actions">
-          <div class="action-group" style="display: flex; gap: 0.5rem;">
-            <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
-                    onclick="uiManager.postsManager.likePost(${post.id})">
-              <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
-              <span class="count">${post.likes_count}</span>
-            </button>
-            <button class="action-btn">
-              <i class="bi bi-chat"></i>
-              <span class="count">${post.comments_count}</span>
-            </button>
-            <button class="action-btn">
-              <i class="bi bi-share"></i>
-            </button>
-          </div>
-          <button class="action-btn bookmark-btn">
-            <i class="bi bi-bookmark"></i>
-          </button>
-        </div>
-      </div>
-    `).join('');
-  }
-}
+      debounce(key, fn, delay = 300) {
+        clearTimeout(this.debounceTimers.get(key));
+        this.debounceTimers.set(key, setTimeout(fn, delay));
+      }
 
-// 🚀 Enhanced Search
-class EnhancedSearch {
-  focusSearch() {
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-      searchInput.focus();
-    }
-  }
-}
+      cacheData(key, data, duration = CACHE_DURATION) {
+        try {
+          this.cache.set(key, {
+            data,
+            timestamp: Date.now(),
+            duration
+          });
+        } catch (error) {
+          console.error('Cache set error:', error);
+        }
+      }
 
-// Initialize the application
-let uiManager;
-let enhancedSearch;
+      getCachedData(key) {
+        try {
+          if (!this.cache) {
+            this.cache = new Map();
+          }
+          const cached = this.cache.get(key);
+          if (cached && Date.now() - cached.timestamp < cached.duration) {
+            return cached.data;
+          }
+          this.cache.delete(key);
+          return null;
+        } catch (error) {
+          console.error('Cache get error:', error);
+          return null;
+        }
+      }
 
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('🚀 Enhanced EdgePowered Forum Initialized');
-  
-  uiManager = new EnhancedUIManager();
-  enhancedSearch = new EnhancedSearch();
-
-  // Subscribe to state changes
-  appState.subscribe((state) => {
-    if (state.posts.length > 0) {
-      uiManager.renderPosts(state.posts);
-    }
-
-    // Update load more button
-    const loadMoreContainer = document.getElementById('load-more-container');
-    const loadMoreBtn = document.getElementById('load-more-btn');
-    
-    if (loadMoreContainer && loadMoreBtn) {
-      if (state.ui.hasMore && state.posts.length > 0) {
-        loadMoreContainer.style.display = 'block';
-        loadMoreBtn.disabled = state.ui.loading;
-        loadMoreBtn.innerHTML = state.ui.loading ? 
-          '<i class="bi bi-arrow-repeat spinner"></i> Loading...' : 
-          '<i class="bi bi-arrow-clockwise"></i> Load More Posts';
-      } else {
-        loadMoreContainer.style.display = 'none';
+      updateFilters(newFilters) {
+        this.setState({
+          ui: {
+            ...this.state.ui,
+            filters: { ...this.state.ui.filters, ...newFilters },
+            currentPage: 1
+          },
+          posts: []
+        });
       }
     }
-  });
 
-  // Add some sample posts for demo
-  if (!localStorage.getItem('token')) {
-    setTimeout(() => {
-      const container = document.getElementById('posts-container');
-      if (container && container.children.length === 0) {
-        container.innerHTML = `
+    const appState = new UltraStateManager();
+
+    // Ultra Fast API Manager
+    class UltraAPIManager {
+      constructor() {
+        this.pendingRequests = new Map();
+        this.requestQueue = [];
+        this.maxConcurrent = 3;
+        this.activeRequests = 0;
+      }
+
+      async call(endpoint, options = {}) {
+        const requestKey = `${endpoint}-${JSON.stringify(options.body || {})}`;
+        
+        try {
+          const cached = appState.getCachedData(requestKey);
+          if (cached && options.method?.toUpperCase() === 'GET') {
+            return cached;
+          }
+
+          if (this.pendingRequests.has(requestKey)) {
+            return this.pendingRequests.get(requestKey);
+          }
+
+          const promise = this.executeRequest(endpoint, options, requestKey);
+          this.pendingRequests.set(requestKey, promise);
+
+          try {
+            const result = await promise;
+            appState.cacheData(requestKey, result);
+            return result;
+          } finally {
+            this.pendingRequests.delete(requestKey);
+          }
+        } catch (error) {
+          console.error(`API call error [${endpoint}]:`, error);
+          throw error;
+        }
+      }
+
+      async executeRequest(endpoint, options, key) {
+        if (this.activeRequests >= this.maxConcurrent) {
+          await new Promise(resolve => {
+            this.requestQueue.push(resolve);
+          });
+        }
+
+        this.activeRequests++;
+
+        try {
+          const token = localStorage.getItem('token');
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token && { 'Authorization': token }),
+            },
+            ...options
+          };
+
+          if (config.body) {
+            config.body = JSON.stringify(config.body);
+          }
+
+          const response = await fetch(API_BASE + endpoint, config);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error(`API request error [${endpoint}]:`, error);
+          throw error;
+        } finally {
+          this.activeRequests--;
+          if (this.requestQueue.length > 0) {
+            const next = this.requestQueue.shift();
+            next();
+          }
+        }
+      }
+    }
+
+    const apiManager = new UltraAPIManager();
+
+    // Instant Posts Manager
+    class InstantPostsManager {
+      constructor() {
+        this.isLoading = false;
+        this.lastLoadTime = 0;
+        this.loadThrottle = 500;
+      }
+
+      async loadPosts(force = false) {
+        const now = Date.now();
+        if (this.isLoading || (now - this.lastLoadTime < this.loadThrottle && !force)) {
+          return;
+        }
+
+        this.isLoading = true;
+        this.lastLoadTime = now;
+        
+        this.showSkeletonPosts();
+
+        try {
+          const { currentPage, filters } = appState.state.ui;
+          const params = new URLSearchParams({
+            page: currentPage,
+            per_page: 8,
+            ...(filters.category && { category: filters.category }),
+            ...(filters.search && { search: filters.search })
+          });
+
+          const data = await apiManager.call(`/posts?${params}`);
+          
+          if (data && data.success) {
+            const posts = currentPage === 1 ? 
+              data.data : 
+              [...appState.state.posts, ...data.data];
+            
+            appState.setState({ 
+              posts,
+              ui: { 
+                ...appState.state.ui, 
+                loading: false,
+                hasMore: currentPage < (data.pagination?.pages || 1)
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Posts load error:', error);
+          safeCall(() => uiManager.showToast('Failed to load posts', 'error'));
+        } finally {
+          this.isLoading = false;
+        }
+      }
+
+      showSkeletonPosts() {
+        const container = safeGetElement('posts-container');
+        if (!container) return;
+        
+        const count = appState.state.posts.length === 0 ? 3 : 2;
+        
+        container.innerHTML = Array.from({ length: count }, () => `
           <div class="card post-card">
             <div class="post-header">
-              <div class="user-avatar" style="background-color: #007AFF">J</div>
+              <div class="skeleton skeleton-avatar"></div>
               <div style="flex: 1;">
-                <strong style="display: block; margin-bottom: 0.25rem;">John</strong>
-                <span style="color: var(--text-muted); font-size: 0.875rem;">Just now • Technology</span>
+                <div class="skeleton skeleton-block" style="width: 40%; height: 1.25rem;"></div>
+                <div class="skeleton skeleton-block" style="width: 60%; height: 0.875rem;"></div>
               </div>
             </div>
-            <div class="post-content">
-              <p>Welcome to EdgePowered! This is a demo post to show the beautiful interface. Sign in to start posting and engaging with the community.</p>
-              <p>🚀 Experience lightning-fast performance and modern design!</p>
-            </div>
-            <div class="post-actions">
-              <div class="action-group" style="display: flex; gap: 0.5rem;">
-                <button class="action-btn"><i class="bi bi-heart"></i><span class="count">24</span></button>
-                <button class="action-btn"><i class="bi bi-chat"></i><span class="count">8</span></button>
-                <button class="action-btn"><i class="bi bi-share"></i></button>
-              </div>
-              <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+            <div style="padding: 0 1.5rem 1.5rem;">
+              <div class="skeleton skeleton-block"></div>
+              <div class="skeleton skeleton-block" style="width: 80%;"></div>
+              <div class="skeleton skeleton-block" style="width: 60%;"></div>
             </div>
           </div>
-        `;
+        `).join('');
       }
-    }, 1000);
-  }
-});
 
-// Make available globally
-window.uiManager = uiManager;
-window.enhancedSearch = enhancedSearch;
-      </script>
+      async createPost(category, content) {
+        if (!content.trim() || content === '<br>') {
+          safeCall(() => uiManager.showToast('Please enter some content', 'warning'));
+          return false;
+        }
+
+        try {
+          const data = await apiManager.call('/posts', {
+            method: 'POST',
+            body: { category, content }
+          });
+
+          if (data && data.success) {
+            const newPost = {
+              id: data.post_id,
+              content,
+              category,
+              user_id: appState.state.user?.id,
+              username: appState.state.user?.username,
+              avatar_color: appState.state.user?.avatar_color,
+              timestamp: new Date().toISOString(),
+              likes_count: 0,
+              comments_count: 0,
+              user_has_liked: false,
+              formatted_timestamp: 'Just now'
+            };
+
+            appState.setState({
+              posts: [newPost, ...appState.state.posts]
+            });
+
+            safeCall(() => uiManager.showToast('Post published successfully!', 'success'));
+            return true;
+          }
+        } catch (error) {
+          console.error('Create post error:', error);
+          safeCall(() => uiManager.showToast('Failed to create post', 'error'));
+          return false;
+        }
+      }
+
+      async likePost(postId) {
+        try {
+          const data = await apiManager.call(`/posts/${postId}/like`, {
+            method: 'POST'
+          });
+
+          if (data && data.success) {
+            const posts = appState.state.posts.map(post => {
+              if (post.id === postId) {
+                return {
+                  ...post,
+                  likes_count: data.likes_count,
+                  user_has_liked: data.action === 'liked'
+                };
+              }
+              return post;
+            });
+
+            appState.setState({ posts });
+          }
+        } catch (error) {
+          console.error('Like error:', error);
+        }
+      }
+    }
+
+    // Enhanced UI Manager
+    class EnhancedUIManager {
+      constructor() {
+        this.postsManager = new InstantPostsManager();
+        this.setupEventListeners();
+        this.initializeApp();
+      }
+
+      setupEventListeners() {
+        const safeAddEventListener = (id, event, handler) => {
+          const element = safeGetElement(id);
+          if (element) {
+            element.addEventListener(event, handler);
+          }
+        };
+
+        // Auth
+        safeAddEventListener('sign-in-btn', 'click', () => this.showModal('loginModal'));
+        safeAddEventListener('create-account-btn', 'click', () => this.showModal('registerModal'));
+        safeAddEventListener('login-btn-main', 'click', () => this.showModal('loginModal'));
+        safeAddEventListener('logout-btn', 'click', () => this.logout());
+
+        // Posts
+        safeAddEventListener('new-post-btn', 'click', () => this.showModal('createPostModal'));
+        safeAddEventListener('create-post-btn', 'click', () => this.handleCreatePost());
+        safeAddEventListener('load-more-btn', 'click', () => this.loadMorePosts());
+
+        // Modals
+        safeAddEventListener('cancel-login-btn', 'click', () => this.hideModal('loginModal'));
+        safeAddEventListener('cancel-register-btn', 'click', () => this.hideModal('registerModal'));
+        safeAddEventListener('cancel-post-btn', 'click', () => this.hideModal('createPostModal'));
+        safeAddEventListener('login-btn', 'click', () => this.handleLogin());
+        safeAddEventListener('register-btn', 'click', () => this.handleRegister());
+
+        // Filters
+        safeAddEventListener('category-filter', 'change', (e) => {
+          appState.updateFilters({ category: e.target.value });
+          this.postsManager.loadPosts(true);
+        });
+
+        safeAddEventListener('search-input', 'input', (e) => {
+          appState.debounce('search', () => {
+            appState.updateFilters({ search: e.target.value });
+            this.postsManager.loadPosts(true);
+          }, 500);
+        });
+
+        safeAddEventListener('clear-filters-btn', 'click', () => {
+          const categoryFilter = safeGetElement('category-filter');
+          const searchInput = safeGetElement('search-input');
+          if (categoryFilter) categoryFilter.value = '';
+          if (searchInput) searchInput.value = '';
+          appState.updateFilters({ category: '', search: '' });
+          this.postsManager.loadPosts(true);
+        });
+
+        // Theme
+        safeAddEventListener('theme-toggle', 'click', () => this.toggleTheme());
+
+        // Global click handlers
+        document.addEventListener('click', (e) => {
+          if (e.target.classList.contains('modal-overlay')) {
+            this.hideModal(e.target.id);
+          }
+        });
+
+        // Enter key for login
+        safeAddEventListener('loginPassword', 'keypress', (e) => {
+          if (e.key === 'Enter') this.handleLogin();
+        });
+      }
+
+      initializeApp() {
+        // Set theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        this.updateThemeIcon(savedTheme);
+
+        // Check auth
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('userData');
+        
+        if (token && userData) {
+          try {
+            const user = JSON.parse(userData);
+            appState.setState({ user });
+            this.showAuthenticatedUI();
+            this.postsManager.loadPosts();
+          } catch (error) {
+            console.error('Auth initialization error:', error);
+            this.clearAuth();
+          }
+        }
+      }
+
+      async handleLogin() {
+        const usernameInput = safeGetElement('loginUsername');
+        const passwordInput = safeGetElement('loginPassword');
+        
+        if (!usernameInput || !passwordInput) return;
+        
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!username || !password) {
+          this.showToast('Please fill in all fields', 'warning');
+          return;
+        }
+
+        this.showToast('Signing in...', 'info');
+
+        try {
+          const data = await apiManager.call('/login', {
+            method: 'POST',
+            body: { username, password }
+          });
+
+          if (data && data.success && data.token) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userData', JSON.stringify(data.user));
+            appState.setState({ user: data.user });
+
+            this.hideModal('loginModal');
+            this.clearLoginForm();
+            this.showAuthenticatedUI();
+            this.showToast('Welcome back!', 'success');
+            this.postsManager.loadPosts();
+          }
+        } catch (error) {
+          this.showToast('Invalid credentials', 'error');
+        }
+      }
+
+      async handleRegister() {
+        const usernameInput = safeGetElement('registerUsername');
+        const emailInput = safeGetElement('registerEmail');
+        const passwordInput = safeGetElement('registerPassword');
+        const confirmInput = safeGetElement('registerConfirmPassword');
+        
+        if (!usernameInput || !emailInput || !passwordInput || !confirmInput) return;
+        
+        const username = usernameInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        const confirmPassword = confirmInput.value;
+
+        if (!username || !email || !password || !confirmPassword) {
+          this.showToast('Please fill in all fields', 'warning');
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          this.showToast('Passwords do not match', 'error');
+          return;
+        }
+
+        if (password.length < 6) {
+          this.showToast('Password must be at least 6 characters', 'warning');
+          return;
+        }
+
+        this.showToast('Creating account...', 'info');
+
+        try {
+          const data = await apiManager.call('/register', {
+            method: 'POST',
+            body: { username, email, password }
+          });
+
+          if (data && data.success) {
+            this.hideModal('registerModal');
+            this.clearRegisterForm();
+            this.showToast('Account created successfully! Please sign in.', 'success');
+          }
+        } catch (error) {
+          this.showToast('Registration failed', 'error');
+        }
+      }
+
+      async handleCreatePost() {
+        const categorySelect = safeGetElement('postCategory');
+        const contentDiv = safeGetElement('postContent');
+        
+        if (!categorySelect || !contentDiv) return;
+        
+        const category = categorySelect.value;
+        const content = contentDiv.innerHTML;
+
+        const success = await this.postsManager.createPost(category, content);
+        if (success) {
+          this.hideModal('createPostModal');
+          if (contentDiv) contentDiv.innerHTML = '';
+        }
+      }
+
+      showAuthenticatedUI() {
+        this.toggleElement('auth-section', 'none');
+        this.toggleElement('posts-section', 'block');
+        this.toggleElement('quick-actions', 'flex');
+        this.toggleElement('login-btn-main', 'none');
+        this.toggleElement('authenticated-ui', 'block');
+        
+        const usernameDisplay = safeGetElement('username-display');
+        if (usernameDisplay && appState.state.user) {
+          usernameDisplay.textContent = appState.state.user.username;
+        }
+      }
+
+      showUnauthenticatedUI() {
+        this.toggleElement('auth-section', 'block');
+        this.toggleElement('posts-section', 'none');
+        this.toggleElement('quick-actions', 'none');
+        this.toggleElement('login-btn-main', 'block');
+        this.toggleElement('authenticated-ui', 'none');
+      }
+
+      toggleElement(id, display) {
+        const element = safeGetElement(id);
+        if (element) {
+          element.style.display = display;
+        }
+      }
+
+      logout() {
+        this.clearAuth();
+        this.showUnauthenticatedUI();
+        this.showToast('Signed out successfully', 'success');
+      }
+
+      clearAuth() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userData');
+        appState.setState({ 
+          user: null, 
+          posts: [],
+          cache: new Map()
+        });
+      }
+
+      clearLoginForm() {
+        const usernameInput = safeGetElement('loginUsername');
+        const passwordInput = safeGetElement('loginPassword');
+        if (usernameInput) usernameInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+      }
+
+      clearRegisterForm() {
+        const usernameInput = safeGetElement('registerUsername');
+        const emailInput = safeGetElement('registerEmail');
+        const passwordInput = safeGetElement('registerPassword');
+        const confirmInput = safeGetElement('registerConfirmPassword');
+        
+        if (usernameInput) usernameInput.value = '';
+        if (emailInput) emailInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+        if (confirmInput) confirmInput.value = '';
+      }
+
+      showModal(id) {
+        const modal = safeGetElement(id);
+        if (!modal) {
+          console.error(`Modal with id '${id}' not found`);
+          return;
+        }
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+      }
+
+      hideModal(id) {
+        const modal = safeGetElement(id);
+        if (!modal) {
+          console.error(`Modal with id '${id}' not found`);
+          return;
+        }
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+
+      toggleTheme() {
+        const newTheme = appState.state.ui.theme === 'light' ? 'dark' : 'light';
+        appState.setState({ 
+          ui: { ...appState.state.ui, theme: newTheme }
+        });
+        localStorage.setItem('theme', newTheme);
+        document.body.setAttribute('data-theme', newTheme);
+        this.updateThemeIcon(newTheme);
+      }
+
+      updateThemeIcon(theme) {
+        const themeIcon = document.querySelector('#theme-toggle i');
+        if (themeIcon) {
+          themeIcon.className = theme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
+        }
+      }
+
+      loadMorePosts() {
+        const { currentPage, hasMore } = appState.state.ui;
+        if (hasMore) {
+          appState.setState({
+            ui: { ...appState.state.ui, currentPage: currentPage + 1 }
+          });
+          this.postsManager.loadPosts();
+        }
+      }
+
+      showToast(message, type = 'info') {
+        const toastContainer = safeGetElement('toast-container');
+        if (!toastContainer) return;
+        
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+          <i class="bi bi-${this.getToastIcon(type)}"></i>
+          <span>${message}</span>
+        `;
+        
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.style.animation = 'toastSlideIn 0.5s ease reverse forwards';
+          setTimeout(() => {
+            if (toast.parentElement) {
+              toast.remove();
+            }
+          }, 500);
+        }, 3000);
+      }
+
+      getToastIcon(type) {
+        const icons = {
+          success: 'check-circle',
+          error: 'exclamation-circle',
+          warning: 'exclamation-triangle',
+          info: 'info-circle'
+        };
+        return icons[type] || 'info-circle';
+      }
+
+      renderPosts(posts) {
+        const container = safeGetElement('posts-container');
+        if (!container) return;
+        
+        if (!posts || posts.length === 0) {
+          container.innerHTML = `
+            <div class="card text-center" style="padding: 3rem;">
+              <i class="bi bi-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+              <h5 style="color: var(--text-secondary);">No posts found</h5>
+              <p style="color: var(--text-muted);">Be the first to start a discussion!</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = posts.map(post => `
+          <div class="card post-card" data-post-id="${post.id}">
+            <div class="post-header">
+              <div class="user-avatar" style="background-color: ${post.avatar_color || '#007AFF'}">
+                ${(post.username || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div style="flex: 1;">
+                <strong style="display: block; margin-bottom: 0.25rem;">${post.username || 'User'}</strong>
+                <span style="color: var(--text-muted); font-size: 0.875rem;">
+                  ${post.formatted_timestamp || 'Recently'} • ${post.category || 'General'}
+                </span>
+              </div>
+            </div>
+            <div class="post-content">${post.content || 'No content'}</div>
+            <div class="post-actions">
+              <div class="action-group" style="display: flex; gap: 0.5rem;">
+                <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
+                        onclick="safeCall(() => uiManager.postsManager.likePost(${post.id}))">
+                  <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
+                  <span class="count">${post.likes_count || 0}</span>
+                </button>
+                <button class="action-btn">
+                  <i class="bi bi-chat"></i>
+                  <span class="count">${post.comments_count || 0}</span>
+                </button>
+                <button class="action-btn">
+                  <i class="bi bi-share"></i>
+                </button>
+              </div>
+              <button class="action-btn bookmark-btn">
+                <i class="bi bi-bookmark"></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Enhanced Search
+    class EnhancedSearch {
+      focusSearch() {
+        const searchInput = safeGetElement('search-input');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+    }
+
+    // Initialize the application
+    let uiManager;
+    let enhancedSearch;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚀 Enhanced EdgePowered Forum Initialized');
+      
+      try {
+        uiManager = new EnhancedUIManager();
+        enhancedSearch = new EnhancedSearch();
+
+        // Subscribe to state changes
+        appState.subscribe((state) => {
+          if (state.posts && state.posts.length > 0) {
+            uiManager.renderPosts(state.posts);
+          }
+
+          // Update load more button
+          const loadMoreContainer = safeGetElement('load-more-container');
+          const loadMoreBtn = safeGetElement('load-more-btn');
+          
+          if (loadMoreContainer && loadMoreBtn) {
+            if (state.ui.hasMore && state.posts.length > 0) {
+              loadMoreContainer.style.display = 'block';
+              loadMoreBtn.disabled = state.ui.loading;
+              loadMoreBtn.innerHTML = state.ui.loading ? 
+                '<i class="bi bi-arrow-repeat spinner"></i> Loading...' : 
+                '<i class="bi bi-arrow-clockwise"></i> Load More Posts';
+            } else {
+              loadMoreContainer.style.display = 'none';
+            }
+          }
+        });
+
+        // Add some sample posts for demo
+        if (!localStorage.getItem('token')) {
+          setTimeout(() => {
+            const container = safeGetElement('posts-container');
+            if (container && container.children.length === 0) {
+              container.innerHTML = `
+                <div class="card post-card">
+                  <div class="post-header">
+                    <div class="user-avatar" style="background-color: #007AFF">J</div>
+                    <div style="flex: 1;">
+                      <strong style="display: block; margin-bottom: 0.25rem;">John</strong>
+                      <span style="color: var(--text-muted); font-size: 0.875rem;">Just now • Technology</span>
+                    </div>
+                  </div>
+                  <div class="post-content">
+                    <p>Welcome to EdgePowered! This is a demo post to show the beautiful interface. Sign in to start posting and engaging with the community.</p>
+                    <p>🚀 Experience lightning-fast performance and modern design!</p>
+                  </div>
+                  <div class="post-actions">
+                    <div class="action-group" style="display: flex; gap: 0.5rem;">
+                      <button class="action-btn"><i class="bi bi-heart"></i><span class="count">24</span></button>
+                      <button class="action-btn"><i class="bi bi-chat"></i><span class="count">8</span></button>
+                      <button class="action-btn"><i class="bi bi-share"></i></button>
+                    </div>
+                    <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+                  </div>
+                </div>
+              `;
+            }
+          }, 1000);
+        }
+      } catch (error) {
+        console.error('Application initialization error:', error);
+      }
+    });
+
+    // Make available globally
+    window.uiManager = uiManager;
+    window.enhancedSearch = enhancedSearch;
+    window.safeCall = safeCall;
+  </script>
 </body>
 </html>
