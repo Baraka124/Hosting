@@ -489,6 +489,50 @@ def posts():
             }
         })
 
+# Enhanced like system
+@app.route('/api/posts/<int:post_id>/like', methods=['POST'])
+@token_required
+@rate_limit
+def like_post(post_id):
+    with get_db() as conn:
+        c = conn.cursor()
+        
+        # Verify post exists
+        c.execute("SELECT id FROM posts WHERE id = ?", (post_id,))
+        if not c.fetchone():
+            return jsonify({"success": False, "error": "Post not found"}), 404
+        
+        # Check if already liked
+        c.execute("SELECT id FROM likes WHERE user_id = ? AND post_id = ?", (request.user_id, post_id))
+        existing_like = c.fetchone()
+        
+        if existing_like:
+            # Unlike
+            c.execute("DELETE FROM likes WHERE id = ?", (existing_like["id"],))
+            c.execute("UPDATE posts SET likes_count = likes_count - 1 WHERE id = ?", (post_id,))
+            action = "unliked"
+        else:
+            # Like
+            c.execute("INSERT INTO likes (user_id, post_id, timestamp) VALUES (?, ?, ?)",
+                     (request.user_id, post_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+            c.execute("UPDATE posts SET likes_count = likes_count + 1 WHERE id = ?", (post_id,))
+            action = "liked"
+        
+        conn.commit()
+        
+        # Get updated like count
+        c.execute("SELECT likes_count FROM posts WHERE id = ?", (post_id,))
+        likes_count = c.fetchone()["likes_count"]
+        
+        # Log activity
+        log_user_activity(request.user_id, f"post_{action}", {"post_id": post_id})
+        
+        return jsonify({
+            "success": True, 
+            "action": action,
+            "likes_count": likes_count
+        })
+
 # Post analytics endpoint
 @app.route('/api/posts/<int:post_id>/analytics')
 @token_required
@@ -522,6 +566,57 @@ def post_analytics(post_id):
             
         analytics = dict(result)
         return jsonify({"success": True, "analytics": analytics})
+
+# Comments endpoints
+@app.route('/api/posts/<int:post_id>/comments', methods=['GET', 'POST'])
+@token_required
+@rate_limit
+def post_comments(post_id):
+    with get_db() as conn:
+        c = conn.cursor()
+        
+        # Verify post exists and user can access it
+        c.execute("""SELECT p.id FROM posts p 
+                    JOIN users u ON p.user_id = u.id 
+                    WHERE p.id = ? AND u.is_active = 1""", (post_id,))
+        if not c.fetchone():
+            return jsonify({"success": False, "error": "Post not found"}), 404
+        
+        if request.method == 'POST':
+            data = request.get_json()
+            valid, msg = validate_fields(data, ["content"])
+            if not valid:
+                return jsonify({"success": False, "error": msg}), 400
+            
+            content = sanitize_input(data["content"], 500)
+            
+            if len(content) < 2:
+                return jsonify({"success": False, "error": "Comment must be at least 2 characters"}), 400
+
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            c.execute("""INSERT INTO comments (post_id, user_id, content, timestamp) 
+                        VALUES (?, ?, ?, ?)""",
+                     (post_id, request.user_id, content, timestamp))
+            
+            # Update post comments count
+            c.execute("UPDATE posts SET comments_count = comments_count + 1 WHERE id = ?", (post_id,))
+            
+            conn.commit()
+            
+            # Log activity
+            log_user_activity(request.user_id, "comment_created", {"post_id": post_id})
+            
+            return jsonify({"success": True, "message": "Comment added"}), 201
+        
+        # GET comments for post
+        c.execute("""SELECT c.*, u.username, u.avatar_color 
+                    FROM comments c 
+                    JOIN users u ON c.user_id = u.id 
+                    WHERE c.post_id = ? AND u.is_active = 1
+                    ORDER BY c.timestamp ASC""", (post_id,))
+        comments = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({"success": True, "data": comments})
 
 # Enhanced user profile with reputation
 @app.route('/api/profile', methods=['GET'])
@@ -560,6 +655,24 @@ def get_profile():
                 "likes_received": like_count,
                 "reputation": reputation
             }
+        })
+
+# User's posts endpoint
+@app.route('/api/profile/posts')
+@token_required
+def get_user_posts():
+    with get_db() as conn:
+        c = conn.cursor()
+        c.execute("""SELECT p.*, u.username, u.avatar_color 
+                    FROM posts p 
+                    JOIN users u ON p.user_id = u.id 
+                    WHERE p.user_id = ? 
+                    ORDER BY p.timestamp DESC""", (request.user_id,))
+        posts = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({
+            "success": True,
+            "data": posts
         })
 
 # Recommendations endpoint
@@ -652,6 +765,56 @@ def search():
             "users": users
         })
 
+# Categories endpoint
+@app.route('/api/categories')
+def get_categories():
+    with get_db() as conn:
+        c = conn.cursor()
+        c.execute("SELECT category, COUNT(*) as count FROM posts GROUP BY category")
+        categories = {row["category"]: row["count"] for row in c.fetchall()}
+        
+        return jsonify({
+            "success": True,
+            "categories": categories
+        })
+
+# Trending topics endpoint
+@app.route('/api/trending')
+def get_trending():
+    with get_db() as conn:
+        c = conn.cursor()
+        # Get posts with most likes in last 7 days
+        c.execute("""SELECT p.*, u.username, u.avatar_color 
+                    FROM posts p 
+                    JOIN users u ON p.user_id = u.id 
+                    WHERE p.timestamp >= datetime('now', '-7 days')
+                    ORDER BY p.likes_count DESC, p.comments_count DESC 
+                    LIMIT 5""")
+        trending_posts = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({
+            "success": True,
+            "trending": trending_posts
+        })
+
+# Top contributors endpoint
+@app.route('/api/contributors')
+def get_top_contributors():
+    with get_db() as conn:
+        c = conn.cursor()
+        c.execute("""SELECT u.username, u.avatar_color, COUNT(p.id) as post_count
+                    FROM users u 
+                    LEFT JOIN posts p ON u.id = p.user_id 
+                    GROUP BY u.id 
+                    ORDER BY post_count DESC 
+                    LIMIT 5""")
+        contributors = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({
+            "success": True,
+            "contributors": contributors
+        })
+
 # Performance metrics endpoint
 @app.route('/api/performance/metrics')
 @token_required
@@ -683,6 +846,52 @@ def performance_metrics():
                 "active_users": active_users,
                 "engagement_rate": (active_users / max(total_posts, 1)) * 100,
                 "avg_post_age_minutes": round(avg_post_age, 2)
+            }
+        })
+
+# Analytics endpoint
+@app.route('/api/analytics/overview')
+@token_required
+def analytics_overview():
+    with get_db() as conn:
+        c = conn.cursor()
+        
+        # Total posts
+        c.execute("SELECT COUNT(*) as total_posts FROM posts")
+        total_posts = c.fetchone()["total_posts"]
+        
+        # Total users
+        c.execute("SELECT COUNT(*) as total_users FROM users")
+        total_users = c.fetchone()["total_users"]
+        
+        # Total likes
+        c.execute("SELECT COUNT(*) as total_likes FROM likes")
+        total_likes = c.fetchone()["total_likes"]
+        
+        # Total comments
+        c.execute("SELECT COUNT(*) as total_comments FROM comments")
+        total_comments = c.fetchone()["total_comments"]
+        
+        # Posts by category
+        c.execute("SELECT category, COUNT(*) as count FROM posts GROUP BY category")
+        categories = {row["category"]: row["count"] for row in c.fetchall()}
+        
+        # Recent activity
+        c.execute("""SELECT p.timestamp, u.username, p.category 
+                    FROM posts p 
+                    JOIN users u ON p.user_id = u.id 
+                    ORDER BY p.timestamp DESC LIMIT 5""")
+        recent_activity = [dict(row) for row in c.fetchall()]
+        
+        return jsonify({
+            "success": True,
+            "overview": {
+                "total_posts": total_posts,
+                "total_users": total_users,
+                "total_likes": total_likes,
+                "total_comments": total_comments,
+                "categories": categories,
+                "recent_activity": recent_activity
             }
         })
 
