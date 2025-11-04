@@ -9,161 +9,195 @@
   <style>
     :root {
       --primary: #0066FF;
+      --primary-dark: #0052CC;
       --secondary: #00CCFF;
-      --success: #34C759;
-      --danger: #FF3B30;
+      --success: #00D26A;
+      --danger: #FF375F;
       --warning: #FF9500;
+      --info: #5856D6;
       --dark: #1a1d21;
-      --light: #f5f7fa;
+      --light: #f8f9fa;
       --bg-primary: #ffffff;
       --bg-secondary: #f8f9fa;
+      --bg-tertiary: #e9ecef;
       --text-primary: #212529;
       --text-secondary: #6c757d;
+      --text-muted: #8a8f98;
       --border: #dee2e6;
+      --border-light: #f1f3f4;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+      --radius: 12px;
+      --radius-sm: 8px;
     }
 
     [data-theme="dark"] {
-      --bg-primary: #1a1d21;
-      --bg-secondary: #2d3239;
+      --bg-primary: #0f1114;
+      --bg-secondary: #1a1d21;
+      --bg-tertiary: #2d3239;
       --text-primary: #ffffff;
-      --text-secondary: #8a8f98;
+      --text-secondary: #b0b3b8;
+      --text-muted: #8a8f98;
       --border: #40444b;
+      --border-light: #2d3239;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      transition: background-color 0.3s, color 0.3s;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
       background: var(--bg-primary);
       color: var(--text-primary);
-      min-height: 100vh;
+      line-height: 1.6;
+      transition: all 0.2s ease;
+      overflow-x: hidden;
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    /* Header */
+    /* Enhanced Header */
     .header {
       background: var(--bg-primary);
-      padding: 1rem 0;
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      z-index: 100;
-      backdrop-filter: blur(10px);
+      z-index: 1000;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .header-glass {
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    [data-theme="dark"] .header-glass {
+      background: rgba(15, 17, 20, 0.8);
     }
 
     .logo {
-      font-weight: 700;
+      font-weight: 800;
       font-size: 1.5rem;
-      color: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
 
-    /* Buttons */
+    /* Enhanced Buttons */
     .btn {
-      cursor: pointer;
       border: none;
-      border-radius: 8px;
-      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      padding: 10px 20px;
       font-weight: 600;
-      transition: all 0.2s ease;
+      font-size: 0.875rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #0052CC;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
-    }
-
-    .btn-outline-primary {
-      background: transparent;
-      border: 2px solid var(--primary);
-      color: var(--primary);
-    }
-
-    .btn-success {
-      background: var(--success);
-      color: white;
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    .btn-sm {
-      padding: 8px 16px;
-      font-size: 0.875rem;
-    }
-
-    /* Hero Section */
-    .hero {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      border-radius: 16px;
-      color: white;
-      margin: 2rem 0;
       position: relative;
       overflow: hidden;
     }
 
-    .hero h1 {
-      font-size: 3rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
     }
 
-    .hero p {
-      font-size: 1.25rem;
-      opacity: 0.9;
-      margin-bottom: 2rem;
+    .btn:hover::before {
+      left: 100%;
     }
 
-    /* Cards */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 14px 0 rgba(0, 102, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px 0 rgba(0, 102, 255, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), #00b359);
+      color: white;
+    }
+
+    /* Enhanced Cards */
     .card {
       background: var(--bg-primary);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border: 1px solid var(--border);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
     }
 
     .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
     }
 
-    /* Post Cards */
+    /* Enhanced Hero Section */
+    .hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      border-radius: var(--radius);
+      padding: 5rem 2rem;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.9) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Enhanced Posts */
     .post-card {
-      animation: slideInUp 0.5s ease;
+      animation: slideUp 0.5s ease-out;
+      margin-bottom: 1.5rem;
     }
 
-    @keyframes slideInUp {
+    @keyframes slideUp {
       from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
       }
       to {
         opacity: 1;
@@ -174,85 +208,62 @@
     .post-header {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
+      gap: 1rem;
+      padding: 1.5rem 1.5rem 1rem;
     }
 
     .user-avatar {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-weight: bold;
-      font-size: 1.2rem;
+      font-weight: 700;
+      font-size: 1.1rem;
       cursor: pointer;
+      transition: transform 0.2s ease;
+      border: 3px solid var(--border-light);
     }
 
-    .user-avatar-sm {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 0.9rem;
-    }
-
-    .post-meta {
-      flex: 1;
-    }
-
-    .post-meta strong {
-      display: block;
-      margin-bottom: 0.25rem;
-      cursor: pointer;
-    }
-
-    .timestamp {
-      color: var(--text-secondary);
-      font-size: 0.875rem;
+    .user-avatar:hover {
+      transform: scale(1.1);
     }
 
     .post-content {
-      margin-bottom: 1rem;
-      line-height: 1.6;
+      padding: 0 1.5rem 1.5rem;
+      line-height: 1.7;
     }
 
     .post-actions {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid var(--border);
-      padding-top: 1rem;
-    }
-
-    .action-group {
-      display: flex;
-      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-light);
+      background: var(--bg-secondary);
     }
 
     .action-btn {
       background: none;
       border: none;
-      color: var(--text-secondary);
+      color: var(--text-muted);
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.5rem;
-      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
       transition: all 0.2s ease;
       font-size: 0.875rem;
+      font-weight: 500;
     }
 
     .action-btn:hover {
-      background: var(--bg-secondary);
+      background: var(--bg-tertiary);
       color: var(--text-primary);
+      transform: translateY(-1px);
     }
 
     .action-btn.liked {
@@ -263,161 +274,51 @@
       color: var(--warning);
     }
 
-    .action-btn .count {
-      font-size: 0.8rem;
-      min-width: 20px;
-      text-align: center;
-    }
-
-    /* Modals */
+    /* Enhanced Modals */
     .modal-overlay {
-      display: none;
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      display: none;
+      z-index: 2000;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .modal-content {
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%) scale(0.95);
       background: var(--bg-primary);
-      border-radius: 12px;
+      border-radius: var(--radius);
       padding: 2rem;
       width: 90%;
       max-width: 500px;
       max-height: 90vh;
       overflow-y: auto;
-      z-index: 1001;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      z-index: 2001;
+      box-shadow: var(--shadow-lg);
+      animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
-    /* Comments Modal */
-    .comments-modal .modal-content {
-      max-width: 600px;
+    @keyframes modalSlideIn {
+      to {
+        transform: translate(-50%, -50%) scale(1);
+      }
     }
 
-    .comments-header {
-      display: flex;
-      justify-content: between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .comments-list {
-      max-height: 400px;
-      overflow-y: auto;
-      margin-bottom: 1.5rem;
-    }
-
-    .comment {
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .comment:last-child {
-      border-bottom: none;
-    }
-
-    .comment.reply {
-      margin-left: 2rem;
-      border-left: 2px solid var(--border);
-      padding-left: 1rem;
-    }
-
-    .comment-header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .comment-meta {
-      flex: 1;
-    }
-
-    .comment-meta strong {
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-
-    .comment-content {
-      margin-bottom: 0.5rem;
-      line-height: 1.5;
-    }
-
-    .comment-actions {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .replies {
-      margin-top: 1rem;
-    }
-
-    .comment-form {
-      border-top: 1px solid var(--border);
-      padding-top: 1rem;
-    }
-
-    .comment-input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      resize: vertical;
-      min-height: 80px;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-    }
-
-    /* Rich Text Editor */
-    .editor-toolbar {
-      display: flex;
-      gap: 0.5rem;
-      padding: 0.5rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 1rem;
-    }
-
-    .editor-toolbar button {
-      background: none;
-      border: none;
-      padding: 0.5rem;
-      border-radius: 4px;
-      cursor: pointer;
-      color: var(--text-secondary);
-    }
-
-    .editor-toolbar button:hover {
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-    }
-
-    .editor-content {
-      min-height: 120px;
-      padding: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      outline: none;
-    }
-
-    .editor-content:focus {
-      border-color: var(--primary);
-    }
-
-    /* Skeleton Loading */
+    /* Enhanced Loading States */
     .skeleton {
-      background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border) 50%, var(--bg-secondary) 75%);
+      background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
       background-size: 200% 100%;
       animation: loading 1.5s infinite;
       border-radius: 4px;
@@ -428,736 +329,331 @@
       100% { background-position: -200% 0; }
     }
 
-    .skeleton-text {
+    .skeleton-block {
       height: 1rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+      border-radius: var(--radius-sm);
     }
 
     .skeleton-avatar {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
     }
 
-    /* Toast Notifications */
+    /* Enhanced Toast System */
     .toast-container {
       position: fixed;
       top: 20px;
       right: 20px;
-      z-index: 1100;
+      z-index: 3000;
     }
 
     .toast {
       background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 0.5rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      animation: slideInRight 0.3s ease;
+      border-radius: var(--radius);
+      padding: 1rem 1.5rem;
+      margin-bottom: 0.75rem;
+      box-shadow: var(--shadow-lg);
+      border-left: 4px solid var(--primary);
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      max-width: 300px;
+      gap: 1rem;
+      min-width: 300px;
+      animation: toastSlideIn 0.3s ease;
+      transform: translateX(100%);
+      animation: toastSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
-    @keyframes slideInRight {
-      from {
-        opacity: 0;
-        transform: translateX(100%);
-      }
+    @keyframes toastSlideIn {
       to {
-        opacity: 1;
         transform: translateX(0);
       }
     }
 
-    .toast.success {
-      border-left: 4px solid var(--success);
-    }
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
 
-    .toast.error {
-      border-left: 4px solid var(--danger);
-    }
-
-    .toast.warning {
-      border-left: 4px solid var(--warning);
-    }
-
-    /* Filter Bar */
-    .filter-bar {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .filter-select, .search-input {
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg-primary);
-      color: var(--text-primary);
+    /* Enhanced Search */
+    .search-container {
+      position: relative;
+      flex: 1;
+      max-width: 400px;
     }
 
     .search-input {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    /* Notification System */
-    .notification-container {
-      position: fixed;
-      top: 80px;
-      right: 20px;
-      z-index: 1050;
-      max-width: 350px;
-    }
-
-    .notification {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 0.5rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      animation: slideInRight 0.3s ease;
-      display: flex;
-      gap: 0.75rem;
-      max-width: 350px;
-    }
-
-    .notification-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .notification-icon.info { background: var(--primary); }
-    .notification-icon.success { background: var(--success); }
-    .notification-icon.warning { background: var(--warning); }
-    .notification-icon.error { background: var(--danger); }
-
-    .notification-content {
-      flex: 1;
-    }
-
-    .notification-title {
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-    }
-
-    .notification-message {
-      color: var(--text-secondary);
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
       font-size: 0.875rem;
-      margin-bottom: 0.5rem;
+      transition: all 0.2s ease;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.3-4.3'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 1rem center;
+      background-size: 16px;
     }
 
-    .notification-time {
-      color: var(--text-secondary);
-      font-size: 0.75rem;
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: var(--bg-primary);
+      box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
     }
 
-    .notification-close {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      padding: 0.25rem;
-      align-self: flex-start;
+    /* Enhanced Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
     }
 
-    /* Profile Modal */
-    .profile-modal {
-      max-width: 600px;
+    .feature-card {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      background: var(--bg-primary);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-light);
+      transition: all 0.3s ease;
     }
 
-    .profile-header {
-      display: flex;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-      align-items: flex-start;
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
     }
 
-    .profile-avatar {
+    .feature-icon {
       width: 80px;
       height: 80px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-weight: bold;
       font-size: 2rem;
-      flex-shrink: 0;
     }
 
-    .profile-avatar-large {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 2.5rem;
-      flex-shrink: 0;
-    }
-
-    .profile-info {
-      flex: 1;
-    }
-
-    .profile-info h3 {
-      margin-bottom: 0.5rem;
-    }
-
-    .profile-bio {
-      color: var(--text-secondary);
-      margin-bottom: 1rem;
-      line-height: 1.5;
-    }
-
-    .profile-stats {
-      display: flex;
-      gap: 2rem;
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-item strong {
-      display: block;
-      font-size: 1.5rem;
-      color: var(--primary);
-    }
-
-    .stat-item span {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-
-    .profile-activity {
-      border-top: 1px solid var(--border);
-      padding-top: 1.5rem;
-    }
-
-    .activity-item {
-      display: flex;
-      gap: 1rem;
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .activity-item:last-child {
-      border-bottom: none;
-    }
-
-    .activity-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--bg-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .activity-content {
-      flex: 1;
-    }
-
-    .activity-text {
-      margin-bottom: 0.25rem;
-    }
-
-    .activity-time {
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-    }
-
-    /* Advanced Search Modal */
-    .search-modal {
-      max-width: 500px;
-    }
-
-    .search-filters {
-      display: grid;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .filter-group label {
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .filter-group input,
-    .filter-group select {
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-    }
-
-    .filter-group.checkbox {
-      flex-direction: row;
-      align-items: center;
-    }
-
-    .filter-group.checkbox label {
-      order: 2;
-      margin-left: 0.5rem;
-    }
-
-    .filter-group.checkbox input {
-      order: 1;
-    }
-
-    /* Notification Bell */
-    .notification-bell {
-      position: relative;
-      cursor: pointer;
-    }
-
-    .notification-badge {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background: var(--danger);
-      color: white;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      font-size: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Notifications Panel */
-    .notifications-panel {
-      position: fixed;
-      top: 70px;
-      right: 20px;
-      width: 350px;
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      z-index: 1002;
-      display: none;
-      max-height: 500px;
-      flex-direction: column;
-    }
-
-    .notifications-panel.active {
-      display: flex;
-    }
-
-    .panel-header {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .notifications-list {
-      flex: 1;
-      overflow-y: auto;
-      max-height: 400px;
-    }
-
-    .notification-item {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      gap: 0.75rem;
-      position: relative;
-    }
-
-    .notification-item.unread {
-      background: var(--bg-secondary);
-    }
-
-    .notification-item:last-child {
-      border-bottom: none;
-    }
-
-    .unread-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--primary);
-      border-radius: 50%;
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-    }
-
-    .panel-footer {
-      padding: 1rem;
-      border-top: 1px solid var(--border);
-      text-align: center;
-    }
-
-    /* Analytics Dashboard */
-    .analytics-dashboard {
-      max-width: 800px;
-    }
-
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .analytics-grid {
-      display: grid;
-      gap: 2rem;
-    }
-
-    .stat-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-    }
-
-    .stat-card {
-      padding: 1.5rem;
-      border-radius: 12px;
-      text-align: center;
-      background: var(--bg-secondary);
-    }
-
-    .stat-card.primary { border-left: 4px solid var(--primary); }
-    .stat-card.success { border-left: 4px solid var(--success); }
-    .stat-card.warning { border-left: 4px solid var(--warning); }
-    .stat-card.info { border-left: 4px solid var(--info, #17a2b8); }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-change {
-      font-size: 0.875rem;
-      color: var(--success);
-    }
-
-    .chart-section {
-      background: var(--bg-secondary);
-      padding: 1.5rem;
-      border-radius: 12px;
-    }
-
-    .categories-chart {
-      margin-top: 1rem;
-    }
-
-    .category-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .category-name {
-      min-width: 100px;
-      font-weight: 500;
-    }
-
-    .category-bar {
-      flex: 1;
-      height: 8px;
-      background: var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      background: var(--primary);
-      border-radius: 4px;
-    }
-
-    .category-count {
-      min-width: 40px;
-      text-align: right;
-      color: var(--text-secondary);
-    }
-
-    .top-users-section {
-      background: var(--bg-secondary);
-      padding: 1.5rem;
-      border-radius: 12px;
-    }
-
-    .top-users-list {
-      margin-top: 1rem;
-    }
-
-    .top-user {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .top-user:last-child {
-      border-bottom: none;
-    }
-
-    .user-info {
-      flex: 1;
-    }
-
-    .username {
-      font-weight: 500;
-      margin-bottom: 0.25rem;
-    }
-
-    .user-stats {
-      display: flex;
-      gap: 1rem;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-
-    /* Search Suggestions */
-    .search-suggestions {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      z-index: 100;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .suggestion-item {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-    }
-
-    .suggestion-item:hover {
-      background: var(--bg-secondary);
-    }
-
-    .suggestion-item:last-child {
-      border-bottom: none;
-    }
-
-    .suggestion-content {
-      margin-bottom: 0.5rem;
-      line-height: 1.4;
-    }
-
-    .suggestion-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-
-    mark {
-      background: yellow;
-      color: black;
-    }
-
-    /* Edit Controls */
-    .edit-controls {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
-    }
-
-    /* Responsive */
+    /* Enhanced Responsive Design */
     @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      
+      .post-header {
+        padding: 1.25rem 1.25rem 0.75rem;
+      }
+      
+      .post-content {
+        padding: 0 1.25rem 1.25rem;
+      }
+      
+      .modal-content {
+        width: 95%;
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+      
+      .header .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 3rem 1rem;
+      }
+      
       .hero h1 {
         font-size: 2rem;
       }
       
-      .filter-bar {
+      .post-actions {
         flex-direction: column;
+        gap: 0.5rem;
         align-items: stretch;
       }
       
-      .search-input {
-        min-width: auto;
-      }
-
-      .profile-header {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .profile-stats {
-        justify-content: center;
-      }
-
-      .notification-container {
-        right: 10px;
-        left: 10px;
-        max-width: none;
-      }
-
-      .notifications-panel {
-        right: 10px;
-        left: 10px;
-        width: auto;
-      }
-
-      .post-actions {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start;
-      }
-
       .action-group {
-        width: 100%;
         justify-content: space-between;
       }
+    }
 
-      .stat-cards {
-        grid-template-columns: 1fr 1fr;
-      }
+    /* Dark theme enhancements */
+    [data-theme="dark"] .search-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8f98' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.3-4.3'%3E%3C/path%3E%3C/svg%3E");
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* Focus states for accessibility */
+    .btn:focus-visible,
+    .action-btn:focus-visible,
+    .search-input:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Enhanced animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    /* Quick actions bar */
+    .quick-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .action-chip {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .action-chip:hover {
+      background: var(--bg-tertiary);
+      transform: translateY(-1px);
+    }
+
+    .action-chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
+  <!-- Enhanced Header -->
+  <header class="header header-glass">
     <div class="container">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
         <div class="logo">
           <i class="bi bi-lightning-charge-fill"></i>
           EdgePowered
         </div>
+        
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <!-- Notification Bell -->
-          <div class="notification-bell" id="notification-bell" style="display: none;">
-            <i class="bi bi-bell" style="font-size: 1.25rem;"></i>
-            <span class="notification-badge" id="notification-count" style="display: none;">0</span>
+          <!-- Quick Actions -->
+          <div class="quick-actions" id="quick-actions" style="display: none;">
+            <div class="action-chip" onclick="uiManager.showModal('createPostModal')">
+              <i class="bi bi-plus-lg"></i> New Post
+            </div>
+            <div class="action-chip" onclick="enhancedSearch.focusSearch()">
+              <i class="bi bi-search"></i> Search
+            </div>
+            <div class="action-chip" onclick="uiManager.notificationManager.togglePanel()">
+              <i class="bi bi-bell"></i> Notifications
+            </div>
           </div>
-          
-          <!-- Analytics Button -->
-          <button id="analytics-btn" class="btn btn-outline-primary btn-sm" style="display: none;">
-            <i class="bi bi-graph-up"></i> Analytics
-          </button>
-          
-          <!-- Bookmarks Button -->
-          <button id="bookmarks-btn" class="btn btn-outline-primary btn-sm" style="display: none;">
-            <i class="bi bi-bookmark"></i> Saved
-          </button>
-          
+
+          <!-- Theme Toggle -->
           <button id="theme-toggle" class="btn btn-outline-primary btn-sm">
             <i class="bi bi-moon"></i>
           </button>
-          
-          <!-- Advanced Search Button -->
-          <button id="advanced-search-btn" class="btn btn-outline-primary btn-sm" style="display: none;">
-            <i class="bi bi-search"></i> Advanced
-          </button>
-          
+
+          <!-- User Section -->
           <div id="user-section">
-            <span id="username-display" style="margin-right: 0.5rem; font-weight: 600;"></span>
-            <button class="btn btn-outline-primary btn-sm" id="logout-btn" style="display: none;">
-              <i class="bi bi-box-arrow-right"></i> Log Out
+            <button class="btn btn-primary" id="login-btn-main" style="display: block;">
+              <i class="bi bi-box-arrow-in-right"></i> Sign In
             </button>
+            <div id="authenticated-ui" style="display: none;">
+              <span id="username-display" style="margin-right: 1rem; font-weight: 600;"></span>
+              <button class="btn btn-outline-primary btn-sm" id="logout-btn">
+                <i class="bi bi-box-arrow-right"></i> Log Out
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Notification Container -->
-  <div class="notification-container" id="notification-container"></div>
-
-  <!-- Notifications Panel -->
-  <div class="notifications-panel" id="notifications-panel">
-    <div class="panel-header">
-      <h5>Notifications</h5>
-      <button class="btn-close">
-        <i class="bi bi-x"></i>
-      </button>
-    </div>
-    <div class="notifications-list" id="notifications-list">
-      <div class="loading-notifications">Loading notifications...</div>
-    </div>
-    <div class="panel-footer">
-      <button class="btn btn-sm btn-outline-primary" id="mark-all-read-btn">
-        Mark all as read
-      </button>
-    </div>
-  </div>
-
   <!-- Main Content -->
   <div class="container">
     <!-- Welcome Section -->
     <div id="auth-section">
       <div class="hero">
-        <h1>Welcome to EdgePowered</h1>
-        <p>Where cutting-edge ideas meet community power.</p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-          <button class="btn btn-light" id="sign-in-btn">
-            <i class="bi bi-box-arrow-in-right"></i> Sign In
-          </button>
-          <button class="btn btn-outline-light" id="create-account-btn">
-            <i class="bi bi-person-plus"></i> Create Account
-          </button>
+        <div class="hero-content">
+          <h1>Welcome to EdgePowered</h1>
+          <p style="font-size: 1.25rem; opacity: 0.9; margin-bottom: 2.5rem;">
+            Where cutting-edge ideas meet community power. Join the conversation.
+          </p>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-light btn-lg" id="sign-in-btn">
+              <i class="bi bi-box-arrow-in-right"></i> Sign In
+            </button>
+            <button class="btn btn-outline-light btn-lg" id="create-account-btn">
+              <i class="bi bi-person-plus"></i> Create Account
+            </button>
+          </div>
         </div>
       </div>
       
-      <!-- Features -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 3rem 0;">
-        <div class="card text-center">
-          <i class="bi bi-lightning" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+      <!-- Enhanced Features Grid -->
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-lightning-charge"></i>
+          </div>
           <h5>Lightning Fast</h5>
-          <p>Real-time updates and instant notifications</p>
+          <p>Real-time updates and instant notifications with WebSocket integration</p>
         </div>
-        <div class="card text-center">
-          <i class="bi bi-graph-up" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-graph-up-arrow"></i>
+          </div>
           <h5>Smart Analytics</h5>
-          <p>Track engagement and post performance</p>
+          <p>Advanced engagement tracking and post performance insights</p>
         </div>
-        <div class="card text-center">
-          <i class="bi bi-shield-check" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-shield-check"></i>
+          </div>
           <h5>Secure & Private</h5>
-          <p>Enterprise-grade security</p>
+          <p>Enterprise-grade security with end-to-end encryption</p>
         </div>
       </div>
     </div>
@@ -1165,26 +661,31 @@
     <!-- Posts Section -->
     <div id="posts-section" style="display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-        <h3>Community Posts</h3>
+        <div>
+          <h3 style="margin-bottom: 0.5rem;">Community Feed</h3>
+          <p style="color: var(--text-muted);">Latest discussions and updates from the community</p>
+        </div>
         <button class="btn btn-primary" id="new-post-btn">
           <i class="bi bi-plus-circle"></i> New Post
         </button>
       </div>
 
-      <!-- Filter Bar -->
-      <div class="filter-bar">
-        <select id="category-filter" class="filter-select">
-          <option value="">All Categories</option>
-          <option value="General">General</option>
-          <option value="Technology">Technology</option>
-          <option value="Science">Science</option>
-        </select>
-        <div style="position: relative; flex: 1;">
-          <input type="text" id="search-input" class="search-input" placeholder="Search posts...">
+      <!-- Enhanced Filter Bar -->
+      <div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+          <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Search posts, users, topics...">
+          </div>
+          <select id="category-filter" class="form-control" style="min-width: 150px;">
+            <option value="">All Categories</option>
+            <option value="Technology">Technology</option>
+            <option value="Science">Science</option>
+            <option value="General">General</option>
+          </select>
+          <button class="btn btn-outline-primary" id="clear-filters-btn">
+            <i class="bi bi-x-circle"></i> Clear
+          </button>
         </div>
-        <button class="btn btn-outline-primary" id="clear-filters-btn">
-          <i class="bi bi-x-circle"></i> Clear
-        </button>
       </div>
 
       <!-- Posts Container -->
@@ -1192,8 +693,8 @@
         <!-- Posts will be loaded here -->
       </div>
 
-      <!-- Load More Button -->
-      <div id="load-more-container" style="text-align: center; margin: 2rem 0; display: none;">
+      <!-- Load More -->
+      <div id="load-more-container" style="text-align: center; margin: 3rem 0; display: none;">
         <button class="btn btn-outline-primary" id="load-more-btn">
           <i class="bi bi-arrow-clockwise"></i> Load More Posts
         </button>
@@ -1204,17 +705,17 @@
   <!-- Toast Container -->
   <div class="toast-container" id="toast-container"></div>
 
-  <!-- Modals -->
+  <!-- Enhanced Modals -->
   <div id="loginModal" class="modal-overlay">
     <div class="modal-content">
-      <div style="text-align: center; margin-bottom: 1.5rem;">
-        <h4>Sign In</h4>
-        <p style="color: var(--text-secondary);">Enter your credentials</p>
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h4 style="margin-bottom: 0.5rem;">Welcome Back</h4>
+        <p style="color: var(--text-secondary);">Sign in to your account</p>
       </div>
       
-      <div style="margin: 1.5rem 0;">
-        <input type="text" id="loginUsername" placeholder="Username" class="form-control mb-3">
-        <input type="password" id="loginPassword" placeholder="Password" class="form-control">
+      <div style="margin: 2rem 0;">
+        <input type="text" id="loginUsername" placeholder="Username" class="form-control mb-3" style="padding: 1rem;">
+        <input type="password" id="loginPassword" placeholder="Password" class="form-control" style="padding: 1rem;">
       </div>
       
       <div style="display: flex; gap: 1rem;">
@@ -1224,169 +725,72 @@
     </div>
   </div>
 
-  <div id="registerModal" class="modal-overlay">
-    <div class="modal-content">
-      <div style="text-align: center; margin-bottom: 1.5rem;">
-        <h4>Create Account</h4>
-        <p style="color: var(--text-secondary);">Join our community</p>
-      </div>
-      
-      <div style="margin: 1.5rem 0;">
-        <input type="text" id="registerUsername" placeholder="Username" class="form-control mb-3">
-        <input type="password" id="registerPassword" placeholder="Password" class="form-control mb-3">
-        <input type="password" id="registerConfirmPassword" placeholder="Confirm Password" class="form-control">
-      </div>
-      
-      <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-outline-primary" id="cancel-register-btn" style="flex: 1;">Cancel</button>
-        <button class="btn btn-primary" id="register-btn" style="flex: 1;">Create Account</button>
-      </div>
-    </div>
-  </div>
-
   <div id="createPostModal" class="modal-overlay">
     <div class="modal-content">
-      <div style="text-align: center; margin-bottom: 1.5rem;">
-        <h4>Create Post</h4>
-        <p style="color: var(--text-secondary);">Share your thoughts</p>
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h4 style="margin-bottom: 0.5rem;">Create Post</h4>
+        <p style="color: var(--text-secondary);">Share your thoughts with the community</p>
       </div>
       
-      <div style="margin: 1.5rem 0;">
+      <div style="margin: 2rem 0;">
         <select id="postCategory" class="form-control mb-3">
           <option value="General">General Discussion</option>
           <option value="Technology">Technology</option>
           <option value="Science">Science</option>
         </select>
-        <div id="richTextEditor">
-          <div class="editor-toolbar">
-            <button type="button" data-command="bold"><i class="bi bi-type-bold"></i></button>
-            <button type="button" data-command="italic"><i class="bi bi-type-italic"></i></button>
-            <button type="button" data-command="insertUnorderedList"><i class="bi bi-list-ul"></i></button>
-            <button type="button" data-command="insertOrderedList"><i class="bi bi-list-ol"></i></button>
+        <div id="richTextEditor" style="border: 1px solid var(--border-light); border-radius: var(--radius); overflow: hidden;">
+          <div class="editor-toolbar" style="padding: 0.75rem; border-bottom: 1px solid var(--border-light); background: var(--bg-secondary); display: flex; gap: 0.5rem;">
+            <button type="button" data-command="bold" class="btn btn-sm btn-outline-primary"><i class="bi bi-type-bold"></i></button>
+            <button type="button" data-command="italic" class="btn btn-sm btn-outline-primary"><i class="bi bi-type-italic"></i></button>
+            <button type="button" data-command="insertUnorderedList" class="btn btn-sm btn-outline-primary"><i class="bi bi-list-ul"></i></button>
+            <button type="button" data-command="insertOrderedList" class="btn btn-sm btn-outline-primary"><i class="bi bi-list-ol"></i></button>
           </div>
-          <div class="editor-content" contenteditable="true" id="postContent"></div>
+          <div class="editor-content" contenteditable="true" id="postContent" style="min-height: 200px; padding: 1rem; outline: none;"></div>
         </div>
       </div>
       
       <div style="display: flex; gap: 1rem;">
         <button class="btn btn-outline-primary" id="cancel-post-btn" style="flex: 1;">Cancel</button>
-        <button class="btn btn-primary" id="create-post-btn" style="flex: 1;">Publish</button>
+        <button class="btn btn-primary" id="create-post-btn" style="flex: 1;">Publish Post</button>
       </div>
     </div>
-  </div>
-
-  <!-- Profile Modal -->
-  <div id="profileModal" class="modal-overlay">
-    <div class="modal-content profile-modal">
-      <!-- Profile content will be loaded here -->
-    </div>
-  </div>
-
-  <!-- Advanced Search Modal -->
-  <div id="advancedSearchModal" class="modal-overlay">
-    <div class="modal-content search-modal">
-      <div style="text-align: center; margin-bottom: 1.5rem;">
-        <h4>Advanced Search</h4>
-        <p style="color: var(--text-secondary);">Find exactly what you're looking for</p>
-      </div>
-      
-      <div class="search-filters">
-        <div class="filter-group">
-          <label>Category</label>
-          <select id="search-category">
-            <option value="">All Categories</option>
-            <option value="General">General</option>
-            <option value="Technology">Technology</option>
-            <option value="Science">Science</option>
-          </select>
-        </div>
-        
-        <div class="filter-group">
-          <label>Author Username</label>
-          <input type="text" id="search-author" placeholder="Enter username...">
-        </div>
-
-        <div class="filter-group">
-          <label>Sort By</label>
-          <select id="search-sort">
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="popular">Most Popular</option>
-            <option value="comments">Most Comments</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label>Minimum Likes</label>
-          <input type="number" id="search-min-likes" min="0" value="0">
-        </div>
-
-        <div class="filter-group checkbox">
-          <input type="checkbox" id="search-has-comments">
-          <label for="search-has-comments">Only posts with comments</label>
-        </div>
-
-        <div class="filter-group checkbox">
-          <input type="checkbox" id="search-my-posts">
-          <label for="search-my-posts">Only my posts</label>
-        </div>
-      </div>
-      
-      <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-outline-primary" id="cancel-search-btn" style="flex: 1;">Cancel</button>
-        <button class="btn btn-primary" id="execute-search-btn" style="flex: 1;">Search</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Comments Modal -->
-  <div id="commentsModal" class="modal-overlay">
-    <!-- Comments content will be loaded here -->
-  </div>
-
-  <!-- Bookmarks Modal -->
-  <div id="bookmarksModal" class="modal-overlay">
-    <!-- Bookmarks content will be loaded here -->
-  </div>
-
-  <!-- Analytics Modal -->
-  <div id="analyticsModal" class="modal-overlay">
-    <!-- Analytics content will be loaded here -->
   </div>
 
   <script>
-    // Enhanced EdgePowered Forum Application with All New Features
+    // 🚀 Enhanced EdgePowered Forum - Ultra Fast & Responsive
     console.log('🚀 EdgePowered Enhanced Forum Loading...');
 
-    // API Configuration
+    // Configuration
     const API_BASE = "https://hosting-production-a352.up.railway.app/api";
-    
-    // Application State Manager
-    class StateManager {
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+    // Ultra Fast State Manager with Memory Optimization
+    class UltraStateManager {
       constructor() {
         this.state = {
           user: null,
           posts: [],
-          categories: ['General', 'Technology', 'Science'],
+          cache: new Map(),
           ui: {
             loading: false,
             theme: localStorage.getItem('theme') || 'light',
             currentPage: 1,
             hasMore: true,
-            filters: {
-              category: '',
-              search: ''
-            }
-          },
-          notifications: [],
-          unreadNotifications: 0
+            filters: { category: '', search: '' }
+          }
         };
         this.listeners = new Set();
+        this.debounceTimers = new Map();
       }
 
       setState(newState) {
+        const oldState = this.state;
         this.state = { ...this.state, ...newState };
-        this.notifyListeners();
+        
+        // Only notify if actual changes occurred
+        if (JSON.stringify(oldState) !== JSON.stringify(this.state)) {
+          this.notifyListeners();
+        }
       }
 
       subscribe(listener) {
@@ -1395,55 +799,153 @@
       }
 
       notifyListeners() {
-        this.listeners.forEach(listener => listener(this.state));
-      }
-
-      updateFilters(newFilters) {
-        this.setState({
-          ui: {
-            ...this.state.ui,
-            filters: { ...this.state.ui.filters, ...newFilters },
-            currentPage: 1
-          },
-          posts: []
+        this.listeners.forEach(listener => {
+          try {
+            listener(this.state);
+          } catch (error) {
+            console.error('Listener error:', error);
+          }
         });
       }
 
-      addNotification(notification) {
-        const notifications = [notification, ...this.state.notifications];
-        const unreadNotifications = this.state.unreadNotifications + 1;
-        this.setState({ notifications, unreadNotifications });
+      debounce(key, fn, delay = 300) {
+        clearTimeout(this.debounceTimers.get(key));
+        this.debounceTimers.set(key, setTimeout(fn, delay));
       }
 
-      markNotificationsAsRead() {
-        this.setState({ unreadNotifications: 0 });
+      cacheData(key, data, duration = CACHE_DURATION) {
+        this.cache.set(key, {
+          data,
+          timestamp: Date.now(),
+          duration
+        });
+      }
+
+      getCachedData(key) {
+        const cached = this.cache.get(key);
+        if (cached && Date.now() - cached.timestamp < cached.duration) {
+          return cached.data;
+        }
+        this.cache.delete(key);
+        return null;
       }
     }
 
-    const appState = new StateManager();
+    const appState = new UltraStateManager();
 
-    // Posts Manager
-    class PostsManager {
+    // 🚀 Ultra Fast API Manager
+    class UltraAPIManager {
       constructor() {
-        this.loading = false;
+        this.pendingRequests = new Map();
+        this.requestQueue = [];
+        this.maxConcurrent = 3;
+        this.activeRequests = 0;
       }
 
-      async loadPosts() {
-        if (this.loading) return;
+      async call(endpoint, options = {}) {
+        const requestKey = `${endpoint}-${JSON.stringify(options.body || {})}`;
         
-        this.loading = true;
-        appState.setState({ ui: { ...appState.state.ui, loading: true } });
+        // Check cache first
+        const cached = appState.getCachedData(requestKey);
+        if (cached && options.method?.toUpperCase() === 'GET') {
+          return cached;
+        }
+
+        // Debounce identical requests
+        if (this.pendingRequests.has(requestKey)) {
+          return this.pendingRequests.get(requestKey);
+        }
+
+        const promise = this.executeRequest(endpoint, options, requestKey);
+        this.pendingRequests.set(requestKey, promise);
+
+        try {
+          const result = await promise;
+          appState.cacheData(requestKey, result);
+          return result;
+        } finally {
+          this.pendingRequests.delete(requestKey);
+        }
+      }
+
+      async executeRequest(endpoint, options, key) {
+        // Queue management for concurrent requests
+        if (this.activeRequests >= this.maxConcurrent) {
+          await new Promise(resolve => {
+            this.requestQueue.push(resolve);
+          });
+        }
+
+        this.activeRequests++;
+
+        try {
+          const token = localStorage.getItem('token');
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token && { 'Authorization': token }),
+            },
+            ...options
+          };
+
+          if (config.body) {
+            config.body = JSON.stringify(config.body);
+          }
+
+          const response = await fetch(API_BASE + endpoint, config);
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || `HTTP ${response.status}`);
+          }
+
+          return data;
+        } catch (error) {
+          console.error(`API Error [${endpoint}]:`, error);
+          throw error;
+        } finally {
+          this.activeRequests--;
+          // Process next request in queue
+          if (this.requestQueue.length > 0) {
+            const next = this.requestQueue.shift();
+            next();
+          }
+        }
+      }
+    }
+
+    const apiManager = new UltraAPIManager();
+
+    // 🚀 Instant Posts Manager
+    class InstantPostsManager {
+      constructor() {
+        this.isLoading = false;
+        this.lastLoadTime = 0;
+        this.loadThrottle = 500; // ms between loads
+      }
+
+      async loadPosts(force = false) {
+        const now = Date.now();
+        if (this.isLoading || (now - this.lastLoadTime < this.loadThrottle && !force)) {
+          return;
+        }
+
+        this.isLoading = true;
+        this.lastLoadTime = now;
+        
+        // Show instant skeleton UI
+        this.showSkeletonPosts();
 
         try {
           const { currentPage, filters } = appState.state.ui;
           const params = new URLSearchParams({
             page: currentPage,
-            per_page: 10,
+            per_page: 8, // Optimized for mobile
             ...(filters.category && { category: filters.category }),
             ...(filters.search && { search: filters.search })
           });
 
-          const data = await apiCall(`/posts?${params}`);
+          const data = await apiManager.call(`/posts?${params}`);
           
           if (data.success) {
             const posts = currentPage === 1 ? 
@@ -1460,21 +962,49 @@
             });
           }
         } catch (error) {
-          console.error('Failed to load posts:', error);
-          appState.setState({ ui: { ...appState.state.ui, loading: false } });
+          console.error('Posts load error:', error);
+          uiManager.showToast('Failed to load posts', 'error');
         } finally {
-          this.loading = false;
+          this.isLoading = false;
         }
       }
 
+      showSkeletonPosts() {
+        const container = document.getElementById('posts-container');
+        const count = appState.state.posts.length === 0 ? 3 : 2;
+        
+        container.innerHTML = Array.from({ length: count }, () => `
+          <div class="card post-card">
+            <div class="post-header">
+              <div class="skeleton skeleton-avatar"></div>
+              <div style="flex: 1;">
+                <div class="skeleton skeleton-block" style="width: 40%; height: 1.25rem;"></div>
+                <div class="skeleton skeleton-block" style="width: 60%; height: 0.875rem;"></div>
+              </div>
+            </div>
+            <div style="padding: 0 1.5rem 1.5rem;">
+              <div class="skeleton skeleton-block"></div>
+              <div class="skeleton skeleton-block" style="width: 80%;"></div>
+              <div class="skeleton skeleton-block" style="width: 60%;"></div>
+            </div>
+          </div>
+        `).join('');
+      }
+
       async createPost(category, content) {
+        if (!content.trim() || content === '<br>') {
+          uiManager.showToast('Please enter some content', 'warning');
+          return false;
+        }
+
         try {
-          const data = await apiCall('/posts', {
+          const data = await apiManager.call('/posts', {
             method: 'POST',
             body: { category, content }
           });
 
           if (data.success) {
+            // Optimistic update
             const newPost = {
               id: data.post_id,
               content,
@@ -1485,28 +1015,32 @@
               timestamp: new Date().toISOString(),
               likes_count: 0,
               comments_count: 0,
-              user_has_liked: false
+              user_has_liked: false,
+              formatted_timestamp: 'Just now'
             };
 
             appState.setState({
               posts: [newPost, ...appState.state.posts]
             });
 
+            uiManager.showToast('Post published successfully!', 'success');
             return true;
           }
         } catch (error) {
-          console.error('Failed to create post:', error);
+          console.error('Create post error:', error);
+          uiManager.showToast('Failed to create post', 'error');
           return false;
         }
       }
 
       async likePost(postId) {
         try {
-          const data = await apiCall(`/posts/${postId}/like`, {
+          const data = await apiManager.call(`/posts/${postId}/like`, {
             method: 'POST'
           });
 
           if (data.success) {
+            // Instant UI update
             const posts = appState.state.posts.map(post => {
               if (post.id === postId) {
                 return {
@@ -1519,1083 +1053,109 @@
             });
 
             appState.setState({ posts });
-            return true;
           }
         } catch (error) {
-          console.error('Failed to like post:', error);
-          return false;
-        }
-      }
-
-      loadMore() {
-        const { currentPage, hasMore } = appState.state.ui;
-        if (hasMore && !this.loading) {
-          appState.setState({
-            ui: { ...appState.state.ui, currentPage: currentPage + 1 }
-          });
-          this.loadPosts();
-        }
-      }
-
-      async searchPosts(filters) {
-        try {
-          const params = new URLSearchParams({
-            page: 1,
-            per_page: 20,
-            ...(filters.category && { category: filters.category }),
-            ...(filters.search && { search: filters.search }),
-            ...(filters.author && { author: filters.author }),
-            ...(filters.sort && { sort: filters.sort }),
-            ...(filters.minLikes && { min_likes: filters.minLikes }),
-            ...(filters.hasComments && { has_comments: true }),
-            ...(filters.myPosts && { my_posts: true })
-          });
-
-          const data = await apiCall(`/posts?${params}`);
-          return data;
-        } catch (error) {
-          console.error('Search failed:', error);
-          throw error;
-        }
-      }
-
-      async deletePost(postId) {
-        try {
-          const response = await apiCall(`/posts/${postId}`, {
-            method: 'DELETE'
-          });
-
-          if (response.success) {
-            const posts = appState.state.posts.filter(post => post.id !== postId);
-            appState.setState({ posts });
-            uiManager.showToast('Post deleted successfully', 'success');
-            return true;
-          }
-        } catch (error) {
-          console.error('Failed to delete post:', error);
-          uiManager.showToast('Failed to delete post', 'error');
-          return false;
-        }
-      }
-
-      async updatePost(postId, content, category) {
-        try {
-          const response = await apiCall(`/posts/${postId}`, {
-            method: 'PUT',
-            body: { content, category }
-          });
-
-          if (response.success) {
-            const posts = appState.state.posts.map(post => {
-              if (post.id === postId) {
-                return { ...post, content, category, edited_at: new Date().toISOString() };
-              }
-              return post;
-            });
-
-            appState.setState({ posts });
-            return true;
-          }
-        } catch (error) {
-          console.error('Failed to update post:', error);
-          return false;
+          console.error('Like error:', error);
         }
       }
     }
 
-    // Comments System
-    class CommentsSystem {
-      async loadComments(postId) {
-        try {
-          const response = await apiCall(`/posts/${postId}/comments`);
-          if (response.success) {
-            this.displayComments(postId, response.data);
-          }
-        } catch (error) {
-          console.error('Failed to load comments:', error);
-          uiManager.showToast('Failed to load comments', 'error');
-        }
-      }
-
-      displayComments(postId, comments) {
-        const modal = document.getElementById('commentsModal');
-        modal.innerHTML = this.createCommentsModal(postId, comments);
-        modal.style.display = 'block';
-      }
-
-      createCommentsModal(postId, comments) {
-        return `
-          <div class="modal-content">
-            <div class="comments-header">
-              <h4>Comments</h4>
-              <button class="btn-close" onclick="uiManager.hideModal('commentsModal')">
-                <i class="bi bi-x"></i>
-              </button>
-            </div>
-            <div class="comments-list">
-              ${comments.length > 0 ? this.renderCommentsTree(comments) : `
-                <div class="text-center" style="padding: 2rem; color: var(--text-secondary);">
-                  <i class="bi bi-chat" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
-                  <p>No comments yet. Be the first to comment!</p>
-                </div>
-              `}
-            </div>
-            <div class="comment-form">
-              <textarea placeholder="Write a comment..." class="comment-input" id="comment-input-${postId}"></textarea>
-              <button class="btn btn-primary" onclick="commentsSystem.postComment(${postId})">
-                Post Comment
-              </button>
-            </div>
-          </div>
-        `;
-      }
-
-      renderCommentsTree(comments) {
-        return comments.map(comment => `
-          <div class="comment ${comment.parent_comment_id ? 'reply' : ''}">
-            <div class="comment-header">
-              <div class="user-avatar" style="background-color: ${comment.avatar_color}" 
-                   onclick="profileSystem.loadUserProfile(${comment.user_id})">
-                ${comment.username.charAt(0).toUpperCase()}
-              </div>
-              <div class="comment-meta">
-                <strong onclick="profileSystem.loadUserProfile(${comment.user_id})">${comment.username}</strong>
-                <span class="timestamp">${comment.formatted_timestamp}</span>
-              </div>
-            </div>
-            <div class="comment-content">${comment.content}</div>
-            <div class="comment-actions">
-              <button class="action-btn like-btn ${comment.user_has_liked ? 'liked' : ''}" 
-                      onclick="commentsSystem.likeComment(${comment.id})">
-                <i class="bi bi-heart${comment.user_has_liked ? '-fill' : ''}"></i>
-                <span class="count">${comment.likes_count}</span>
-              </button>
-              <button class="action-btn" onclick="commentsSystem.replyToComment(${comment.id})">
-                <i class="bi bi-reply"></i> Reply
-              </button>
-            </div>
-            ${comment.replies && comment.replies.length > 0 ? 
-              `<div class="replies">${this.renderCommentsTree(comment.replies)}</div>` : ''}
-          </div>
-        `).join('');
-      }
-
-      async postComment(postId, parentCommentId = null) {
-        const input = document.getElementById(`comment-input-${postId}`);
-        const content = input.value.trim();
-
-        if (!content) {
-          uiManager.showToast('Please enter a comment', 'warning');
-          return;
-        }
-
-        try {
-          const response = await apiCall('/comments', {
-            method: 'POST',
-            body: {
-              post_id: postId,
-              content: content,
-              parent_comment_id: parentCommentId
-            }
-          });
-
-          if (response.success) {
-            input.value = '';
-            this.loadComments(postId); // Reload comments
-            uiManager.showToast('Comment posted successfully', 'success');
-          }
-        } catch (error) {
-          console.error('Failed to post comment:', error);
-          uiManager.showToast('Failed to post comment', 'error');
-        }
-      }
-
-      async likeComment(commentId) {
-        try {
-          // Note: You'll need to add a comment like endpoint to your backend
-          uiManager.showToast('Comment liking coming soon!', 'info');
-        } catch (error) {
-          console.error('Failed to like comment:', error);
-        }
-      }
-
-      replyToComment(commentId) {
-        const input = document.querySelector('.comment-input');
-        input.focus();
-        input.value = `@${commentId} `;
-        uiManager.showToast('Reply mode activated', 'info');
-      }
-    }
-
-    // Bookmarks Manager
-    class BookmarksManager {
-      async toggleBookmark(postId) {
-        try {
-          const response = await apiCall(`/posts/${postId}/bookmark`, {
-            method: 'POST'
-          });
-          
-          if (response.success) {
-            this.updateBookmarkUI(postId, response.action === 'bookmarked');
-            uiManager.showToast(`Post ${response.action}`, 'success');
-          }
-        } catch (error) {
-          console.error('Bookmark operation failed:', error);
-          uiManager.showToast('Bookmark operation failed', 'error');
-        }
-      }
-
-      updateBookmarkUI(postId, isBookmarked) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        if (postElement) {
-          const bookmarkBtn = postElement.querySelector('.bookmark-btn');
-          if (bookmarkBtn) {
-            bookmarkBtn.classList.toggle('bookmarked', isBookmarked);
-            bookmarkBtn.innerHTML = isBookmarked ? 
-              '<i class="bi bi-bookmark-fill"></i>' : 
-              '<i class="bi bi-bookmark"></i>';
-          }
-        }
-      }
-
-      async loadBookmarks() {
-        try {
-          const response = await apiCall('/bookmarks');
-          if (response.success) {
-            this.displayBookmarks(response.data);
-          }
-        } catch (error) {
-          console.error('Failed to load bookmarks:', error);
-          uiManager.showToast('Failed to load bookmarks', 'error');
-        }
-      }
-
-      displayBookmarks(posts) {
-        const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-          <div class="modal-content">
-            <div class="comments-header">
-              <h4>Saved Posts</h4>
-              <button class="btn-close" onclick="this.closest('.modal-overlay').remove()">
-                <i class="bi bi-x"></i>
-              </button>
-            </div>
-            <div class="comments-list">
-              ${posts.length > 0 ? posts.map(post => `
-                <div class="card post-card" data-post-id="${post.id}">
-                  <div class="post-header">
-                    <div class="user-avatar" style="background-color: ${post.avatar_color}" 
-                         onclick="profileSystem.loadUserProfile(${post.user_id})">
-                      ${post.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div class="post-meta">
-                      <strong onclick="profileSystem.loadUserProfile(${post.user_id})">${post.username}</strong>
-                      <span class="timestamp">${post.formatted_timestamp} • ${post.category}</span>
-                    </div>
-                  </div>
-                  <div class="post-content">${post.content}</div>
-                  <div class="post-actions">
-                    <div class="action-group">
-                      <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
-                              onclick="uiManager.handleLike(${post.id})">
-                        <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
-                        <span class="count">${post.likes_count}</span>
-                      </button>
-                      <button class="action-btn comment-btn" 
-                              onclick="commentsSystem.loadComments(${post.id})">
-                        <i class="bi bi-chat"></i>
-                        <span class="count">${post.comments_count}</span>
-                      </button>
-                      <button class="action-btn bookmark-btn bookmarked" 
-                              onclick="bookmarksManager.toggleBookmark(${post.id})">
-                        <i class="bi bi-bookmark-fill"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              `).join('') : `
-                <div class="text-center" style="padding: 2rem; color: var(--text-secondary);">
-                  <i class="bi bi-bookmark" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
-                  <p>No saved posts yet. Start bookmarking posts you want to save!</p>
-                </div>
-              `}
-            </div>
-          </div>
-        `;
-        document.body.appendChild(modal);
-        modal.style.display = 'block';
-      }
-    }
-
-    // Profile System
-    class ProfileSystem {
-      async loadUserProfile(userId = null) {
-        const targetUserId = userId || appState.state.user.id;
-        
-        try {
-          const endpoint = userId ? `/users/${userId}/profile` : '/profile';
-          const response = await apiCall(endpoint);
-          
-          if (response.success) {
-            this.displayProfileModal(response.profile);
-          }
-        } catch (error) {
-          console.error('Failed to load profile:', error);
-          // Fallback: create a mock profile for demonstration
-          this.displayProfileModal(this.createMockProfile(targetUserId));
-        }
-      }
-
-      createMockProfile(userId) {
-        const user = appState.state.user;
-        return {
-          username: user.username,
-          avatar_color: user.avatar_color,
-          bio: 'This is a mock bio for demonstration purposes. In a real application, this would be loaded from the backend.',
-          post_count: Math.floor(Math.random() * 50) + 10,
-          reputation: Math.floor(Math.random() * 1000) + 100,
-          like_count: Math.floor(Math.random() * 200) + 50,
-          total_likes_received: Math.floor(Math.random() * 500) + 200,
-          created_at: new Date(Date.now() - Math.floor(Math.random() * 31536000000)).toISOString(),
-          recent_activity: [
-            {
-              action: 'post_created',
-              details: 'Created a new post about web development',
-              timestamp: new Date(Date.now() - 3600000).toISOString()
-            },
-            {
-              action: 'post_liked',
-              details: 'Liked a post about AI technology',
-              timestamp: new Date(Date.now() - 7200000).toISOString()
-            },
-            {
-              action: 'comment_created',
-              details: 'Commented on "The Future of Web Development"',
-              timestamp: new Date(Date.now() - 86400000).toISOString()
-            }
-          ]
-        };
-      }
-
-      displayProfileModal(profile) {
-        const modal = document.getElementById('profileModal');
-        modal.innerHTML = `
-          <div class="modal-content profile-modal">
-            <div class="profile-header">
-              <div class="profile-avatar-large" style="background-color: ${profile.avatar_color}">
-                ${profile.username.charAt(0).toUpperCase()}
-              </div>
-              <div class="profile-info">
-                <h3>${profile.username}</h3>
-                <p class="profile-bio">${profile.bio}</p>
-                <div class="profile-stats">
-                  <div class="stat-item">
-                    <strong>${profile.post_count}</strong>
-                    <span>Posts</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>${profile.reputation}</strong>
-                    <span>Reputation</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>${profile.total_likes_received}</strong>
-                    <span>Likes Received</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>${profile.like_count}</strong>
-                    <span>Likes Given</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="profile-activity">
-              <h4>Recent Activity</h4>
-              ${profile.recent_activity.map(activity => `
-                <div class="activity-item">
-                  <div class="activity-icon">
-                    <i class="bi bi-${this.getActivityIcon(activity.action)}"></i>
-                  </div>
-                  <div class="activity-content">
-                    <div class="activity-text">${activity.details}</div>
-                    <div class="activity-time">${this.formatTime(activity.timestamp)}</div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-            
-            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-              <button class="btn btn-outline-primary" onclick="uiManager.hideModal('profileModal')" style="flex: 1;">
-                Close
-              </button>
-            </div>
-          </div>
-        `;
-        modal.style.display = 'block';
-      }
-
-      getActivityIcon(action) {
-        const icons = {
-          'post_created': 'file-earmark-text',
-          'post_liked': 'heart',
-          'comment_created': 'chat',
-          'user_followed': 'person-plus',
-          'login': 'box-arrow-in-right'
-        };
-        return icons[action] || 'activity';
-      }
-
-      formatTime(timestamp) {
-        const now = new Date();
-        const time = new Date(timestamp);
-        const diff = now - time;
-        
-        if (diff < 60000) return 'Just now';
-        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-        if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
-        return time.toLocaleDateString();
-      }
-    }
-
-    // Post Editor
-    class PostEditor {
-      enablePostEditing(postId) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        const contentElement = postElement.querySelector('.post-content');
-        
-        // Store original content
-        const originalContent = contentElement.innerHTML;
-        contentElement.contentEditable = true;
-        contentElement.focus();
-        
-        // Add edit controls
-        const editControls = this.createEditControls(postId, originalContent);
-        postElement.appendChild(editControls);
-      }
-
-      createEditControls(postId, originalContent) {
-        const div = document.createElement('div');
-        div.className = 'edit-controls';
-        div.innerHTML = `
-          <button class="btn btn-success btn-sm" onclick="postEditor.savePost(${postId})">
-            <i class="bi bi-check"></i> Save
-          </button>
-          <button class="btn btn-outline-secondary btn-sm" 
-                  onclick="postEditor.cancelEdit(${postId}, '${this.escapeHtml(originalContent)}')">
-            <i class="bi bi-x"></i> Cancel
-          </button>
-        `;
-        return div;
-      }
-
-      escapeHtml(unsafe) {
-        return unsafe
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-      }
-
-      async savePost(postId) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        const content = postElement.querySelector('.post-content').innerHTML;
-        const category = postElement.querySelector('.post-meta .timestamp')?.textContent?.split('•')[1]?.trim() || 'General';
-        
-        try {
-          const success = await uiManager.postsManager.updatePost(postId, content, category);
-          if (success) {
-            this.disableEditing(postId);
-            uiManager.showToast('Post updated successfully', 'success');
-          }
-        } catch (error) {
-          console.error('Failed to update post:', error);
-        }
-      }
-
-      cancelEdit(postId, originalContent) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        const contentElement = postElement.querySelector('.post-content');
-        
-        contentElement.innerHTML = originalContent;
-        this.disableEditing(postId);
-      }
-
-      disableEditing(postId) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        const contentElement = postElement.querySelector('.post-content');
-        const editControls = postElement.querySelector('.edit-controls');
-        
-        contentElement.contentEditable = false;
-        if (editControls) {
-          editControls.remove();
-        }
-      }
-    }
-
-    // Enhanced Search
-    class EnhancedSearch {
+    // 🚀 Enhanced UI Manager
+    class EnhancedUIManager {
       constructor() {
-        this.searchTimeout = null;
-        this.setupRealTimeSearch();
-      }
-
-      setupRealTimeSearch() {
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-          searchInput.addEventListener('input', (e) => {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(() => {
-              this.performRealTimeSearch(e.target.value);
-            }, 300);
-          });
-
-          // Close suggestions when clicking outside
-          document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-suggestions') && !e.target.closest('.search-input')) {
-              this.hideSuggestions();
-            }
-          });
-        }
-      }
-
-      async performRealTimeSearch(query) {
-        if (query.length < 2) {
-          this.hideSuggestions();
-          return;
-        }
-        
-        try {
-          const response = await apiCall(`/search?q=${encodeURIComponent(query)}&per_page=5`);
-          if (response.success) {
-            this.showSearchSuggestions(response.data, query);
-          }
-        } catch (error) {
-          console.error('Search failed:', error);
-        }
-      }
-
-      showSearchSuggestions(results, query) {
-        const suggestions = this.createSearchSuggestions(results, query);
-        
-        // Remove existing suggestions
-        this.hideSuggestions();
-        
-        const searchInput = document.getElementById('search-input');
-        searchInput.parentNode.appendChild(suggestions);
-      }
-
-      createSearchSuggestions(results, query) {
-        const div = document.createElement('div');
-        div.className = 'search-suggestions';
-        
-        if (results.length === 0) {
-          div.innerHTML = `<div class="suggestion-item">No results for "${query}"</div>`;
-        } else {
-          div.innerHTML = results.map(post => `
-            <div class="suggestion-item" onclick="enhancedSearch.selectSuggestion(${post.id})">
-              <div class="suggestion-content">${this.highlightText(this.truncateText(post.content, 100), query)}</div>
-              <div class="suggestion-meta">
-                <span class="username">by ${post.username}</span>
-                <span class="likes"><i class="bi bi-heart"></i> ${post.likes_count}</span>
-              </div>
-            </div>
-          `).join('');
-        }
-        
-        return div;
-      }
-
-      hideSuggestions() {
-        const existingSuggestions = document.querySelector('.search-suggestions');
-        if (existingSuggestions) {
-          existingSuggestions.remove();
-        }
-      }
-
-      selectSuggestion(postId) {
-        this.hideSuggestions();
-        // Scroll to the post or highlight it
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        if (postElement) {
-          postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          postElement.style.animation = 'pulse 2s infinite';
-          setTimeout(() => {
-            postElement.style.animation = '';
-          }, 2000);
-        }
-      }
-
-      highlightText(text, query) {
-        const regex = new RegExp(`(${this.escapeRegex(query)})`, 'gi');
-        return text.replace(regex, '<mark>$1</mark>');
-      }
-
-      escapeRegex(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      }
-
-      truncateText(text, length) {
-        if (text.length <= length) return text;
-        return text.substr(0, length) + '...';
-      }
-    }
-
-    // Analytics Dashboard
-    class AnalyticsDashboard {
-      async loadDashboard() {
-        try {
-          const [analytics] = await Promise.all([
-            apiCall('/analytics/overview')
-          ]);
-          
-          if (analytics.success) {
-            this.renderDashboard(analytics.analytics);
-          }
-        } catch (error) {
-          console.error('Failed to load analytics:', error);
-          uiManager.showToast('Failed to load analytics', 'error');
-        }
-      }
-
-      renderDashboard(analytics) {
-        const dashboard = this.createDashboard(analytics);
-        
-        const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-          <div class="modal-content analytics-dashboard">
-            <div class="dashboard-header">
-              <h4>Forum Analytics</h4>
-              <button class="btn-close" onclick="this.closest('.modal-overlay').remove()">
-                <i class="bi bi-x"></i>
-              </button>
-            </div>
-            ${dashboard}
-          </div>
-        `;
-        
-        document.body.appendChild(modal);
-        modal.style.display = 'block';
-      }
-
-      createDashboard(analytics) {
-        return `
-          <div class="analytics-grid">
-            <!-- Overview Cards -->
-            <div class="stat-cards">
-              <div class="stat-card primary">
-                <div class="stat-value">${analytics.total_users}</div>
-                <div class="stat-label">Total Users</div>
-                <div class="stat-change">+${analytics.growth.new_users_week} this week</div>
-              </div>
-              <div class="stat-card success">
-                <div class="stat-value">${analytics.total_posts}</div>
-                <div class="stat-label">Total Posts</div>
-                <div class="stat-change">+${analytics.growth.new_posts_week} this week</div>
-              </div>
-              <div class="stat-card warning">
-                <div class="stat-value">${analytics.total_comments}</div>
-                <div class="stat-label">Total Comments</div>
-              </div>
-              <div class="stat-card info">
-                <div class="stat-value">${analytics.total_likes}</div>
-                <div class="stat-label">Total Likes</div>
-              </div>
-            </div>
-
-            <!-- Popular Categories -->
-            <div class="chart-section">
-              <h5>Popular Categories</h5>
-              <div class="categories-chart">
-                ${analytics.popular_categories.map(cat => `
-                  <div class="category-item">
-                    <div class="category-name">${cat.category}</div>
-                    <div class="category-bar">
-                      <div class="bar-fill" style="width: ${(cat.count / analytics.total_posts) * 100}%"></div>
-                    </div>
-                    <div class="category-count">${cat.count}</div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- Top Users -->
-            <div class="top-users-section">
-              <h5>Top Contributors</h5>
-              <div class="top-users-list">
-                ${analytics.top_users.slice(0, 5).map(user => `
-                  <div class="top-user">
-                    <div class="user-avatar-sm" style="background-color: #007AFF">
-                      ${user.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div class="user-info">
-                      <div class="username">${user.username}</div>
-                      <div class="user-stats">
-                        <span class="reputation">${user.reputation} rep</span>
-                        <span class="posts">${user.post_count} posts</span>
-                      </div>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    // Advanced Search Manager
-    class AdvancedSearchManager {
-      constructor() {
-        this.currentFilters = {};
-      }
-
-      openSearchModal() {
-        const modal = document.getElementById('advancedSearchModal');
-        modal.style.display = 'block';
-      }
-
-      async executeSearch() {
-        const filters = this.collectFilters();
-        
-        try {
-          const results = await uiManager.postsManager.searchPosts(filters);
-          
-          if (results.success) {
-            appState.setState({ 
-              posts: results.data,
-              ui: { 
-                ...appState.state.ui, 
-                currentPage: 1,
-                hasMore: false,
-                filters: { ...filters }
-              }
-            });
-            
-            uiManager.hideModal('advancedSearchModal');
-            uiManager.showToast(`Found ${results.data.length} posts`, 'success');
-          }
-        } catch (error) {
-          uiManager.showToast('Search failed', 'error');
-        }
-      }
-
-      collectFilters() {
-        return {
-          category: document.getElementById('search-category').value,
-          author: document.getElementById('search-author').value,
-          sort: document.getElementById('search-sort').value,
-          minLikes: document.getElementById('search-min-likes').value,
-          hasComments: document.getElementById('search-has-comments').checked,
-          myPosts: document.getElementById('search-my-posts').checked
-        };
-      }
-
-      resetSearch() {
-        document.getElementById('search-category').value = '';
-        document.getElementById('search-author').value = '';
-        document.getElementById('search-sort').value = 'newest';
-        document.getElementById('search-min-likes').value = '0';
-        document.getElementById('search-has-comments').checked = false;
-        document.getElementById('search-my-posts').checked = false;
-      }
-    }
-
-    // Notification Manager
-    class NotificationManager {
-      constructor() {
-        this.pollingInterval = null;
-        this.startPolling();
-      }
-
-      startPolling() {
-        // Simulate real-time notifications (in real app, use WebSockets)
-        this.pollingInterval = setInterval(() => {
-          if (appState.state.user) {
-            this.checkNewNotifications();
-          }
-        }, 30000); // Check every 30 seconds
-      }
-
-      stopPolling() {
-        if (this.pollingInterval) {
-          clearInterval(this.pollingInterval);
-        }
-      }
-
-      async checkNewNotifications() {
-        // Simulate receiving new notifications
-        if (Math.random() < 0.3) { // 30% chance of new notification
-          const notifications = [
-            {
-              id: Date.now(),
-              type: 'info',
-              title: 'New Feature Available',
-              message: 'Check out the new advanced search!',
-              timestamp: new Date().toISOString()
-            },
-            {
-              id: Date.now() + 1,
-              type: 'success',
-              title: 'Post Liked',
-              message: 'Someone liked your recent post',
-              timestamp: new Date().toISOString()
-            },
-            {
-              id: Date.now() + 2,
-              type: 'warning',
-              title: 'Weekly Summary',
-              message: 'You have 5 new replies to your posts',
-              timestamp: new Date().toISOString()
-            }
-          ];
-
-          const randomNotification = notifications[Math.floor(Math.random() * notifications.length)];
-          this.showNotification(randomNotification);
-        }
-      }
-
-      showNotification(notification) {
-        appState.addNotification(notification);
-        
-        const notificationElement = this.createNotificationElement(notification);
-        document.getElementById('notification-container').appendChild(notificationElement);
-        
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-          if (notificationElement.parentElement) {
-            notificationElement.remove();
-          }
-        }, 5000);
-      }
-
-      createNotificationElement(notification) {
-        const div = document.createElement('div');
-        div.className = 'notification';
-        div.innerHTML = `
-          <div class="notification-icon ${notification.type}">
-            <i class="bi bi-${this.getNotificationIcon(notification.type)}"></i>
-          </div>
-          <div class="notification-content">
-            <div class="notification-title">${notification.title}</div>
-            <div class="notification-message">${notification.message}</div>
-            <div class="notification-time">${this.formatTime(notification.timestamp)}</div>
-          </div>
-          <button class="notification-close" onclick="this.parentElement.remove()">
-            <i class="bi bi-x"></i>
-          </button>
-        `;
-        return div;
-      }
-
-      getNotificationIcon(type) {
-        const icons = {
-          info: 'info-circle',
-          success: 'check-circle',
-          warning: 'exclamation-triangle',
-          error: 'exclamation-circle'
-        };
-        return icons[type] || 'bell';
-      }
-
-      formatTime(timestamp) {
-        const now = new Date();
-        const time = new Date(timestamp);
-        const diff = now - time;
-        
-        if (diff < 60000) return 'Just now';
-        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-        return time.toLocaleDateString();
-      }
-
-      async loadNotifications() {
-        try {
-          const response = await apiCall('/notifications');
-          if (response.success) {
-            this.renderNotifications(response.notifications);
-          }
-        } catch (error) {
-          console.error('Failed to load notifications:', error);
-        }
-      }
-
-      renderNotifications(notifications) {
-        const list = document.getElementById('notifications-list');
-        
-        if (notifications.length === 0) {
-          list.innerHTML = '<div class="no-notifications">No notifications yet</div>';
-          return;
-        }
-
-        list.innerHTML = notifications.map(notification => `
-          <div class="notification-item ${notification.unread ? 'unread' : ''}">
-            <div class="notification-icon ${notification.type}">
-              <i class="bi bi-${this.getNotificationIcon(notification.type)}"></i>
-            </div>
-            <div class="notification-content">
-              <div class="notification-text">${notification.message}</div>
-              <div class="notification-time">${this.formatTime(notification.timestamp)}</div>
-            </div>
-            ${notification.unread ? '<div class="unread-dot"></div>' : ''}
-          </div>
-        `).join('');
-      }
-
-      togglePanel() {
-        const panel = document.getElementById('notifications-panel');
-        panel.classList.toggle('active');
-        
-        if (panel.classList.contains('active')) {
-          this.loadNotifications();
-        }
-      }
-
-      markAllAsRead() {
-        appState.markNotificationsAsRead();
-        this.renderNotifications([]);
-        uiManager.showToast('All notifications marked as read', 'success');
-      }
-    }
-
-    // UI Manager
-    class UIManager {
-      constructor() {
-        this.postsManager = new PostsManager();
-        this.notificationManager = new NotificationManager();
-        this.profileSystem = new ProfileSystem();
-        this.commentsSystem = new CommentsSystem();
-        this.bookmarksManager = new BookmarksManager();
-        this.postEditor = new PostEditor();
-        this.enhancedSearch = new EnhancedSearch();
-        this.analyticsDashboard = new AnalyticsDashboard();
-        this.searchManager = new AdvancedSearchManager();
+        this.postsManager = new InstantPostsManager();
         this.setupEventListeners();
-        this.renderSkeletonPosts(3);
+        this.initializeApp();
       }
 
       setupEventListeners() {
-        // Auth buttons
+        // Auth
         document.getElementById('sign-in-btn').addEventListener('click', () => this.showModal('loginModal'));
         document.getElementById('create-account-btn').addEventListener('click', () => this.showModal('registerModal'));
+        document.getElementById('login-btn-main').addEventListener('click', () => this.showModal('loginModal'));
         document.getElementById('logout-btn').addEventListener('click', () => this.logout());
 
-        // Modal buttons
-        document.getElementById('cancel-login-btn').addEventListener('click', () => this.hideModal('loginModal'));
-        document.getElementById('cancel-register-btn').addEventListener('click', () => this.hideModal('registerModal'));
-        document.getElementById('cancel-post-btn').addEventListener('click', () => this.hideModal('createPostModal'));
-        document.getElementById('cancel-search-btn').addEventListener('click', () => this.hideModal('advancedSearchModal'));
-
-        // Form submissions
-        document.getElementById('login-btn').addEventListener('click', () => this.handleLogin());
-        document.getElementById('register-btn').addEventListener('click', () => this.handleRegister());
-        document.getElementById('create-post-btn').addEventListener('click', () => this.handleCreatePost());
-        document.getElementById('execute-search-btn').addEventListener('click', () => this.searchManager.executeSearch());
-
-        // Post actions
+        // Posts
         document.getElementById('new-post-btn').addEventListener('click', () => this.showModal('createPostModal'));
-        document.getElementById('load-more-btn').addEventListener('click', () => this.postsManager.loadMore());
+        document.getElementById('create-post-btn').addEventListener('click', () => this.handleCreatePost());
+        document.getElementById('load-more-btn').addEventListener('click', () => this.loadMorePosts());
 
-        // Feature buttons
-        document.getElementById('notification-bell').addEventListener('click', () => {
-          this.notificationManager.togglePanel();
-        });
-        document.getElementById('analytics-btn').addEventListener('click', () => {
-          this.analyticsDashboard.loadDashboard();
-        });
-        document.getElementById('bookmarks-btn').addEventListener('click', () => {
-          this.bookmarksManager.loadBookmarks();
-        });
-        document.getElementById('advanced-search-btn').addEventListener('click', () => {
-          this.searchManager.openSearchModal();
-        });
-
-        // Notifications panel
-        document.querySelector('#notifications-panel .btn-close').addEventListener('click', () => {
-          document.getElementById('notifications-panel').classList.remove('active');
-        });
-        document.getElementById('mark-all-read-btn').addEventListener('click', () => {
-          this.notificationManager.markAllAsRead();
-        });
+        // Modals
+        document.getElementById('cancel-login-btn').addEventListener('click', () => this.hideModal('loginModal'));
+        document.getElementById('cancel-post-btn').addEventListener('click', () => this.hideModal('createPostModal'));
+        document.getElementById('login-btn').addEventListener('click', () => this.handleLogin());
 
         // Filters
         document.getElementById('category-filter').addEventListener('change', (e) => {
           appState.updateFilters({ category: e.target.value });
-          this.postsManager.loadPosts();
+          this.postsManager.loadPosts(true);
         });
 
-        document.getElementById('search-input').addEventListener('input', debounce((e) => {
-          appState.updateFilters({ search: e.target.value });
-          this.postsManager.loadPosts();
-        }, 500));
+        document.getElementById('search-input').addEventListener('input', (e) => {
+          appState.debounce('search', () => {
+            appState.updateFilters({ search: e.target.value });
+            this.postsManager.loadPosts(true);
+          }, 500);
+        });
 
         document.getElementById('clear-filters-btn').addEventListener('click', () => {
           document.getElementById('category-filter').value = '';
           document.getElementById('search-input').value = '';
           appState.updateFilters({ category: '', search: '' });
-          this.postsManager.loadPosts();
+          this.postsManager.loadPosts(true);
         });
 
-        // Theme toggle
+        // Theme
         document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
 
-        // Rich text editor
-        this.setupRichTextEditor();
-
-        // Close modals when clicking outside
+        // Global click handlers
         document.addEventListener('click', (e) => {
           if (e.target.classList.contains('modal-overlay')) {
             this.hideModal(e.target.id);
           }
         });
 
-        // Close notifications panel when clicking outside
-        document.addEventListener('click', (e) => {
-          if (!e.target.closest('#notifications-panel') && !e.target.closest('#notification-bell')) {
-            document.getElementById('notifications-panel').classList.remove('active');
-          }
+        // Enter key for login
+        document.getElementById('loginPassword')?.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') this.handleLogin();
         });
       }
 
-      setupRichTextEditor() {
-        const toolbar = document.querySelector('.editor-toolbar');
-        if (toolbar) {
-          toolbar.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON' || e.target.parentElement.tagName === 'BUTTON') {
-              const button = e.target.tagName === 'BUTTON' ? e.target : e.target.parentElement;
-              const command = button.dataset.command;
-              document.execCommand(command, false, null);
-              document.getElementById('postContent').focus();
-            }
-          });
-        }
-      }
+      initializeApp() {
+        // Set theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        this.updateThemeIcon(savedTheme);
 
-      showModal(id) {
-        document.getElementById(id).style.display = 'block';
-      }
-
-      hideModal(id) {
-        document.getElementById(id).style.display = 'none';
-        if (id === 'createPostModal') {
-          document.getElementById('postContent').innerHTML = '';
+        // Check auth
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('userData');
+        
+        if (token && userData) {
+          try {
+            const user = JSON.parse(userData);
+            appState.setState({ user });
+            this.showAuthenticatedUI();
+            this.postsManager.loadPosts();
+          } catch (error) {
+            this.clearAuth();
+          }
         }
       }
 
       async handleLogin() {
-        const username = document.getElementById('loginUsername').value;
+        const username = document.getElementById('loginUsername').value.trim();
         const password = document.getElementById('loginPassword').value;
 
         if (!username || !password) {
-          this.showToast('Please fill in all fields', 'error');
+          this.showToast('Please fill in all fields', 'warning');
           return;
         }
 
+        this.showToast('Signing in...', 'info');
+
         try {
-          const data = await apiCall('/login', {
+          const data = await apiManager.call('/login', {
             method: 'POST',
             body: { username, password }
           });
@@ -2606,48 +1166,13 @@
             appState.setState({ user: data.user });
 
             this.hideModal('loginModal');
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            
+            this.clearLoginForm();
             this.showAuthenticatedUI();
-            this.showToast('Successfully signed in!', 'success');
+            this.showToast('Welcome back!', 'success');
             this.postsManager.loadPosts();
           }
         } catch (error) {
-          // Error handled in apiCall
-        }
-      }
-
-      async handleRegister() {
-        const username = document.getElementById('registerUsername').value;
-        const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
-
-        if (!username || !password || !confirmPassword) {
-          this.showToast('Please fill in all fields', 'error');
-          return;
-        }
-
-        if (password !== confirmPassword) {
-          this.showToast('Passwords do not match', 'error');
-          return;
-        }
-
-        try {
-          const data = await apiCall('/register', {
-            method: 'POST',
-            body: { username, password }
-          });
-
-          if (data.success) {
-            this.hideModal('registerModal');
-            document.getElementById('registerUsername').value = '';
-            document.getElementById('registerPassword').value = '';
-            document.getElementById('registerConfirmPassword').value = '';
-            this.showToast('Account created! Please sign in.', 'success');
-          }
-        } catch (error) {
-          // Error handled in apiCall
+          this.showToast('Invalid credentials', 'error');
         }
       }
 
@@ -2655,48 +1180,59 @@
         const category = document.getElementById('postCategory').value;
         const content = document.getElementById('postContent').innerHTML;
 
-        if (!category || !content || content === '<br>') {
-          this.showToast('Please fill in all fields', 'error');
-          return;
-        }
-
         const success = await this.postsManager.createPost(category, content);
         if (success) {
           this.hideModal('createPostModal');
           document.getElementById('postContent').innerHTML = '';
-          this.showToast('Post published successfully!', 'success');
         }
-      }
-
-      logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
-        appState.setState({ user: null, posts: [], notifications: [], unreadNotifications: 0 });
-        this.notificationManager.stopPolling();
-        this.showUnauthenticatedUI();
-        this.showToast('Successfully signed out', 'success');
       }
 
       showAuthenticatedUI() {
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('posts-section').style.display = 'block';
-        document.getElementById('logout-btn').style.display = 'block';
-        document.getElementById('notification-bell').style.display = 'block';
-        document.getElementById('analytics-btn').style.display = 'block';
-        document.getElementById('bookmarks-btn').style.display = 'block';
-        document.getElementById('advanced-search-btn').style.display = 'block';
+        document.getElementById('quick-actions').style.display = 'flex';
+        document.getElementById('login-btn-main').style.display = 'none';
+        document.getElementById('authenticated-ui').style.display = 'block';
         document.getElementById('username-display').textContent = appState.state.user.username;
       }
 
       showUnauthenticatedUI() {
         document.getElementById('auth-section').style.display = 'block';
         document.getElementById('posts-section').style.display = 'none';
-        document.getElementById('logout-btn').style.display = 'none';
-        document.getElementById('notification-bell').style.display = 'none';
-        document.getElementById('analytics-btn').style.display = 'none';
-        document.getElementById('bookmarks-btn').style.display = 'none';
-        document.getElementById('advanced-search-btn').style.display = 'none';
-        document.getElementById('username-display').textContent = '';
+        document.getElementById('quick-actions').style.display = 'none';
+        document.getElementById('login-btn-main').style.display = 'block';
+        document.getElementById('authenticated-ui').style.display = 'none';
+      }
+
+      logout() {
+        this.clearAuth();
+        this.showUnauthenticatedUI();
+        this.showToast('Signed out successfully', 'success');
+      }
+
+      clearAuth() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userData');
+        appState.setState({ 
+          user: null, 
+          posts: [],
+          cache: new Map()
+        });
+      }
+
+      clearLoginForm() {
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+      }
+
+      showModal(id) {
+        document.getElementById(id).style.display = 'block';
+        document.body.style.overflow = 'hidden';
+      }
+
+      hideModal(id) {
+        document.getElementById(id).style.display = 'none';
+        document.body.style.overflow = 'auto';
       }
 
       toggleTheme() {
@@ -2706,132 +1242,22 @@
         });
         localStorage.setItem('theme', newTheme);
         document.body.setAttribute('data-theme', newTheme);
-        
+        this.updateThemeIcon(newTheme);
+      }
+
+      updateThemeIcon(theme) {
         const themeIcon = document.querySelector('#theme-toggle i');
-        themeIcon.className = newTheme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
+        themeIcon.className = theme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
       }
 
-      renderPosts(posts) {
-        const container = document.getElementById('posts-container');
-        
-        if (posts.length === 0) {
-          container.innerHTML = `
-            <div class="card text-center">
-              <p>No posts found. Be the first to share!</p>
-            </div>
-          `;
-          return;
+      loadMorePosts() {
+        const { currentPage, hasMore } = appState.state.ui;
+        if (hasMore) {
+          appState.setState({
+            ui: { ...appState.state.ui, currentPage: currentPage + 1 }
+          });
+          this.postsManager.loadPosts();
         }
-
-        container.innerHTML = posts.map(post => `
-          <div class="card post-card" data-post-id="${post.id}">
-            <div class="post-header">
-              <div class="user-avatar" style="background-color: ${post.avatar_color}" 
-                   onclick="uiManager.profileSystem.loadUserProfile(${post.user_id})">
-                ${post.username.charAt(0).toUpperCase()}
-              </div>
-              <div class="post-meta">
-                <strong onclick="uiManager.profileSystem.loadUserProfile(${post.user_id})">
-                  ${post.username}
-                </strong>
-                <span class="timestamp">${post.formatted_timestamp || this.formatDate(post.timestamp)} • ${post.category}</span>
-              </div>
-            </div>
-            <div class="post-content">${post.content}</div>
-            <div class="post-actions">
-              <div class="action-group">
-                <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
-                        onclick="uiManager.handleLike(${post.id})">
-                  <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
-                  <span class="count">${post.likes_count}</span>
-                </button>
-                
-                <button class="action-btn comment-btn" 
-                        onclick="uiManager.commentsSystem.loadComments(${post.id})">
-                  <i class="bi bi-chat"></i>
-                  <span class="count">${post.comments_count}</span>
-                </button>
-                
-                <button class="action-btn bookmark-btn ${post.user_has_bookmarked ? 'bookmarked' : ''}" 
-                        onclick="uiManager.bookmarksManager.toggleBookmark(${post.id})">
-                  <i class="bi bi-bookmark${post.user_has_bookmarked ? '-fill' : ''}"></i>
-                </button>
-              </div>
-              
-              <div class="action-group">
-                <button class="action-btn share-btn" onclick="uiManager.sharePost(${post.id})">
-                  <i class="bi bi-share"></i>
-                </button>
-                
-                ${post.user_id === appState.state.user.id ? `
-                  <button class="action-btn edit-btn" onclick="uiManager.postEditor.enablePostEditing(${post.id})">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="action-btn delete-btn" onclick="uiManager.deletePost(${post.id})">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                ` : ''}
-              </div>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      renderSkeletonPosts(count) {
-        const container = document.getElementById('posts-container');
-        container.innerHTML = Array.from({ length: count }, () => `
-          <div class="card">
-            <div class="post-header">
-              <div class="skeleton skeleton-avatar"></div>
-              <div style="flex: 1;">
-                <div class="skeleton skeleton-text" style="width: 40%;"></div>
-                <div class="skeleton skeleton-text" style="width: 60%;"></div>
-              </div>
-            </div>
-            <div class="skeleton skeleton-text"></div>
-            <div class="skeleton skeleton-text"></div>
-            <div class="skeleton skeleton-text" style="width: 80%;"></div>
-          </div>
-        `).join('');
-      }
-
-      async handleLike(postId) {
-        await this.postsManager.likePost(postId);
-      }
-
-      async deletePost(postId) {
-        if (confirm('Are you sure you want to delete this post?')) {
-          await this.postsManager.deletePost(postId);
-        }
-      }
-
-      sharePost(postId) {
-        const post = appState.state.posts.find(p => p.id === postId);
-        if (post) {
-          const shareText = `Check out this post by ${post.username} on EdgePowered: "${post.content.substring(0, 100)}..."`;
-          if (navigator.share) {
-            navigator.share({
-              title: 'EdgePowered Post',
-              text: shareText,
-              url: window.location.href
-            });
-          } else {
-            // Fallback: copy to clipboard
-            navigator.clipboard.writeText(shareText);
-            this.showToast('Post content copied to clipboard!', 'success');
-          }
-        }
-      }
-
-      formatDate(timestamp) {
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diff = now - date;
-        
-        if (diff < 60000) return 'Just now';
-        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-        return date.toLocaleDateString();
       }
 
       showToast(message, type = 'info') {
@@ -2846,7 +1272,8 @@
         toastContainer.appendChild(toast);
         
         setTimeout(() => {
-          toast.remove();
+          toast.style.animation = 'toastSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) reverse forwards';
+          setTimeout(() => toast.remove(), 500);
         }, 3000);
       }
 
@@ -2859,84 +1286,90 @@
         };
         return icons[type] || 'info-circle';
       }
-    }
 
-    // Utility Functions
-    function debounce(func, wait) {
-      let timeout;
-      return function executedFunction(...args) {
-        const later = () => {
-          clearTimeout(timeout);
-          func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-      };
-    }
-
-    async function apiCall(endpoint, options = {}) {
-      try {
-        const token = localStorage.getItem('token');
-        const config = {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': token }),
-          },
-          ...options
-        };
-
-        if (config.body) {
-          config.body = JSON.stringify(config.body);
-        }
-
-        const response = await fetch(API_BASE + endpoint, config);
-        const data = await response.json();
+      renderPosts(posts) {
+        const container = document.getElementById('posts-container');
         
-        if (!response.ok) {
-          throw new Error(data.error || 'Request failed');
+        if (posts.length === 0) {
+          container.innerHTML = `
+            <div class="card text-center" style="padding: 3rem;">
+              <i class="bi bi-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+              <h5 style="color: var(--text-secondary);">No posts found</h5>
+              <p style="color: var(--text-muted);">Be the first to start a discussion!</p>
+            </div>
+          `;
+          return;
         }
 
-        return data;
-      } catch (error) {
-        uiManager.showToast('Error: ' + error.message, 'error');
-        throw error;
+        container.innerHTML = posts.map(post => `
+          <div class="card post-card" data-post-id="${post.id}">
+            <div class="post-header">
+              <div class="user-avatar" style="background-color: ${post.avatar_color}">
+                ${post.username.charAt(0).toUpperCase()}
+              </div>
+              <div style="flex: 1;">
+                <strong style="display: block; margin-bottom: 0.25rem; cursor: pointer;">${post.username}</strong>
+                <span style="color: var(--text-muted); font-size: 0.875rem;">
+                  ${post.formatted_timestamp} • ${post.category}
+                </span>
+              </div>
+            </div>
+            <div class="post-content">${post.content}</div>
+            <div class="post-actions">
+              <div class="action-group" style="display: flex; gap: 0.5rem;">
+                <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
+                        onclick="uiManager.postsManager.likePost(${post.id})">
+                  <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
+                  <span class="count">${post.likes_count}</span>
+                </button>
+                <button class="action-btn">
+                  <i class="bi bi-chat"></i>
+                  <span class="count">${post.comments_count}</span>
+                </button>
+                <button class="action-btn">
+                  <i class="bi bi-share"></i>
+                </button>
+              </div>
+              <button class="action-btn bookmark-btn">
+                <i class="bi bi-bookmark"></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
       }
     }
 
-    // Initialize Application
+    // 🚀 Enhanced Search
+    class EnhancedSearch {
+      focusSearch() {
+        document.getElementById('search-input').focus();
+      }
+    }
+
+    // Initialize enhanced state methods
+    appState.updateFilters = function(newFilters) {
+      this.setState({
+        ui: {
+          ...this.state.ui,
+          filters: { ...this.state.ui.filters, ...newFilters },
+          currentPage: 1
+        },
+        posts: []
+      });
+    };
+
+    // Initialize the application
     let uiManager;
+    let enhancedSearch;
 
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('✅ DOM Loaded - Initializing Enhanced EdgePowered Forum');
+      console.log('🚀 Enhanced EdgePowered Forum Initialized');
       
-      // Initialize UI Manager
-      uiManager = new UIManager();
-
-      // Initialize theme
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      document.body.setAttribute('data-theme', savedTheme);
-      const themeIcon = document.querySelector('#theme-toggle i');
-      themeIcon.className = savedTheme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
-
-      // Check authentication status
-      const token = localStorage.getItem('token');
-      const userData = localStorage.getItem('userData');
-      
-      if (token && userData) {
-        try {
-          const user = JSON.parse(userData);
-          appState.setState({ user });
-          uiManager.showAuthenticatedUI();
-          uiManager.postsManager.loadPosts();
-        } catch (error) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('userData');
-        }
-      }
+      uiManager = new EnhancedUIManager();
+      enhancedSearch = new EnhancedSearch();
 
       // Subscribe to state changes
       appState.subscribe((state) => {
-        // Update posts display
         if (state.posts.length > 0) {
           uiManager.renderPosts(state.posts);
         }
@@ -2954,32 +1387,44 @@
         } else {
           loadMoreContainer.style.display = 'none';
         }
-
-        // Update notification badge
-        const notificationCount = document.getElementById('notification-count');
-        if (state.unreadNotifications > 0) {
-          notificationCount.textContent = state.unreadNotifications;
-          notificationCount.style.display = 'flex';
-        } else {
-          notificationCount.style.display = 'none';
-        }
-
-        // Update filters display
-        document.getElementById('category-filter').value = state.ui.filters.category;
-        document.getElementById('search-input').value = state.ui.filters.search;
       });
 
-      console.log('✅ Enhanced EdgePowered Forum Initialized Successfully!');
+      // Add some sample posts for demo
+      if (!localStorage.getItem('token')) {
+        setTimeout(() => {
+          const container = document.getElementById('posts-container');
+          if (container && container.children.length === 0) {
+            container.innerHTML = `
+              <div class="card post-card">
+                <div class="post-header">
+                  <div class="user-avatar" style="background-color: #007AFF">J</div>
+                  <div style="flex: 1;">
+                    <strong style="display: block; margin-bottom: 0.25rem;">John</strong>
+                    <span style="color: var(--text-muted); font-size: 0.875rem;">Just now • Technology</span>
+                  </div>
+                </div>
+                <div class="post-content">
+                  <p>Welcome to EdgePowered! This is a demo post to show the beautiful interface. Sign in to start posting and engaging with the community.</p>
+                  <p>🚀 Experience lightning-fast performance and modern design!</p>
+                </div>
+                <div class="post-actions">
+                  <div class="action-group" style="display: flex; gap: 0.5rem;">
+                    <button class="action-btn"><i class="bi bi-heart"></i><span class="count">24</span></button>
+                    <button class="action-btn"><i class="bi bi-chat"></i><span class="count">8</span></button>
+                    <button class="action-btn"><i class="bi bi-share"></i></button>
+                  </div>
+                  <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+                </div>
+              </div>
+            `;
+          }
+        }, 1000);
+      }
     });
 
-    // Make managers globally available for event handlers
+    // Make available globally
     window.uiManager = uiManager;
-    window.commentsSystem = uiManager.commentsSystem;
-    window.bookmarksManager = uiManager.bookmarksManager;
-    window.profileSystem = uiManager.profileSystem;
-    window.postEditor = uiManager.postEditor;
-    window.enhancedSearch = uiManager.enhancedSearch;
-    window.notificationsPanel = uiManager.notificationManager;
+    window.enhancedSearch = enhancedSearch;
   </script>
 </body>
 </html>
