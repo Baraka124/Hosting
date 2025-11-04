@@ -7,51 +7,208 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <style>
+    :root {
+      --primary-color: #007AFF;
+      --success-color: #34C759;
+      --danger-color: #FF3B30;
+      --warning-color: #FF9500;
+      --dark-color: #1D1D1F;
+      --light-color: #F5F5F7;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #f5f5f7;
+      background-color: var(--light-color);
       margin: 0;
       padding: 0;
+      transition: background-color 0.3s ease;
     }
+
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
     }
+
     .card {
       background: white;
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 16px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: none;
     }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
     .btn-primary {
-      background: #007AFF;
+      background: var(--primary-color);
       border: none;
       border-radius: 8px;
       padding: 10px 20px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: #0056CC;
+      transform: translateY(-1px);
+    }
+
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary-color);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    .toast {
+      background: white;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-left: 4px solid var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.success { border-left-color: var(--success-color); }
+    .toast.error { border-left-color: var(--danger-color); }
+    .toast.warning { border-left-color: var(--warning-color); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 15px;
+      border-top: 1px solid #eee;
+      padding-top: 12px;
+    }
+
+    .btn-like.active {
+      color: var(--danger-color);
+      border-color: var(--danger-color);
+    }
+
+    .category-badge {
+      background: var(--primary-color);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      padding-left: 40px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #666;
+    }
+
+    .dark-mode {
+      background-color: var(--dark-color);
+      color: white;
+    }
+
+    .dark-mode .card {
+      background: #2D2D2F;
+      color: white;
+    }
+
+    .dark-mode .modal-content {
+      background: #2D2D2F;
+      color: white;
+    }
+
+    .dark-mode input,
+    .dark-mode textarea,
+    .dark-mode select {
+      background: #1D1D1F;
+      border-color: #444;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <!-- Simple Header -->
-  <header style="background: white; padding: 16px 0; border-bottom: 1px solid #e5e5e7;">
+  <!-- Enhanced Header -->
+  <header style="background: white; padding: 16px 0; border-bottom: 1px solid #e5e5e7; transition: all 0.3s ease;">
     <div class="container">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3 style="margin: 0; color: #007AFF;">
           <i class="bi bi-chat-dots"></i> Konekt
         </h3>
-        <div id="user-section">
-          <span id="username-display" style="margin-right: 10px;"></span>
-          <button class="btn btn-outline-secondary btn-sm" id="logout-btn" style="display: none;">Log Out</button>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <button id="theme-toggle" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-moon"></i>
+          </button>
+          <div id="user-section">
+            <span id="username-display" style="margin-right: 10px;"></span>
+            <button class="btn btn-outline-secondary btn-sm" id="logout-btn" style="display: none;">Log Out</button>
+          </div>
         </div>
       </div>
     </div>
   </header>
 
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
   <!-- Main Content -->
   <div class="container">
-    <!-- Welcome Section (shown when not logged in) -->
+    <!-- Welcome Section -->
     <div id="auth-section">
       <div class="card text-center">
         <h2>Welcome to Konekt</h2>
@@ -63,21 +220,51 @@
       </div>
     </div>
 
-    <!-- Posts Section (shown when logged in) -->
+    <!-- Posts Section -->
     <div id="posts-section" style="display: none;">
-      <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 20px;">
-        <h4>Community Posts</h4>
+      <!-- Search and Filters -->
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" id="search-input" placeholder="Search posts..." 
+               style="width: 100%; padding: 10px 10px 10px 40px; border: 1px solid #ddd; border-radius: 8px;"
+               onkeyup="debouncedSearch()">
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+          <h4 style="display: inline-block; margin-right: 15px;">Community Posts</h4>
+          <select id="category-filter" onchange="loadPosts()" style="padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+            <option value="">All Categories</option>
+            <option value="General">General</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Healthcare">Healthcare</option>
+          </select>
+        </div>
         <button class="btn btn-primary" onclick="showCreatePost()">New Post</button>
       </div>
+
+      <!-- Loading Spinner -->
+      <div class="loading-spinner" id="posts-loading">
+        <div class="spinner"></div>
+        <p style="margin-top: 10px;">Loading posts...</p>
+      </div>
+
       <div id="posts-container">
         <!-- Posts will appear here -->
+      </div>
+
+      <!-- Pagination -->
+      <div id="pagination" style="display: none; text-align: center; margin-top: 20px;">
+        <button class="btn btn-outline-primary btn-sm" onclick="loadPreviousPage()" id="prev-btn">Previous</button>
+        <span style="margin: 0 15px;" id="page-info">Page 1 of 1</span>
+        <button class="btn btn-outline-primary btn-sm" onclick="loadNextPage()" id="next-btn">Next</button>
       </div>
     </div>
   </div>
 
-  <!-- Simple Modals -->
-  <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 400px;">
+  <!-- Enhanced Modals -->
+  <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(5px);">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
       <h4>Sign In</h4>
       <div style="margin: 20px 0;">
         <input type="text" id="loginUsername" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
@@ -85,13 +272,14 @@
       </div>
       <div style="display: flex; gap: 10px;">
         <button class="btn btn-secondary" onclick="hideModal('loginModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="handleLogin()">Sign In</button>
+        <button class="btn btn-primary" onclick="handleLogin()" id="login-btn">Sign In</button>
       </div>
     </div>
   </div>
 
-  <div id="registerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 400px;">
+  <!-- Similar enhanced modals for register and create post -->
+  <div id="registerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(5px);">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
       <h4>Create Account</h4>
       <div style="margin: 20px 0;">
         <input type="text" id="registerUsername" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
@@ -100,13 +288,13 @@
       </div>
       <div style="display: flex; gap: 10px;">
         <button class="btn btn-secondary" onclick="hideModal('registerModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="handleRegister()">Create Account</button>
+        <button class="btn btn-primary" onclick="handleRegister()" id="register-btn">Create Account</button>
       </div>
     </div>
   </div>
 
-  <div id="createPostModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 500px;">
+  <div id="createPostModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(5px);">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
       <h4>Create Post</h4>
       <div style="margin: 20px 0;">
         <select id="postCategory" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
@@ -118,20 +306,25 @@
       </div>
       <div style="display: flex; gap: 10px;">
         <button class="btn btn-secondary" onclick="hideModal('createPostModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="handleCreatePost()">Publish</button>
+        <button class="btn btn-primary" onclick="handleCreatePost()" id="create-post-btn">Publish</button>
       </div>
     </div>
   </div>
 
   <script>
-    // Konekt Forum - Bulletproof Version
+    // Enhanced Konekt Forum - A+ Version
     const API_BASE = "https://hosting-production-a352.up.railway.app/api";
     let currentUser = null;
     let allPosts = [];
+    let currentPage = 1;
+    let totalPages = 1;
+    let searchTimeout = null;
 
-    // Safe DOM functions
+    // Enhanced DOM functions with error handling
     function getElement(id) {
-      return document.getElementById(id);
+      const el = document.getElementById(id);
+      if (!el) console.warn(`Element with id '${id}' not found`);
+      return el;
     }
 
     function showElement(id) {
@@ -151,7 +344,7 @@
 
     function getValue(id) {
       const el = getElement(id);
-      return el ? el.value : '';
+      return el ? el.value.trim() : '';
     }
 
     function setValue(id, value) {
@@ -159,13 +352,60 @@
       if (el) el.value = value;
     }
 
-    // Modal functions
+    function setLoading(buttonId, loading) {
+      const btn = getElement(buttonId);
+      if (!btn) return;
+      
+      if (loading) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-hourglass"></i> Loading...';
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = btn.getAttribute('data-original-text') || btn.textContent;
+      }
+    }
+
+    // Enhanced Toast System
+    function showToast(message, type = 'info', duration = 5000) {
+      const container = getElement('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: 'bi-check-circle-fill',
+        error: 'bi-exclamation-circle-fill',
+        warning: 'bi-exclamation-triangle-fill',
+        info: 'bi-info-circle-fill'
+      };
+
+      toast.innerHTML = `
+        <i class="bi ${icons[type] || icons.info}" style="color: ${getComputedStyle(document.documentElement).getPropertyValue(`--${type}-color`) || '#007AFF'}"></i>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300);
+      }, duration);
+    }
+
+    // Enhanced Modal functions
     function showModal(id) {
       showElement(id);
+      document.body.style.overflow = 'hidden';
     }
 
     function hideModal(id) {
       hideElement(id);
+      document.body.style.overflow = 'auto';
     }
 
     function showLogin() {
@@ -180,55 +420,126 @@
       showModal('createPostModal');
     }
 
-    // Initialize app
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('🚀 Konekt Forum Starting...');
-      checkAuthStatus();
-    });
-
-    // API call with error handling
-    async function apiCall(endpoint, options = {}) {
-      const token = localStorage.getItem('token');
+    // Theme Management
+    function initTheme() {
+      const theme = localStorage.getItem('theme') || 'light';
+      setTheme(theme);
       
-      try {
-        const config = {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': token }),
-          },
-          ...options
-        };
-
-        if (config.body && typeof config.body === 'object') {
-          config.body = JSON.stringify(config.body);
-        }
-
-        console.log(`📡 API Call: ${endpoint}`);
-        const response = await fetch(`${API_BASE}${endpoint}`, config);
-        
-        if (response.status === 401) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('userData');
-          currentUser = null;
-          showUnauthenticatedUI();
-          throw new Error('Session expired. Please login again.');
-        }
-
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.error || `Request failed: ${response.status}`);
-        }
-
-        return data;
-      } catch (error) {
-        console.error('API Error:', error);
-        alert(`Error: ${error.message}`);
-        throw error;
+      const themeBtn = getElement('theme-toggle');
+      if (themeBtn) {
+        themeBtn.innerHTML = theme === 'dark' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+        themeBtn.onclick = toggleTheme;
       }
     }
 
-    // Authentication
+    function setTheme(theme) {
+      document.body.className = theme === 'dark' ? 'dark-mode' : '';
+      localStorage.setItem('theme', theme);
+    }
+
+    function toggleTheme() {
+      const currentTheme = localStorage.getItem('theme') || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+      
+      const themeBtn = getElement('theme-toggle');
+      if (themeBtn) {
+        themeBtn.innerHTML = newTheme === 'dark' ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+      }
+    }
+
+    // Debounced Search
+    function debouncedSearch() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        currentPage = 1;
+        loadPosts();
+      }, 500);
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚀 Konekt Forum Starting...');
+      initTheme();
+      checkAuthStatus();
+      setupEventListeners();
+    });
+
+    function setupEventListeners() {
+      // Enter key support in modals
+      document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          if (getElement('loginModal').style.display !== 'none') {
+            handleLogin();
+          } else if (getElement('registerModal').style.display !== 'none') {
+            handleRegister();
+          } else if (getElement('createPostModal').style.display !== 'none') {
+            handleCreatePost();
+          }
+        }
+      });
+
+      // Store original button texts
+      const loginBtn = getElement('login-btn');
+      const registerBtn = getElement('register-btn');
+      const createPostBtn = getElement('create-post-btn');
+      
+      if (loginBtn) loginBtn.setAttribute('data-original-text', 'Sign In');
+      if (registerBtn) registerBtn.setAttribute('data-original-text', 'Create Account');
+      if (createPostBtn) createPostBtn.setAttribute('data-original-text', 'Publish');
+    }
+
+    // Enhanced API call with retry logic
+    async function apiCall(endpoint, options = {}, retries = 3) {
+      const token = localStorage.getItem('token');
+      
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          const config = {
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token && { 'Authorization': token }),
+            },
+            ...options
+          };
+
+          if (config.body && typeof config.body === 'object') {
+            config.body = JSON.stringify(config.body);
+          }
+
+          console.log(`📡 API Call: ${endpoint} (Attempt ${attempt}/${retries})`);
+          const response = await fetch(`${API_BASE}${endpoint}`, config);
+          
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+            currentUser = null;
+            showUnauthenticatedUI();
+            throw new Error('Session expired. Please login again.');
+          }
+
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || `Request failed: ${response.status}`);
+          }
+
+          return data;
+        } catch (error) {
+          console.error(`API Error (Attempt ${attempt}/${retries}):`, error);
+          
+          if (attempt === retries) {
+            showToast(error.message, 'error');
+            throw error;
+          }
+          
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+
+    // Enhanced Authentication
     async function checkAuthStatus() {
       console.log('🔐 Checking auth status...');
       const token = localStorage.getItem('token');
@@ -264,17 +575,20 @@
       hideElement('posts-section');
       setText('username-display', '');
       hideElement('logout-btn');
+      hideElement('pagination');
     }
 
-    // Auth handlers
+    // Enhanced Auth handlers
     async function handleLogin() {
       const username = getValue('loginUsername');
       const password = getValue('loginPassword');
 
       if (!username || !password) {
-        alert('Please fill in all fields');
+        showToast('Please fill in all fields', 'warning');
         return;
       }
+
+      setLoading('login-btn', true);
 
       try {
         const data = await apiCall('/login', {
@@ -292,10 +606,12 @@
           setValue('loginPassword', '');
           
           showAuthenticatedUI();
-          alert('✅ Successfully signed in!');
+          showToast('Successfully signed in!', 'success');
         }
       } catch (error) {
         // Error handled in apiCall
+      } finally {
+        setLoading('login-btn', false);
       }
     }
 
@@ -305,14 +621,26 @@
       const confirmPassword = getValue('registerConfirmPassword');
 
       if (!username || !password || !confirmPassword) {
-        alert('Please fill in all fields');
+        showToast('Please fill in all fields', 'warning');
+        return;
+      }
+
+      if (username.length < 3) {
+        showToast('Username must be at least 3 characters', 'warning');
+        return;
+      }
+
+      if (password.length < 6) {
+        showToast('Password must be at least 6 characters', 'warning');
         return;
       }
 
       if (password !== confirmPassword) {
-        alert('Passwords do not match');
+        showToast('Passwords do not match', 'error');
         return;
       }
+
+      setLoading('register-btn', true);
 
       try {
         const data = await apiCall('/register', {
@@ -325,10 +653,12 @@
           setValue('registerUsername', '');
           setValue('registerPassword', '');
           setValue('registerConfirmPassword', '');
-          alert('✅ Account created! Please sign in.');
+          showToast('Account created! Please sign in.', 'success');
         }
       } catch (error) {
         // Error handled in apiCall
+      } finally {
+        setLoading('register-btn', false);
       }
     }
 
@@ -337,18 +667,25 @@
       localStorage.removeItem('userData');
       currentUser = null;
       showUnauthenticatedUI();
-      alert('✅ Successfully signed out');
+      showToast('Successfully signed out', 'success');
     }
 
-    // Post handlers
+    // Enhanced Post handlers
     async function handleCreatePost() {
       const category = getValue('postCategory');
       const content = getValue('postContent');
 
       if (!category || !content) {
-        alert('Please fill in all fields');
+        showToast('Please fill in all fields', 'warning');
         return;
       }
+
+      if (content.length < 10) {
+        showToast('Post must be at least 10 characters', 'warning');
+        return;
+      }
+
+      setLoading('create-post-btn', true);
 
       try {
         const data = await apiCall('/posts', {
@@ -360,20 +697,93 @@
           hideModal('createPostModal');
           setValue('postContent', '');
           await loadPosts();
-          alert('✅ Post published!');
+          showToast('Post published successfully!', 'success');
         }
       } catch (error) {
         // Error handled in apiCall
+      } finally {
+        setLoading('create-post-btn', false);
       }
     }
 
-    async function loadPosts() {
+    async function loadPosts(page = 1) {
+      showElement('posts-loading');
+      hideElement('pagination');
+
       try {
-        const data = await apiCall('/posts');
+        const category = getValue('category-filter');
+        const search = getValue('search-input');
+        
+        let endpoint = `/posts?page=${page}&per_page=10`;
+        if (category) endpoint += `&category=${encodeURIComponent(category)}`;
+        if (search) endpoint += `&search=${encodeURIComponent(search)}`;
+
+        const data = await apiCall(endpoint);
         
         if (data.success) {
-          allPosts = data.data || data;
+          allPosts = data.data || [];
+          currentPage = data.pagination?.page || 1;
+          totalPages = data.pagination?.pages || 1;
+          
           displayPosts(allPosts);
+          updatePagination();
+        }
+      } catch (error) {
+        // Error handled in apiCall
+      } finally {
+        hideElement('posts-loading');
+      }
+    }
+
+    function updatePagination() {
+      const pagination = getElement('pagination');
+      const pageInfo = getElement('page-info');
+      const prevBtn = getElement('prev-btn');
+      const nextBtn = getElement('next-btn');
+
+      if (totalPages <= 1) {
+        hideElement('pagination');
+        return;
+      }
+
+      showElement('pagination');
+      setText('page-info', `Page ${currentPage} of ${totalPages}`);
+      
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.disabled = currentPage === totalPages;
+    }
+
+    function loadNextPage() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        loadPosts(currentPage);
+      }
+    }
+
+    function loadPreviousPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        loadPosts(currentPage);
+      }
+    }
+
+    async function handleLike(postId) {
+      try {
+        const data = await apiCall(`/posts/${postId}/like`, {
+          method: 'POST'
+        });
+
+        if (data.success) {
+          // Update the like count in the UI
+          const likeBtn = document.querySelector(`[data-post-id="${postId}"] .btn-like`);
+          const likeCount = document.querySelector(`[data-post-id="${postId}"] .like-count`);
+          
+          if (likeBtn && likeCount) {
+            likeBtn.classList.toggle('active', data.action === 'liked');
+            likeCount.textContent = data.likes_count;
+          }
+          
+          showToast(data.action === 'liked' ? 'Post liked!' : 'Post unliked', 'success');
         }
       } catch (error) {
         // Error handled in apiCall
@@ -385,27 +795,48 @@
       if (!container) return;
 
       if (!posts || posts.length === 0) {
-        container.innerHTML = '<div class="card text-center"><p>No posts yet. Be the first to post!</p></div>';
+        container.innerHTML = `
+          <div class="card text-center">
+            <i class="bi bi-inbox" style="font-size: 48px; color: #ccc; margin-bottom: 16px;"></i>
+            <h5>No posts found</h5>
+            <p>Be the first to start a discussion!</p>
+            <button class="btn btn-primary" onclick="showCreatePost()">Create First Post</button>
+          </div>
+        `;
         return;
       }
 
       container.innerHTML = posts.map(post => `
-        <div class="card">
-          <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 12px;">
+        <div class="card" data-post-id="${post.id}">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
             <div style="flex: 1">
-              <strong>${post.username || 'User'}</strong>
-              <div style="color: #666; font-size: 14px; margin-top: 4px;">
-                ${new Date(post.timestamp).toLocaleDateString()} • ${post.category}
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                <div class="user-avatar" style="background: ${post.avatar_color || '#007AFF'}">
+                  ${(post.username || 'U').charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <strong>${post.username || 'User'}</strong>
+                  <div style="color: #666; font-size: 14px; margin-top: 2px;">
+                    ${new Date(post.timestamp).toLocaleDateString()} • 
+                    <span class="category-badge">${post.category}</span>
+                    ${post.is_pinned ? '<i class="bi bi-pin-fill" style="margin-left: 5px; color: #FF9500;"></i>' : ''}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div style="margin-bottom: 16px; line-height: 1.5;">${post.content}</div>
-          <div style="display: flex; gap: 20px; border-top: 1px solid #eee; padding-top: 12px;">
-            <button class="btn btn-sm btn-outline-secondary">
-              <i class="bi bi-heart"></i> ${post.likes_count || 0}
+          <div style="margin-bottom: 16px; line-height: 1.5; white-space: pre-wrap;">${post.content}</div>
+          <div class="post-actions">
+            <button class="btn btn-sm btn-outline-secondary btn-like ${post.user_has_liked ? 'active' : ''}" 
+                    onclick="handleLike(${post.id})">
+              <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i> 
+              <span class="like-count">${post.likes_count || 0}</span>
             </button>
             <button class="btn btn-sm btn-outline-secondary">
               <i class="bi bi-chat"></i> ${post.comments_count || 0}
+            </button>
+            <button class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-share"></i> Share
             </button>
           </div>
         </div>
@@ -420,7 +851,7 @@
       }
     });
 
-    console.log('🎯 Konekt Forum Loaded Successfully!');
+    console.log('🎯 Konekt Forum Enhanced Version Loaded Successfully!');
   </script>
 </body>
 </html>
