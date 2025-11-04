@@ -3,972 +3,424 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Konekt • Advanced Community Forum</title>
+  <title>Konekt • Community Forum</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
   <style>
-    /* Your existing CSS styles here */
-    :root {
-      --apple-blue: #007AFF;
-      --apple-green: #34C759;
-      --apple-orange: #FF9500;
-      --apple-red: #FF3B30;
-      --apple-purple: #AF52DE;
-      --apple-indigo: #5856D6;
-      --apple-gray-1: #F5F5F7;
-      --apple-gray-2: #E8E8ED;
-      --apple-gray-3: #C6C6C8;
-      --apple-gray-6: #8E8E93;
-      --apple-gray-9: #1D1D1F;
-      --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-      --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    /* Add all your existing CSS styles here */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--apple-gray-1);
-      color: var(--apple-gray-9);
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f5f5f7;
+      margin: 0;
+      padding: 0;
     }
-
-    .app-container {
-      max-width: 1400px;
+    .container {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 20px;
     }
-
-    /* Continue with all your existing CSS... */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .btn-primary {
+      background: #007AFF;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+    }
   </style>
 </head>
 <body>
-  <!-- Your existing HTML structure -->
-  <header class="app-header">
-    <!-- Header content -->
+  <!-- Simple Header -->
+  <header style="background: white; padding: 16px 0; border-bottom: 1px solid #e5e5e7;">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0; color: #007AFF;">
+          <i class="bi bi-chat-dots"></i> Konekt
+        </h3>
+        <div id="user-section">
+          <span id="username-display" style="margin-right: 10px;"></span>
+          <button class="btn btn-outline-secondary btn-sm" id="logout-btn" style="display: none;">Log Out</button>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <main class="app-container">
-    <!-- Main content -->
-  </main>
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Welcome Section (shown when not logged in) -->
+    <div id="auth-section">
+      <div class="card text-center">
+        <h2>Welcome to Konekt</h2>
+        <p>Join our community forum to share ideas and connect with others.</p>
+        <div>
+          <button class="btn btn-primary" onclick="showLogin()">Sign In</button>
+          <button class="btn btn-outline-primary" onclick="showRegister()" style="margin-left: 10px;">Create Account</button>
+        </div>
+      </div>
+    </div>
 
-  <!-- Modals -->
-  <div class="modal fade" id="loginModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Sign In to Konekt</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="loginForm">
-            <div class="mb-3">
-              <label for="loginUsername" class="form-label">Username</label>
-              <input type="text" class="form-control" id="loginUsername" required>
-            </div>
-            <div class="mb-3">
-              <label for="loginPassword" class="form-label">Password</label>
-              <input type="password" class="form-control" id="loginPassword" required>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="loginBtn">Sign In</button>
-        </div>
+    <!-- Posts Section (shown when logged in) -->
+    <div id="posts-section" style="display: none;">
+      <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 20px;">
+        <h4>Community Posts</h4>
+        <button class="btn btn-primary" onclick="showCreatePost()">New Post</button>
+      </div>
+      <div id="posts-container">
+        <!-- Posts will appear here -->
       </div>
     </div>
   </div>
 
-  <div class="modal fade" id="registerModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Create Account</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="registerForm">
-            <div class="mb-3">
-              <label for="registerUsername" class="form-label">Username</label>
-              <input type="text" class="form-control" id="registerUsername" required>
-            </div>
-            <div class="mb-3">
-              <label for="registerPassword" class="form-label">Password</label>
-              <input type="password" class="form-control" id="registerPassword" required>
-            </div>
-            <div class="mb-3">
-              <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
-              <input type="password" class="form-control" id="registerConfirmPassword" required>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="registerBtn">Create Account</button>
-        </div>
+  <!-- Simple Modals -->
+  <div id="loginModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 400px;">
+      <h4>Sign In</h4>
+      <div style="margin: 20px 0;">
+        <input type="text" id="loginUsername" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
+        <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px;">
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-secondary" onclick="hideModal('loginModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="handleLogin()">Sign In</button>
       </div>
     </div>
   </div>
 
-  <div class="modal fade" id="createPostModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Create New Post</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="createPostForm">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="postCategory" class="form-label">Category</label>
-                <select class="form-control" id="postCategory" required>
-                  <option value="">Select a category</option>
-                  <option value="General">General</option>
-                  <option value="Engineering">Engineering</option>
-                  <option value="Healthcare">Healthcare</option>
-                  <option value="Research">Research</option>
-                  <option value="Community">Community</option>
-                </select>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="postTags" class="form-label">Tags (comma separated)</label>
-                <input type="text" class="form-control" id="postTags" placeholder="tech, programming, help">
-              </div>
-            </div>
-            <div class="mb-3">
-              <label for="postTitle" class="form-label">Title</label>
-              <input type="text" class="form-control" id="postTitle" placeholder="Enter a descriptive title">
-            </div>
-            <div class="mb-3">
-              <label for="postContent" class="form-label">Content</label>
-              <textarea class="form-control" id="postContent" rows="6" required placeholder="What would you like to share?"></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="createPostBtn">Publish Post</button>
-        </div>
+  <div id="registerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 400px;">
+      <h4>Create Account</h4>
+      <div style="margin: 20px 0;">
+        <input type="text" id="registerUsername" placeholder="Username" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
+        <input type="password" id="registerPassword" placeholder="Password" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
+        <input type="password" id="registerConfirmPassword" placeholder="Confirm Password" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px;">
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-secondary" onclick="hideModal('registerModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="handleRegister()">Create Account</button>
       </div>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <div id="createPostModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 24px; border-radius: 12px; width: 500px;">
+      <h4>Create Post</h4>
+      <div style="margin: 20px 0;">
+        <select id="postCategory" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px;">
+          <option value="General">General</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Healthcare">Healthcare</option>
+        </select>
+        <textarea id="postContent" placeholder="What would you like to share?" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 6px; height: 120px;"></textarea>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-secondary" onclick="hideModal('createPostModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="handleCreatePost()">Publish</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Konekt Forum - Complete Fixed JavaScript
+    // Konekt Forum - Bulletproof Version
     const API_BASE = "https://hosting-production-a352.up.railway.app/api";
-
-    // Application State
     let currentUser = null;
-    let currentPage = 1;
-    let postsPerPage = 10;
-    let currentCategory = '';
-    let currentSort = 'newest';
-    let currentSearchQuery = '';
     let allPosts = [];
-    let categories = ['General', 'Engineering', 'Healthcare', 'Research', 'Community'];
 
-    // Initialize Application
+    // Safe DOM functions
+    function getElement(id) {
+      return document.getElementById(id);
+    }
+
+    function showElement(id) {
+      const el = getElement(id);
+      if (el) el.style.display = 'block';
+    }
+
+    function hideElement(id) {
+      const el = getElement(id);
+      if (el) el.style.display = 'none';
+    }
+
+    function setText(id, text) {
+      const el = getElement(id);
+      if (el) el.textContent = text;
+    }
+
+    function getValue(id) {
+      const el = getElement(id);
+      return el ? el.value : '';
+    }
+
+    function setValue(id, value) {
+      const el = getElement(id);
+      if (el) el.value = value;
+    }
+
+    // Modal functions
+    function showModal(id) {
+      showElement(id);
+    }
+
+    function hideModal(id) {
+      hideElement(id);
+    }
+
+    function showLogin() {
+      showModal('loginModal');
+    }
+
+    function showRegister() {
+      showModal('registerModal');
+    }
+
+    function showCreatePost() {
+      showModal('createPostModal');
+    }
+
+    // Initialize app
     document.addEventListener('DOMContentLoaded', function() {
-        initializeApp();
+      console.log('🚀 Konekt Forum Starting...');
+      checkAuthStatus();
     });
 
-    async function initializeApp() {
-        setupEventListeners();
-        await checkAuthStatus();
-        loadCategories();
-        setupSearch();
-        loadTrendingTopics();
-        loadTopContributors();
-    }
-
-    function setupEventListeners() {
-        // Auth Buttons
-        document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
-        document.getElementById('registerBtn')?.addEventListener('click', handleRegister);
-        document.getElementById('createPostBtn')?.addEventListener('click', handleCreatePost);
-        document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
-        
-        // Filters
-        document.getElementById('category-filter')?.addEventListener('change', handleCategoryFilter);
-        document.getElementById('sort-filter')?.addEventListener('change', handleSortFilter);
-        
-        // Search
-        document.getElementById('search-input')?.addEventListener('input', debounce(handleSearch, 300));
-        
-        // Navigation
-        document.addEventListener('click', handleGlobalClick);
-    }
-
-    // Fixed API Call Function
+    // API call with error handling
     async function apiCall(endpoint, options = {}) {
-        const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token');
+      
+      try {
         const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token && { 'Authorization': token }),
-                ...options.headers
-            },
-            ...options
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': token }),
+          },
+          ...options
         };
-        
+
         if (config.body && typeof config.body === 'object') {
-            config.body = JSON.stringify(config.body);
+          config.body = JSON.stringify(config.body);
         }
+
+        console.log(`📡 API Call: ${endpoint}`);
+        const response = await fetch(`${API_BASE}${endpoint}`, config);
         
-        try {
-            const response = await fetch(`${API_BASE}${endpoint}`, config);
-            
-            // Handle 401 Unauthorized
-            if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userData');
-                currentUser = null;
-                showUnauthenticatedUI();
-                throw new Error('Session expired. Please login again.');
-            }
-            
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.error || `HTTP ${response.status}`);
-            }
-            
-            return data;
-        } catch (error) {
-            console.error('API call failed:', error);
-            showToast(error.message, 'error');
-            throw error;
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userData');
+          currentUser = null;
+          showUnauthenticatedUI();
+          throw new Error('Session expired. Please login again.');
         }
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || `Request failed: ${response.status}`);
+        }
+
+        return data;
+      } catch (error) {
+        console.error('API Error:', error);
+        alert(`Error: ${error.message}`);
+        throw error;
+      }
     }
 
-    // Authentication Functions
+    // Authentication
     async function checkAuthStatus() {
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('userData');
-        
-        if (token && userData) {
-            try {
-                currentUser = JSON.parse(userData);
-                showAuthenticatedUI();
-                await loadPosts();
-            } catch (error) {
-                console.error('Auth check failed:', error);
-                handleLogout();
-            }
-        } else {
-            showUnauthenticatedUI();
+      console.log('🔐 Checking auth status...');
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('userData');
+      
+      if (token && userData) {
+        try {
+          currentUser = JSON.parse(userData);
+          console.log('✅ User found:', currentUser.username);
+          showAuthenticatedUI();
+          await loadPosts();
+        } catch (error) {
+          console.error('Auth error:', error);
+          handleLogout();
         }
+      } else {
+        console.log('❌ No user found');
+        showUnauthenticatedUI();
+      }
     }
 
     function showAuthenticatedUI() {
-        hideAllSections();
-        document.getElementById('create-post-section').classList.remove('d-none');
-        document.getElementById('posts-section').classList.remove('d-none');
-        document.getElementById('sidebar').classList.remove('d-none');
-        document.getElementById('trending-topics').classList.remove('d-none');
-        document.getElementById('filter-bar').classList.remove('d-none');
-        document.getElementById('search-container').classList.remove('d-none');
-        document.getElementById('logged-in-user').classList.remove('d-none');
-        
-        document.getElementById('username-display').textContent = currentUser.username;
-        document.getElementById('current-username').textContent = currentUser.username;
-        
-        const initials = currentUser.username.charAt(0).toUpperCase();
-        document.getElementById('user-avatar').textContent = initials;
-        document.getElementById('current-user-avatar').textContent = initials;
-        
-        const avatarColor = currentUser.avatar_color || '#007AFF';
-        document.getElementById('user-avatar').style.backgroundColor = avatarColor;
-        document.getElementById('current-user-avatar').style.backgroundColor = avatarColor;
+      console.log('👤 Showing authenticated UI');
+      hideElement('auth-section');
+      showElement('posts-section');
+      setText('username-display', currentUser.username);
+      showElement('logout-btn');
     }
 
     function showUnauthenticatedUI() {
-        hideAllSections();
-        document.getElementById('auth-section').classList.remove('d-none');
+      console.log('👥 Showing unauthenticated UI');
+      showElement('auth-section');
+      hideElement('posts-section');
+      setText('username-display', '');
+      hideElement('logout-btn');
     }
 
-    // Auth Handlers
+    // Auth handlers
     async function handleLogin() {
-        const username = document.getElementById('loginUsername').value;
-        const password = document.getElementById('loginPassword').value;
-        
-        if (!username || !password) {
-            showToast('Please fill in all fields', 'error');
-            return;
+      const username = getValue('loginUsername');
+      const password = getValue('loginPassword');
+
+      if (!username || !password) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      try {
+        const data = await apiCall('/login', {
+          method: 'POST',
+          body: { username, password }
+        });
+
+        if (data.success && data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userData', JSON.stringify(data.user));
+          currentUser = data.user;
+
+          hideModal('loginModal');
+          setValue('loginUsername', '');
+          setValue('loginPassword', '');
+          
+          showAuthenticatedUI();
+          alert('✅ Successfully signed in!');
         }
-        
-        try {
-            const data = await apiCall('/login', {
-                method: 'POST',
-                body: { username, password }
-            });
-            
-            if (data.success && data.token) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userData', JSON.stringify(data.user));
-                currentUser = data.user;
-                
-                // Close modal safely
-                const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                if (loginModal) {
-                    loginModal.hide();
-                }
-                document.getElementById('loginForm').reset();
-                
-                showAuthenticatedUI();
-                await loadPosts();
-                showToast('Successfully signed in!', 'success');
-            }
-        } catch (error) {
-            // Error handled in apiCall
-        }
+      } catch (error) {
+        // Error handled in apiCall
+      }
     }
 
     async function handleRegister() {
-        const username = document.getElementById('registerUsername').value;
-        const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
-        
-        if (!username || !password || !confirmPassword) {
-            showToast('Please fill in all fields', 'error');
-            return;
+      const username = getValue('registerUsername');
+      const password = getValue('registerPassword');
+      const confirmPassword = getValue('registerConfirmPassword');
+
+      if (!username || !password || !confirmPassword) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+
+      try {
+        const data = await apiCall('/register', {
+          method: 'POST',
+          body: { username, password }
+        });
+
+        if (data.success) {
+          hideModal('registerModal');
+          setValue('registerUsername', '');
+          setValue('registerPassword', '');
+          setValue('registerConfirmPassword', '');
+          alert('✅ Account created! Please sign in.');
         }
-        
-        if (password !== confirmPassword) {
-            showToast('Passwords do not match', 'error');
-            return;
-        }
-        
-        try {
-            const data = await apiCall('/register', {
-                method: 'POST',
-                body: { username, password }
-            });
-            
-            if (data.success) {
-                const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
-                if (registerModal) {
-                    registerModal.hide();
-                }
-                document.getElementById('registerForm').reset();
-                showToast('Account created successfully! Please sign in.', 'success');
-            }
-        } catch (error) {
-            // Error handled in apiCall
-        }
+      } catch (error) {
+        // Error handled in apiCall
+      }
     }
 
     function handleLogout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
-        currentUser = null;
-        showUnauthenticatedUI();
-        showToast('Successfully signed out', 'success');
+      localStorage.removeItem('token');
+      localStorage.removeItem('userData');
+      currentUser = null;
+      showUnauthenticatedUI();
+      alert('✅ Successfully signed out');
     }
 
-    // Post Management
+    // Post handlers
     async function handleCreatePost() {
-        const category = document.getElementById('postCategory').value;
-        const title = document.getElementById('postTitle').value;
-        const content = document.getElementById('postContent').value;
-        const tags = document.getElementById('postTags').value;
-        
-        if (!category || !content) {
-            showToast('Please fill in all required fields', 'error');
-            return;
+      const category = getValue('postCategory');
+      const content = getValue('postContent');
+
+      if (!category || !content) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      try {
+        const data = await apiCall('/posts', {
+          method: 'POST',
+          body: { category, content }
+        });
+
+        if (data.success) {
+          hideModal('createPostModal');
+          setValue('postContent', '');
+          await loadPosts();
+          alert('✅ Post published!');
         }
-        
-        try {
-            const data = await apiCall('/posts', {
-                method: 'POST',
-                body: {
-                    category,
-                    title: title || null,
-                    content,
-                    tags: tags || null
-                }
-            });
-            
-            if (data.success) {
-                const createPostModal = bootstrap.Modal.getInstance(document.getElementById('createPostModal'));
-                if (createPostModal) {
-                    createPostModal.hide();
-                }
-                document.getElementById('createPostForm').reset();
-                
-                await loadPosts();
-                showToast('Post published successfully!', 'success');
-            }
-        } catch (error) {
-            // Error handled in apiCall
-        }
+      } catch (error) {
+        // Error handled in apiCall
+      }
     }
 
-    async function loadPosts(page = 1) {
-        try {
-            const data = await apiCall('/posts');
-            
-            if (data.success) {
-                allPosts = data.data || data;
-                displayPosts(allPosts);
-                updateStats();
-            }
-        } catch (error) {
-            // Error handled in apiCall
+    async function loadPosts() {
+      try {
+        const data = await apiCall('/posts');
+        
+        if (data.success) {
+          allPosts = data.data || data;
+          displayPosts(allPosts);
         }
+      } catch (error) {
+        // Error handled in apiCall
+      }
     }
 
     function displayPosts(posts) {
-        const container = document.getElementById('posts-container');
-        if (!container) return;
-        
-        if (!posts || posts.length === 0) {
-            container.innerHTML = `
-                <div class="post-card text-center py-5">
-                    <i class="bi bi-inbox display-1 text-muted mb-3"></i>
-                    <h3 class="text-muted">No posts found</h3>
-                    <p class="text-muted">Be the first to share something with the community!</p>
-                </div>
-            `;
-            return;
-        }
-        
-        container.innerHTML = '';
-        
-        posts.forEach(post => {
-            const postElement = createPostElement(post);
-            container.appendChild(postElement);
-        });
-    }
+      const container = getElement('posts-container');
+      if (!container) return;
 
-    function createPostElement(post) {
-        const postElement = document.createElement('div');
-        postElement.className = `post-card ${post.is_pinned ? 'pinned' : ''}`;
-        
-        const initials = post.username ? post.username.charAt(0).toUpperCase() : 'U';
-        const avatarColor = post.avatar_color || '#007AFF';
-        const formattedDate = formatDate(post.timestamp);
-        
-        postElement.innerHTML = `
-            ${post.is_pinned ? '<div class="pin-badge"><i class="bi bi-pin"></i> Pinned</div>' : ''}
-            <div class="post-header">
-                <div class="post-avatar" style="background-color: ${avatarColor}">${initials}</div>
-                <div class="post-user">
-                    <div class="post-username">${post.username || 'Unknown User'}</div>
-                    <div class="post-meta">
-                        <span>${formattedDate}</span>
-                    </div>
-                </div>
-                <div class="post-category">${post.category || 'General'}</div>
+      if (!posts || posts.length === 0) {
+        container.innerHTML = '<div class="card text-center"><p>No posts yet. Be the first to post!</p></div>';
+        return;
+      }
+
+      container.innerHTML = posts.map(post => `
+        <div class="card">
+          <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 12px;">
+            <div style="flex: 1">
+              <strong>${post.username || 'User'}</strong>
+              <div style="color: #666; font-size: 14px; margin-top: 4px;">
+                ${new Date(post.timestamp).toLocaleDateString()} • ${post.category}
+              </div>
             </div>
-            ${post.title ? `<div class="post-title">${post.title}</div>` : ''}
-            <div class="post-content">
-                ${post.content || ''}
-            </div>
-            ${post.tags ? `
-            <div class="post-tags">
-                ${post.tags.split(',').map(tag => 
-                    `<span class="post-tag">#${tag.trim()}</span>`
-                ).join('')}
-            </div>
-            ` : ''}
-            <div class="post-actions">
-                <div class="post-action like-action" data-post-id="${post.id}">
-                    <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
-                    <span class="like-count">${post.likes_count || 0}</span>
-                </div>
-                <div class="post-action comment-action" data-post-id="${post.id}">
-                    <i class="bi bi-chat"></i>
-                    <span>${post.comments_count || 0}</span>
-                </div>
-                <div class="post-action">
-                    <i class="bi bi-share"></i>
-                    <span>Share</span>
-                </div>
-            </div>
-        `;
-        
-        // Add event listeners
-        const likeAction = postElement.querySelector('.like-action');
-        const commentAction = postElement.querySelector('.comment-action');
-        
-        likeAction.addEventListener('click', () => handleLikePost(post.id));
-        commentAction.addEventListener('click', () => toggleComments(post.id));
-        
-        return postElement;
+          </div>
+          <div style="margin-bottom: 16px; line-height: 1.5;">${post.content}</div>
+          <div style="display: flex; gap: 20px; border-top: 1px solid #eee; padding-top: 12px;">
+            <button class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-heart"></i> ${post.likes_count || 0}
+            </button>
+            <button class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-chat"></i> ${post.comments_count || 0}
+            </button>
+          </div>
+        </div>
+      `).join('');
     }
 
-    // Like System
-    async function handleLikePost(postId) {
-        try {
-            const data = await apiCall(`/posts/${postId}/like`, {
-                method: 'POST'
-            });
-            
-            if (data.success) {
-                // Update UI
-                const likeAction = document.querySelector(`.like-action[data-post-id="${postId}"]`);
-                if (likeAction) {
-                    const likeIcon = likeAction.querySelector('i');
-                    const likeCount = likeAction.querySelector('.like-count');
-                    
-                    likeIcon.className = data.action === 'liked' ? 'bi bi-heart-fill' : 'bi bi-heart';
-                    likeAction.classList.toggle('liked', data.action === 'liked');
-                    likeCount.textContent = data.likes_count;
-                    
-                    showToast(`Post ${data.action}`, 'success');
-                }
-            }
-        } catch (error) {
-            // Error handled in apiCall
-        }
-    }
+    // Set up logout button
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoutBtn = getElement('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+      }
+    });
 
-    // Comment System
-    async function toggleComments(postId) {
-        const commentsSection = document.getElementById(`comments-${postId}`);
-        if (!commentsSection) {
-            // Create comments section if it doesn't exist
-            const postElement = document.querySelector(`.post-card .like-action[data-post-id="${postId}"]`)?.closest('.post-card');
-            if (postElement) {
-                const commentsHTML = `
-                    <div class="comments-section" id="comments-${postId}">
-                        <div class="comment-form">
-                            <textarea class="comment-input" placeholder="Write a comment..." id="comment-input-${postId}"></textarea>
-                            <button class="btn btn-primary" onclick="addComment(${postId})">Post</button>
-                        </div>
-                        <div class="comment-list" id="comment-list-${postId}">
-                            Loading comments...
-                        </div>
-                    </div>
-                `;
-                postElement.insertAdjacentHTML('beforeend', commentsHTML);
-            }
-        }
-        
-        const commentList = document.getElementById(`comment-list-${postId}`);
-        
-        if (commentsSection.classList.contains('d-none')) {
-            // Load comments
-            try {
-                const data = await apiCall(`/posts/${postId}/comments`);
-                
-                if (data.success) {
-                    displayComments(commentList, data.data);
-                    commentsSection.classList.remove('d-none');
-                }
-            } catch (error) {
-                // Error handled in apiCall
-            }
-        } else {
-            commentsSection.classList.add('d-none');
-        }
-    }
-
-    function displayComments(container, comments) {
-        if (!container) return;
-        
-        if (!comments || comments.length === 0) {
-            container.innerHTML = '<p class="text-muted text-center">No comments yet</p>';
-            return;
-        }
-        
-        container.innerHTML = comments.map(comment => `
-            <div class="comment-card">
-                <div class="comment-header">
-                    <div class="comment-avatar" style="background-color: ${comment.avatar_color || '#007AFF'}">
-                        ${comment.username ? comment.username.charAt(0).toUpperCase() : 'U'}
-                    </div>
-                    <div>
-                        <div class="comment-username">${comment.username}</div>
-                        <div class="comment-meta">${formatDate(comment.timestamp)}</div>
-                    </div>
-                </div>
-                <div class="comment-content">${comment.content}</div>
-            </div>
-        `).join('');
-    }
-
-    async function addComment(postId) {
-        const commentInput = document.getElementById(`comment-input-${postId}`);
-        if (!commentInput) return;
-        
-        const content = commentInput.value.trim();
-        
-        if (!content) {
-            showToast('Please write a comment', 'error');
-            return;
-        }
-        
-        try {
-            const data = await apiCall(`/posts/${postId}/comments`, {
-                method: 'POST',
-                body: { content }
-            });
-            
-            if (data.success) {
-                commentInput.value = '';
-                await toggleComments(postId);
-                showToast('Comment added successfully!', 'success');
-            }
-        } catch (error) {
-            // Error handled in apiCall
-        }
-    }
-
-    // Categories & Filtering
-    function loadCategories() {
-        updateCategoryFilters();
-        updateCategoryStats();
-    }
-
-    function updateCategoryFilters() {
-        const categoryList = document.getElementById('category-list');
-        if (!categoryList) return;
-        
-        categoryList.innerHTML = `
-            <li>
-                <a href="#" class="active" data-category="">
-                    <i class="bi bi-house"></i> All Posts
-                    <span class="category-count">${allPosts.length}</span>
-                </a>
-            </li>
-            ${categories.map(category => `
-                <li>
-                    <a href="#" data-category="${category}">
-                        <i class="bi bi-tag"></i> ${category}
-                        <span class="category-count">${allPosts.filter(p => p.category === category).length}</span>
-                    </a>
-                </li>
-            `).join('')}
-        `;
-        
-        // Add event listeners to category links
-        categoryList.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const category = e.target.getAttribute('data-category');
-                handleCategorySelect(category);
-            });
-        });
-    }
-
-    function updateCategoryStats() {
-        const statPosts = document.getElementById('stat-posts');
-        const statUsers = document.getElementById('stat-users');
-        
-        if (statPosts) statPosts.textContent = allPosts.length;
-        if (statUsers) statUsers.textContent = '3';
-    }
-
-    function handleCategorySelect(category) {
-        currentCategory = category;
-        currentPage = 1;
-        loadPosts();
-    }
-
-    function handleCategoryFilter() {
-        const categoryFilter = document.getElementById('category-filter');
-        if (categoryFilter) {
-            currentCategory = categoryFilter.value;
-            currentPage = 1;
-            loadPosts();
-        }
-    }
-
-    function handleSortFilter() {
-        currentSort = 'newest';
-        loadPosts();
-    }
-
-    // Search Functionality
-    function setupSearch() {
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.addEventListener('focus', () => {
-                if (currentSearchQuery) {
-                    showSearchResults();
-                }
-            });
-        }
-    }
-
-    async function handleSearch() {
-        const searchInput = document.getElementById('search-input');
-        if (!searchInput) return;
-        
-        currentSearchQuery = searchInput.value.trim();
-        
-        if (currentSearchQuery.length < 2) {
-            hideSearchResults();
-            return;
-        }
-        
-        try {
-            const data = await apiCall(`/search?q=${encodeURIComponent(currentSearchQuery)}`);
-            
-            if (data.success) {
-                displaySearchResults(data);
-                showSearchResults();
-            }
-        } catch (error) {
-            // Error handled in apiCall
-        }
-    }
-
-    function displaySearchResults(data) {
-        const searchPostsResults = document.getElementById('search-posts-results');
-        const searchUsersResults = document.getElementById('search-users-results');
-        
-        if (!searchPostsResults || !searchUsersResults) return;
-        
-        // Posts results
-        if (data.posts && data.posts.length > 0) {
-            searchPostsResults.innerHTML = data.posts.map(post => `
-                <div class="post-card">
-                    <div class="post-header">
-                        <div class="post-avatar" style="background-color: ${post.avatar_color || '#007AFF'}">
-                            ${post.username ? post.username.charAt(0).toUpperCase() : 'U'}
-                        </div>
-                        <div class="post-user">
-                            <div class="post-username">${post.username}</div>
-                            <div class="post-meta">${formatDate(post.timestamp)}</div>
-                        </div>
-                        <div class="post-category">${post.category}</div>
-                    </div>
-                    ${post.title ? `<div class="post-title">${post.title}</div>` : ''}
-                    <div class="post-content">${post.content}</div>
-                </div>
-            `).join('');
-        } else {
-            searchPostsResults.innerHTML = '<p class="text-muted">No posts found</p>';
-        }
-    }
-
-    function showSearchResults() {
-        hideAllSections();
-        const searchResultsSection = document.getElementById('search-results-section');
-        if (searchResultsSection) {
-            searchResultsSection.classList.remove('d-none');
-        }
-    }
-
-    function hideSearchResults() {
-        const searchResultsSection = document.getElementById('search-results-section');
-        if (searchResultsSection) {
-            searchResultsSection.classList.add('d-none');
-        }
-        showMainContent();
-    }
-
-    // Analytics & Profile
-    async function showAnalytics() {
-        try {
-            const data = await apiCall('/analytics/overview');
-            
-            if (data.success) {
-                displayAnalytics(data.overview);
-                hideAllSections();
-                document.getElementById('analytics-section').classList.remove('d-none');
-            }
-        } catch (error) {
-            // Use mock data if API fails
-            const mockData = {
-                total_posts: allPosts.length,
-                total_users: 3,
-                total_likes: allPosts.reduce((sum, post) => sum + (post.likes_count || 0), 0),
-                total_comments: allPosts.reduce((sum, post) => sum + (post.comments_count || 0), 0),
-                categories: categories.reduce((acc, cat) => {
-                    acc[cat] = allPosts.filter(p => p.category === cat).length;
-                    return acc;
-                }, {}),
-                recent_activity: allPosts.slice(0, 3).map(post => ({
-                    username: post.username,
-                    category: post.category,
-                    timestamp: post.timestamp
-                }))
-            };
-            displayAnalytics(mockData);
-            hideAllSections();
-            document.getElementById('analytics-section').classList.remove('d-none');
-        }
-    }
-
-    function displayAnalytics(analyticsData) {
-        if (!analyticsData) return;
-        
-        document.getElementById('analytics-posts').textContent = analyticsData.total_posts || 0;
-        document.getElementById('analytics-users').textContent = analyticsData.total_users || 0;
-        document.getElementById('analytics-likes').textContent = analyticsData.total_likes || 0;
-        document.getElementById('analytics-comments').textContent = analyticsData.total_comments || 0;
-    }
-
-    async function showProfile() {
-        try {
-            const data = await apiCall('/profile');
-            
-            if (data.success) {
-                displayProfile(data);
-                hideAllSections();
-                document.getElementById('profile-section').classList.remove('d-none');
-            }
-        } catch (error) {
-            // Use mock data if API fails
-            const mockData = {
-                profile: {
-                    username: currentUser.username,
-                    bio: 'Active community member',
-                    created_at: new Date().toISOString(),
-                    avatar_color: currentUser.avatar_color || '#007AFF'
-                },
-                stats: {
-                    posts: allPosts.filter(post => post.username === currentUser.username).length,
-                    likes_received: 0
-                }
-            };
-            displayProfile(mockData);
-            hideAllSections();
-            document.getElementById('profile-section').classList.remove('d-none');
-        }
-    }
-
-    function displayProfile(data) {
-        const profile = data.profile;
-        const stats = data.stats;
-        
-        document.getElementById('profile-avatar').textContent = profile.username.charAt(0).toUpperCase();
-        document.getElementById('profile-avatar').style.backgroundColor = profile.avatar_color || '#007AFF';
-        document.getElementById('profile-name').textContent = profile.username;
-        document.getElementById('profile-bio').textContent = profile.bio || 'No bio yet';
-        document.getElementById('profile-posts').textContent = stats.posts || 0;
-        document.getElementById('profile-likes').textContent = stats.likes_received || 0;
-        document.getElementById('profile-member').textContent = '1d';
-    }
-
-    // Stats & Updates
-    function updateStats() {
-        const statPosts = document.getElementById('stat-posts');
-        const statUsers = document.getElementById('stat-users');
-        
-        if (statPosts) statPosts.textContent = allPosts.length;
-        if (statUsers) statUsers.textContent = '3';
-    }
-
-    function loadTrendingTopics() {
-        const container = document.getElementById('trending-topics-list');
-        if (!container) return;
-        
-        const trendingTopics = [
-            { title: 'Welcome to Konekt!', category: 'General', replies: 24 },
-            { title: 'Programming Tips', category: 'Engineering', replies: 18 }
-        ];
-        
-        container.innerHTML = trendingTopics.map(topic => `
-            <div class="topic-item">
-                <div class="topic-avatar" style="background-color: #007AFF">
-                    ${topic.category.charAt(0)}
-                </div>
-                <div class="topic-content">
-                    <div class="topic-title">${topic.title}</div>
-                    <div class="topic-meta">${topic.category} • ${topic.replies} replies</div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function loadTopContributors() {
-        const container = document.getElementById('top-contributors');
-        if (!container) return;
-        
-        const contributors = [
-            { username: 'JohnDoe', posts: 42 },
-            { username: 'SarahSmith', posts: 38 }
-        ];
-        
-        container.innerHTML = contributors.map(contributor => `
-            <div class="topic-item">
-                <div class="topic-avatar" style="background-color: #34C759">
-                    ${contributor.username.charAt(0)}
-                </div>
-                <div class="topic-content">
-                    <div class="topic-title">${contributor.username}</div>
-                    <div class="topic-meta">${contributor.posts} posts</div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Utility Functions
-    function hideAllSections() {
-        const sections = [
-            'posts-section',
-            'analytics-section',
-            'profile-section',
-            'search-results-section',
-            'auth-section'
-        ];
-        
-        sections.forEach(section => {
-            const element = document.getElementById(section);
-            if (element) {
-                element.classList.add('d-none');
-            }
-        });
-    }
-
-    function showMainContent() {
-        hideAllSections();
-        document.getElementById('posts-section').classList.remove('d-none');
-    }
-
-    function formatDate(dateString) {
-        if (!dateString) return 'Recently';
-        
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString();
-        } catch (error) {
-            return 'Recently';
-        }
-    }
-
-    function showToast(message, type) {
-        console.log(`${type}: ${message}`);
-        alert(message);
-    }
-
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    function handleGlobalClick(event) {
-        // Close search results when clicking outside
-        const searchContainer = document.getElementById('search-container');
-        const searchResultsSection = document.getElementById('search-results-section');
-        
-        if (searchContainer && searchResultsSection && 
-            !searchContainer.contains(event.target) && 
-            !searchResultsSection.contains(event.target)) {
-            hideSearchResults();
-        }
-    }
-
-    // Make functions globally available
-    window.showAnalytics = showAnalytics;
-    window.showProfile = showProfile;
-    window.addComment = addComment;
+    console.log('🎯 Konekt Forum Loaded Successfully!');
   </script>
 </body>
 </html>
