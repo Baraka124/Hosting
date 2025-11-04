@@ -757,674 +757,728 @@
   </div>
 
   <script>
-    // 🚀 Enhanced EdgePowered Forum - Ultra Fast & Responsive
-    console.log('🚀 EdgePowered Enhanced Forum Loading...');
+// 🚀 Enhanced EdgePowered Forum - Ultra Fast & Responsive
+console.log('🚀 EdgePowered Enhanced Forum Loading...');
 
-    // Configuration
-    const API_BASE = "https://hosting-production-a352.up.railway.app/api";
-    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+// Configuration
+const API_BASE = "https://hosting-production-a352.up.railway.app/api";
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-    // Ultra Fast State Manager with Memory Optimization
-    class UltraStateManager {
-      constructor() {
-        this.state = {
-          user: null,
-          posts: [],
-          cache: new Map(),
-          ui: {
-            loading: false,
-            theme: localStorage.getItem('theme') || 'light',
-            currentPage: 1,
-            hasMore: true,
-            filters: { category: '', search: '' }
-          }
-        };
-        this.listeners = new Set();
-        this.debounceTimers = new Map();
+// Ultra Fast State Manager with Memory Optimization
+class UltraStateManager {
+  constructor() {
+    this.state = {
+      user: null,
+      posts: [],
+      ui: {
+        loading: false,
+        theme: localStorage.getItem('theme') || 'light',
+        currentPage: 1,
+        hasMore: true,
+        filters: { category: '', search: '' }
       }
+    };
+    this.listeners = new Set();
+    this.debounceTimers = new Map();
+    this.cache = new Map(); // Initialize cache
+  }
 
-      setState(newState) {
-        const oldState = this.state;
-        this.state = { ...this.state, ...newState };
-        
-        // Only notify if actual changes occurred
-        if (JSON.stringify(oldState) !== JSON.stringify(this.state)) {
-          this.notifyListeners();
-        }
-      }
+  setState(newState) {
+    const oldState = this.state;
+    this.state = { ...this.state, ...newState };
+    
+    if (JSON.stringify(oldState) !== JSON.stringify(this.state)) {
+      this.notifyListeners();
+    }
+  }
 
-      subscribe(listener) {
-        this.listeners.add(listener);
-        return () => this.listeners.delete(listener);
-      }
+  subscribe(listener) {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
 
-      notifyListeners() {
-        this.listeners.forEach(listener => {
-          try {
-            listener(this.state);
-          } catch (error) {
-            console.error('Listener error:', error);
-          }
-        });
+  notifyListeners() {
+    this.listeners.forEach(listener => {
+      try {
+        listener(this.state);
+      } catch (error) {
+        console.error('Listener error:', error);
       }
+    });
+  }
 
-      debounce(key, fn, delay = 300) {
-        clearTimeout(this.debounceTimers.get(key));
-        this.debounceTimers.set(key, setTimeout(fn, delay));
-      }
+  debounce(key, fn, delay = 300) {
+    clearTimeout(this.debounceTimers.get(key));
+    this.debounceTimers.set(key, setTimeout(fn, delay));
+  }
 
-      cacheData(key, data, duration = CACHE_DURATION) {
-        this.cache.set(key, {
-          data,
-          timestamp: Date.now(),
-          duration
-        });
-      }
+  cacheData(key, data, duration = CACHE_DURATION) {
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now(),
+      duration
+    });
+  }
 
-      getCachedData(key) {
-        const cached = this.cache.get(key);
-        if (cached && Date.now() - cached.timestamp < cached.duration) {
-          return cached.data;
-        }
-        this.cache.delete(key);
-        return null;
-      }
+  getCachedData(key) {
+    if (!this.cache) {
+      this.cache = new Map(); // Safety initialization
+    }
+    const cached = this.cache.get(key);
+    if (cached && Date.now() - cached.timestamp < cached.duration) {
+      return cached.data;
+    }
+    this.cache.delete(key);
+    return null;
+  }
+
+  updateFilters(newFilters) {
+    this.setState({
+      ui: {
+        ...this.state.ui,
+        filters: { ...this.state.ui.filters, ...newFilters },
+        currentPage: 1
+      },
+      posts: []
+    });
+  }
+}
+
+const appState = new UltraStateManager();
+
+// 🚀 Ultra Fast API Manager
+class UltraAPIManager {
+  constructor() {
+    this.pendingRequests = new Map();
+    this.requestQueue = [];
+    this.maxConcurrent = 3;
+    this.activeRequests = 0;
+  }
+
+  async call(endpoint, options = {}) {
+    const requestKey = `${endpoint}-${JSON.stringify(options.body || {})}`;
+    
+    // Safe cache check
+    const cached = appState.getCachedData(requestKey);
+    if (cached && options.method?.toUpperCase() === 'GET') {
+      return cached;
     }
 
-    const appState = new UltraStateManager();
-
-    // 🚀 Ultra Fast API Manager
-    class UltraAPIManager {
-      constructor() {
-        this.pendingRequests = new Map();
-        this.requestQueue = [];
-        this.maxConcurrent = 3;
-        this.activeRequests = 0;
-      }
-
-      async call(endpoint, options = {}) {
-        const requestKey = `${endpoint}-${JSON.stringify(options.body || {})}`;
-        
-        // Check cache first
-        const cached = appState.getCachedData(requestKey);
-        if (cached && options.method?.toUpperCase() === 'GET') {
-          return cached;
-        }
-
-        // Debounce identical requests
-        if (this.pendingRequests.has(requestKey)) {
-          return this.pendingRequests.get(requestKey);
-        }
-
-        const promise = this.executeRequest(endpoint, options, requestKey);
-        this.pendingRequests.set(requestKey, promise);
-
-        try {
-          const result = await promise;
-          appState.cacheData(requestKey, result);
-          return result;
-        } finally {
-          this.pendingRequests.delete(requestKey);
-        }
-      }
-
-      async executeRequest(endpoint, options, key) {
-        // Queue management for concurrent requests
-        if (this.activeRequests >= this.maxConcurrent) {
-          await new Promise(resolve => {
-            this.requestQueue.push(resolve);
-          });
-        }
-
-        this.activeRequests++;
-
-        try {
-          const token = localStorage.getItem('token');
-          const config = {
-            headers: {
-              'Content-Type': 'application/json',
-              ...(token && { 'Authorization': token }),
-            },
-            ...options
-          };
-
-          if (config.body) {
-            config.body = JSON.stringify(config.body);
-          }
-
-          const response = await fetch(API_BASE + endpoint, config);
-          const data = await response.json();
-          
-          if (!response.ok) {
-            throw new Error(data.error || `HTTP ${response.status}`);
-          }
-
-          return data;
-        } catch (error) {
-          console.error(`API Error [${endpoint}]:`, error);
-          throw error;
-        } finally {
-          this.activeRequests--;
-          // Process next request in queue
-          if (this.requestQueue.length > 0) {
-            const next = this.requestQueue.shift();
-            next();
-          }
-        }
-      }
+    if (this.pendingRequests.has(requestKey)) {
+      return this.pendingRequests.get(requestKey);
     }
 
-    const apiManager = new UltraAPIManager();
+    const promise = this.executeRequest(endpoint, options, requestKey);
+    this.pendingRequests.set(requestKey, promise);
 
-    // 🚀 Instant Posts Manager
-    class InstantPostsManager {
-      constructor() {
-        this.isLoading = false;
-        this.lastLoadTime = 0;
-        this.loadThrottle = 500; // ms between loads
-      }
-
-      async loadPosts(force = false) {
-        const now = Date.now();
-        if (this.isLoading || (now - this.lastLoadTime < this.loadThrottle && !force)) {
-          return;
-        }
-
-        this.isLoading = true;
-        this.lastLoadTime = now;
-        
-        // Show instant skeleton UI
-        this.showSkeletonPosts();
-
-        try {
-          const { currentPage, filters } = appState.state.ui;
-          const params = new URLSearchParams({
-            page: currentPage,
-            per_page: 8, // Optimized for mobile
-            ...(filters.category && { category: filters.category }),
-            ...(filters.search && { search: filters.search })
-          });
-
-          const data = await apiManager.call(`/posts?${params}`);
-          
-          if (data.success) {
-            const posts = currentPage === 1 ? 
-              data.data : 
-              [...appState.state.posts, ...data.data];
-            
-            appState.setState({ 
-              posts,
-              ui: { 
-                ...appState.state.ui, 
-                loading: false,
-                hasMore: currentPage < data.pagination.pages
-              }
-            });
-          }
-        } catch (error) {
-          console.error('Posts load error:', error);
-          uiManager.showToast('Failed to load posts', 'error');
-        } finally {
-          this.isLoading = false;
-        }
-      }
-
-      showSkeletonPosts() {
-        const container = document.getElementById('posts-container');
-        const count = appState.state.posts.length === 0 ? 3 : 2;
-        
-        container.innerHTML = Array.from({ length: count }, () => `
-          <div class="card post-card">
-            <div class="post-header">
-              <div class="skeleton skeleton-avatar"></div>
-              <div style="flex: 1;">
-                <div class="skeleton skeleton-block" style="width: 40%; height: 1.25rem;"></div>
-                <div class="skeleton skeleton-block" style="width: 60%; height: 0.875rem;"></div>
-              </div>
-            </div>
-            <div style="padding: 0 1.5rem 1.5rem;">
-              <div class="skeleton skeleton-block"></div>
-              <div class="skeleton skeleton-block" style="width: 80%;"></div>
-              <div class="skeleton skeleton-block" style="width: 60%;"></div>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      async createPost(category, content) {
-        if (!content.trim() || content === '<br>') {
-          uiManager.showToast('Please enter some content', 'warning');
-          return false;
-        }
-
-        try {
-          const data = await apiManager.call('/posts', {
-            method: 'POST',
-            body: { category, content }
-          });
-
-          if (data.success) {
-            // Optimistic update
-            const newPost = {
-              id: data.post_id,
-              content,
-              category,
-              user_id: appState.state.user.id,
-              username: appState.state.user.username,
-              avatar_color: appState.state.user.avatar_color,
-              timestamp: new Date().toISOString(),
-              likes_count: 0,
-              comments_count: 0,
-              user_has_liked: false,
-              formatted_timestamp: 'Just now'
-            };
-
-            appState.setState({
-              posts: [newPost, ...appState.state.posts]
-            });
-
-            uiManager.showToast('Post published successfully!', 'success');
-            return true;
-          }
-        } catch (error) {
-          console.error('Create post error:', error);
-          uiManager.showToast('Failed to create post', 'error');
-          return false;
-        }
-      }
-
-      async likePost(postId) {
-        try {
-          const data = await apiManager.call(`/posts/${postId}/like`, {
-            method: 'POST'
-          });
-
-          if (data.success) {
-            // Instant UI update
-            const posts = appState.state.posts.map(post => {
-              if (post.id === postId) {
-                return {
-                  ...post,
-                  likes_count: data.likes_count,
-                  user_has_liked: data.action === 'liked'
-                };
-              }
-              return post;
-            });
-
-            appState.setState({ posts });
-          }
-        } catch (error) {
-          console.error('Like error:', error);
-        }
-      }
+    try {
+      const result = await promise;
+      appState.cacheData(requestKey, result);
+      return result;
+    } finally {
+      this.pendingRequests.delete(requestKey);
     }
+  }
 
-    // 🚀 Enhanced UI Manager
-    class EnhancedUIManager {
-      constructor() {
-        this.postsManager = new InstantPostsManager();
-        this.setupEventListeners();
-        this.initializeApp();
-      }
-
-      setupEventListeners() {
-        // Auth
-        document.getElementById('sign-in-btn').addEventListener('click', () => this.showModal('loginModal'));
-        document.getElementById('create-account-btn').addEventListener('click', () => this.showModal('registerModal'));
-        document.getElementById('login-btn-main').addEventListener('click', () => this.showModal('loginModal'));
-        document.getElementById('logout-btn').addEventListener('click', () => this.logout());
-
-        // Posts
-        document.getElementById('new-post-btn').addEventListener('click', () => this.showModal('createPostModal'));
-        document.getElementById('create-post-btn').addEventListener('click', () => this.handleCreatePost());
-        document.getElementById('load-more-btn').addEventListener('click', () => this.loadMorePosts());
-
-        // Modals
-        document.getElementById('cancel-login-btn').addEventListener('click', () => this.hideModal('loginModal'));
-        document.getElementById('cancel-post-btn').addEventListener('click', () => this.hideModal('createPostModal'));
-        document.getElementById('login-btn').addEventListener('click', () => this.handleLogin());
-
-        // Filters
-        document.getElementById('category-filter').addEventListener('change', (e) => {
-          appState.updateFilters({ category: e.target.value });
-          this.postsManager.loadPosts(true);
-        });
-
-        document.getElementById('search-input').addEventListener('input', (e) => {
-          appState.debounce('search', () => {
-            appState.updateFilters({ search: e.target.value });
-            this.postsManager.loadPosts(true);
-          }, 500);
-        });
-
-        document.getElementById('clear-filters-btn').addEventListener('click', () => {
-          document.getElementById('category-filter').value = '';
-          document.getElementById('search-input').value = '';
-          appState.updateFilters({ category: '', search: '' });
-          this.postsManager.loadPosts(true);
-        });
-
-        // Theme
-        document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
-
-        // Global click handlers
-        document.addEventListener('click', (e) => {
-          if (e.target.classList.contains('modal-overlay')) {
-            this.hideModal(e.target.id);
-          }
-        });
-
-        // Enter key for login
-        document.getElementById('loginPassword')?.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') this.handleLogin();
-        });
-      }
-
-      initializeApp() {
-        // Set theme
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.body.setAttribute('data-theme', savedTheme);
-        this.updateThemeIcon(savedTheme);
-
-        // Check auth
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('userData');
-        
-        if (token && userData) {
-          try {
-            const user = JSON.parse(userData);
-            appState.setState({ user });
-            this.showAuthenticatedUI();
-            this.postsManager.loadPosts();
-          } catch (error) {
-            this.clearAuth();
-          }
-        }
-      }
-
-      async handleLogin() {
-        const username = document.getElementById('loginUsername').value.trim();
-        const password = document.getElementById('loginPassword').value;
-
-        if (!username || !password) {
-          this.showToast('Please fill in all fields', 'warning');
-          return;
-        }
-
-        this.showToast('Signing in...', 'info');
-
-        try {
-          const data = await apiManager.call('/login', {
-            method: 'POST',
-            body: { username, password }
-          });
-
-          if (data.success && data.token) {
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('userData', JSON.stringify(data.user));
-            appState.setState({ user: data.user });
-
-            this.hideModal('loginModal');
-            this.clearLoginForm();
-            this.showAuthenticatedUI();
-            this.showToast('Welcome back!', 'success');
-            this.postsManager.loadPosts();
-          }
-        } catch (error) {
-          this.showToast('Invalid credentials', 'error');
-        }
-      }
-
-      async handleCreatePost() {
-        const category = document.getElementById('postCategory').value;
-        const content = document.getElementById('postContent').innerHTML;
-
-        const success = await this.postsManager.createPost(category, content);
-        if (success) {
-          this.hideModal('createPostModal');
-          document.getElementById('postContent').innerHTML = '';
-        }
-      }
-
-      showAuthenticatedUI() {
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('posts-section').style.display = 'block';
-        document.getElementById('quick-actions').style.display = 'flex';
-        document.getElementById('login-btn-main').style.display = 'none';
-        document.getElementById('authenticated-ui').style.display = 'block';
-        document.getElementById('username-display').textContent = appState.state.user.username;
-      }
-
-      showUnauthenticatedUI() {
-        document.getElementById('auth-section').style.display = 'block';
-        document.getElementById('posts-section').style.display = 'none';
-        document.getElementById('quick-actions').style.display = 'none';
-        document.getElementById('login-btn-main').style.display = 'block';
-        document.getElementById('authenticated-ui').style.display = 'none';
-      }
-
-      logout() {
-        this.clearAuth();
-        this.showUnauthenticatedUI();
-        this.showToast('Signed out successfully', 'success');
-      }
-
-      clearAuth() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
-        appState.setState({ 
-          user: null, 
-          posts: [],
-          cache: new Map()
-        });
-      }
-
-      clearLoginForm() {
-        document.getElementById('loginUsername').value = '';
-        document.getElementById('loginPassword').value = '';
-      }
-
-      showModal(id) {
-        document.getElementById(id).style.display = 'block';
-        document.body.style.overflow = 'hidden';
-      }
-
-      hideModal(id) {
-        document.getElementById(id).style.display = 'none';
-        document.body.style.overflow = 'auto';
-      }
-
-      toggleTheme() {
-        const newTheme = appState.state.ui.theme === 'light' ? 'dark' : 'light';
-        appState.setState({ 
-          ui: { ...appState.state.ui, theme: newTheme }
-        });
-        localStorage.setItem('theme', newTheme);
-        document.body.setAttribute('data-theme', newTheme);
-        this.updateThemeIcon(newTheme);
-      }
-
-      updateThemeIcon(theme) {
-        const themeIcon = document.querySelector('#theme-toggle i');
-        themeIcon.className = theme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
-      }
-
-      loadMorePosts() {
-        const { currentPage, hasMore } = appState.state.ui;
-        if (hasMore) {
-          appState.setState({
-            ui: { ...appState.state.ui, currentPage: currentPage + 1 }
-          });
-          this.postsManager.loadPosts();
-        }
-      }
-
-      showToast(message, type = 'info') {
-        const toastContainer = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `
-          <i class="bi bi-${this.getToastIcon(type)}"></i>
-          <span>${message}</span>
-        `;
-        
-        toastContainer.appendChild(toast);
-        
-        setTimeout(() => {
-          toast.style.animation = 'toastSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) reverse forwards';
-          setTimeout(() => toast.remove(), 500);
-        }, 3000);
-      }
-
-      getToastIcon(type) {
-        const icons = {
-          success: 'check-circle',
-          error: 'exclamation-circle',
-          warning: 'exclamation-triangle',
-          info: 'info-circle'
-        };
-        return icons[type] || 'info-circle';
-      }
-
-      renderPosts(posts) {
-        const container = document.getElementById('posts-container');
-        
-        if (posts.length === 0) {
-          container.innerHTML = `
-            <div class="card text-center" style="padding: 3rem;">
-              <i class="bi bi-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
-              <h5 style="color: var(--text-secondary);">No posts found</h5>
-              <p style="color: var(--text-muted);">Be the first to start a discussion!</p>
-            </div>
-          `;
-          return;
-        }
-
-        container.innerHTML = posts.map(post => `
-          <div class="card post-card" data-post-id="${post.id}">
-            <div class="post-header">
-              <div class="user-avatar" style="background-color: ${post.avatar_color}">
-                ${post.username.charAt(0).toUpperCase()}
-              </div>
-              <div style="flex: 1;">
-                <strong style="display: block; margin-bottom: 0.25rem; cursor: pointer;">${post.username}</strong>
-                <span style="color: var(--text-muted); font-size: 0.875rem;">
-                  ${post.formatted_timestamp} • ${post.category}
-                </span>
-              </div>
-            </div>
-            <div class="post-content">${post.content}</div>
-            <div class="post-actions">
-              <div class="action-group" style="display: flex; gap: 0.5rem;">
-                <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
-                        onclick="uiManager.postsManager.likePost(${post.id})">
-                  <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
-                  <span class="count">${post.likes_count}</span>
-                </button>
-                <button class="action-btn">
-                  <i class="bi bi-chat"></i>
-                  <span class="count">${post.comments_count}</span>
-                </button>
-                <button class="action-btn">
-                  <i class="bi bi-share"></i>
-                </button>
-              </div>
-              <button class="action-btn bookmark-btn">
-                <i class="bi bi-bookmark"></i>
-              </button>
-            </div>
-          </div>
-        `).join('');
-      }
-    }
-
-    // 🚀 Enhanced Search
-    class EnhancedSearch {
-      focusSearch() {
-        document.getElementById('search-input').focus();
-      }
-    }
-
-    // Initialize enhanced state methods
-    appState.updateFilters = function(newFilters) {
-      this.setState({
-        ui: {
-          ...this.state.ui,
-          filters: { ...this.state.ui.filters, ...newFilters },
-          currentPage: 1
-        },
-        posts: []
+  async executeRequest(endpoint, options, key) {
+    if (this.activeRequests >= this.maxConcurrent) {
+      await new Promise(resolve => {
+        this.requestQueue.push(resolve);
       });
+    }
+
+    this.activeRequests++;
+
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': token }),
+        },
+        ...options
+      };
+
+      if (config.body) {
+        config.body = JSON.stringify(config.body);
+      }
+
+      const response = await fetch(API_BASE + endpoint, config);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || `HTTP ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error(`API Error [${endpoint}]:`, error);
+      throw error;
+    } finally {
+      this.activeRequests--;
+      if (this.requestQueue.length > 0) {
+        const next = this.requestQueue.shift();
+        next();
+      }
+    }
+  }
+}
+
+const apiManager = new UltraAPIManager();
+
+// 🚀 Instant Posts Manager
+class InstantPostsManager {
+  constructor() {
+    this.isLoading = false;
+    this.lastLoadTime = 0;
+    this.loadThrottle = 500;
+  }
+
+  async loadPosts(force = false) {
+    const now = Date.now();
+    if (this.isLoading || (now - this.lastLoadTime < this.loadThrottle && !force)) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.lastLoadTime = now;
+    
+    this.showSkeletonPosts();
+
+    try {
+      const { currentPage, filters } = appState.state.ui;
+      const params = new URLSearchParams({
+        page: currentPage,
+        per_page: 8,
+        ...(filters.category && { category: filters.category }),
+        ...(filters.search && { search: filters.search })
+      });
+
+      const data = await apiManager.call(`/posts?${params}`);
+      
+      if (data.success) {
+        const posts = currentPage === 1 ? 
+          data.data : 
+          [...appState.state.posts, ...data.data];
+        
+        appState.setState({ 
+          posts,
+          ui: { 
+            ...appState.state.ui, 
+            loading: false,
+            hasMore: currentPage < data.pagination.pages
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Posts load error:', error);
+      uiManager.showToast('Failed to load posts', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  showSkeletonPosts() {
+    const container = document.getElementById('posts-container');
+    if (!container) return;
+    
+    const count = appState.state.posts.length === 0 ? 3 : 2;
+    
+    container.innerHTML = Array.from({ length: count }, () => `
+      <div class="card post-card">
+        <div class="post-header">
+          <div class="skeleton skeleton-avatar"></div>
+          <div style="flex: 1;">
+            <div class="skeleton skeleton-block" style="width: 40%; height: 1.25rem;"></div>
+            <div class="skeleton skeleton-block" style="width: 60%; height: 0.875rem;"></div>
+          </div>
+        </div>
+        <div style="padding: 0 1.5rem 1.5rem;">
+          <div class="skeleton skeleton-block"></div>
+          <div class="skeleton skeleton-block" style="width: 80%;"></div>
+          <div class="skeleton skeleton-block" style="width: 60%;"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async createPost(category, content) {
+    if (!content.trim() || content === '<br>') {
+      uiManager.showToast('Please enter some content', 'warning');
+      return false;
+    }
+
+    try {
+      const data = await apiManager.call('/posts', {
+        method: 'POST',
+        body: { category, content }
+      });
+
+      if (data.success) {
+        const newPost = {
+          id: data.post_id,
+          content,
+          category,
+          user_id: appState.state.user.id,
+          username: appState.state.user.username,
+          avatar_color: appState.state.user.avatar_color,
+          timestamp: new Date().toISOString(),
+          likes_count: 0,
+          comments_count: 0,
+          user_has_liked: false,
+          formatted_timestamp: 'Just now'
+        };
+
+        appState.setState({
+          posts: [newPost, ...appState.state.posts]
+        });
+
+        uiManager.showToast('Post published successfully!', 'success');
+        return true;
+      }
+    } catch (error) {
+      console.error('Create post error:', error);
+      uiManager.showToast('Failed to create post', 'error');
+      return false;
+    }
+  }
+
+  async likePost(postId) {
+    try {
+      const data = await apiManager.call(`/posts/${postId}/like`, {
+        method: 'POST'
+      });
+
+      if (data.success) {
+        const posts = appState.state.posts.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              likes_count: data.likes_count,
+              user_has_liked: data.action === 'liked'
+            };
+          }
+          return post;
+        });
+
+        appState.setState({ posts });
+      }
+    } catch (error) {
+      console.error('Like error:', error);
+    }
+  }
+}
+
+// 🚀 Enhanced UI Manager
+class EnhancedUIManager {
+  constructor() {
+    this.postsManager = new InstantPostsManager();
+    this.setupEventListeners();
+    this.initializeApp();
+  }
+
+  setupEventListeners() {
+    // Safe event listener binding
+    const safeAddEventListener = (id, event, handler) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener(event, handler);
+      }
     };
 
-    // Initialize the application
-    let uiManager;
-    let enhancedSearch;
+    // Auth
+    safeAddEventListener('sign-in-btn', 'click', () => this.showModal('loginModal'));
+    safeAddEventListener('create-account-btn', 'click', () => this.showModal('registerModal'));
+    safeAddEventListener('login-btn-main', 'click', () => this.showModal('loginModal'));
+    safeAddEventListener('logout-btn', 'click', () => this.logout());
 
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('🚀 Enhanced EdgePowered Forum Initialized');
-      
-      uiManager = new EnhancedUIManager();
-      enhancedSearch = new EnhancedSearch();
+    // Posts
+    safeAddEventListener('new-post-btn', 'click', () => this.showModal('createPostModal'));
+    safeAddEventListener('create-post-btn', 'click', () => this.handleCreatePost());
+    safeAddEventListener('load-more-btn', 'click', () => this.loadMorePosts());
 
-      // Subscribe to state changes
-      appState.subscribe((state) => {
-        if (state.posts.length > 0) {
-          uiManager.renderPosts(state.posts);
-        }
+    // Modals
+    safeAddEventListener('cancel-login-btn', 'click', () => this.hideModal('loginModal'));
+    safeAddEventListener('cancel-post-btn', 'click', () => this.hideModal('createPostModal'));
+    safeAddEventListener('login-btn', 'click', () => this.handleLogin());
 
-        // Update load more button
-        const loadMoreContainer = document.getElementById('load-more-container');
-        const loadMoreBtn = document.getElementById('load-more-btn');
-        
-        if (state.ui.hasMore && state.posts.length > 0) {
-          loadMoreContainer.style.display = 'block';
-          loadMoreBtn.disabled = state.ui.loading;
-          loadMoreBtn.innerHTML = state.ui.loading ? 
-            '<i class="bi bi-arrow-repeat spinner"></i> Loading...' : 
-            '<i class="bi bi-arrow-clockwise"></i> Load More Posts';
-        } else {
-          loadMoreContainer.style.display = 'none';
-        }
-      });
+    // Filters
+    safeAddEventListener('category-filter', 'change', (e) => {
+      appState.updateFilters({ category: e.target.value });
+      this.postsManager.loadPosts(true);
+    });
 
-      // Add some sample posts for demo
-      if (!localStorage.getItem('token')) {
-        setTimeout(() => {
-          const container = document.getElementById('posts-container');
-          if (container && container.children.length === 0) {
-            container.innerHTML = `
-              <div class="card post-card">
-                <div class="post-header">
-                  <div class="user-avatar" style="background-color: #007AFF">J</div>
-                  <div style="flex: 1;">
-                    <strong style="display: block; margin-bottom: 0.25rem;">John</strong>
-                    <span style="color: var(--text-muted); font-size: 0.875rem;">Just now • Technology</span>
-                  </div>
-                </div>
-                <div class="post-content">
-                  <p>Welcome to EdgePowered! This is a demo post to show the beautiful interface. Sign in to start posting and engaging with the community.</p>
-                  <p>🚀 Experience lightning-fast performance and modern design!</p>
-                </div>
-                <div class="post-actions">
-                  <div class="action-group" style="display: flex; gap: 0.5rem;">
-                    <button class="action-btn"><i class="bi bi-heart"></i><span class="count">24</span></button>
-                    <button class="action-btn"><i class="bi bi-chat"></i><span class="count">8</span></button>
-                    <button class="action-btn"><i class="bi bi-share"></i></button>
-                  </div>
-                  <button class="action-btn"><i class="bi bi-bookmark"></i></button>
-                </div>
-              </div>
-            `;
-          }
-        }, 1000);
+    safeAddEventListener('search-input', 'input', (e) => {
+      appState.debounce('search', () => {
+        appState.updateFilters({ search: e.target.value });
+        this.postsManager.loadPosts(true);
+      }, 500);
+    });
+
+    safeAddEventListener('clear-filters-btn', 'click', () => {
+      const categoryFilter = document.getElementById('category-filter');
+      const searchInput = document.getElementById('search-input');
+      if (categoryFilter) categoryFilter.value = '';
+      if (searchInput) searchInput.value = '';
+      appState.updateFilters({ category: '', search: '' });
+      this.postsManager.loadPosts(true);
+    });
+
+    // Theme
+    safeAddEventListener('theme-toggle', 'click', () => this.toggleTheme());
+
+    // Global click handlers
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        this.hideModal(e.target.id);
       }
     });
 
-    // Make available globally
-    window.uiManager = uiManager;
-    window.enhancedSearch = enhancedSearch;
-  </script>
+    // Enter key for login
+    safeAddEventListener('loginPassword', 'keypress', (e) => {
+      if (e.key === 'Enter') this.handleLogin();
+    });
+  }
+
+  initializeApp() {
+    // Set theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+    this.updateThemeIcon(savedTheme);
+
+    // Check auth
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('userData');
+    
+    if (token && userData) {
+      try {
+        const user = JSON.parse(userData);
+        appState.setState({ user });
+        this.showAuthenticatedUI();
+        this.postsManager.loadPosts();
+      } catch (error) {
+        this.clearAuth();
+      }
+    }
+  }
+
+  async handleLogin() {
+    const usernameInput = document.getElementById('loginUsername');
+    const passwordInput = document.getElementById('loginPassword');
+    
+    if (!usernameInput || !passwordInput) return;
+    
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!username || !password) {
+      this.showToast('Please fill in all fields', 'warning');
+      return;
+    }
+
+    this.showToast('Signing in...', 'info');
+
+    try {
+      const data = await apiManager.call('/login', {
+        method: 'POST',
+        body: { username, password }
+      });
+
+      if (data.success && data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+        appState.setState({ user: data.user });
+
+        this.hideModal('loginModal');
+        this.clearLoginForm();
+        this.showAuthenticatedUI();
+        this.showToast('Welcome back!', 'success');
+        this.postsManager.loadPosts();
+      }
+    } catch (error) {
+      this.showToast('Invalid credentials', 'error');
+    }
+  }
+
+  async handleCreatePost() {
+    const categorySelect = document.getElementById('postCategory');
+    const contentDiv = document.getElementById('postContent');
+    
+    if (!categorySelect || !contentDiv) return;
+    
+    const category = categorySelect.value;
+    const content = contentDiv.innerHTML;
+
+    const success = await this.postsManager.createPost(category, content);
+    if (success) {
+      this.hideModal('createPostModal');
+      if (contentDiv) contentDiv.innerHTML = '';
+    }
+  }
+
+  showAuthenticatedUI() {
+    this.toggleElement('auth-section', 'none');
+    this.toggleElement('posts-section', 'block');
+    this.toggleElement('quick-actions', 'flex');
+    this.toggleElement('login-btn-main', 'none');
+    this.toggleElement('authenticated-ui', 'block');
+    
+    const usernameDisplay = document.getElementById('username-display');
+    if (usernameDisplay) {
+      usernameDisplay.textContent = appState.state.user.username;
+    }
+  }
+
+  showUnauthenticatedUI() {
+    this.toggleElement('auth-section', 'block');
+    this.toggleElement('posts-section', 'none');
+    this.toggleElement('quick-actions', 'none');
+    this.toggleElement('login-btn-main', 'block');
+    this.toggleElement('authenticated-ui', 'none');
+  }
+
+  toggleElement(id, display) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.style.display = display;
+    }
+  }
+
+  logout() {
+    this.clearAuth();
+    this.showUnauthenticatedUI();
+    this.showToast('Signed out successfully', 'success');
+  }
+
+  clearAuth() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userData');
+    appState.setState({ 
+      user: null, 
+      posts: [],
+      cache: new Map()
+    });
+  }
+
+  clearLoginForm() {
+    const usernameInput = document.getElementById('loginUsername');
+    const passwordInput = document.getElementById('loginPassword');
+    if (usernameInput) usernameInput.value = '';
+    if (passwordInput) passwordInput.value = '';
+  }
+
+  showModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) {
+      console.error(`Modal with id '${id}' not found`);
+      return;
+    }
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  hideModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) {
+      console.error(`Modal with id '${id}' not found`);
+      return;
+    }
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+
+  toggleTheme() {
+    const newTheme = appState.state.ui.theme === 'light' ? 'dark' : 'light';
+    appState.setState({ 
+      ui: { ...appState.state.ui, theme: newTheme }
+    });
+    localStorage.setItem('theme', newTheme);
+    document.body.setAttribute('data-theme', newTheme);
+    this.updateThemeIcon(newTheme);
+  }
+
+  updateThemeIcon(theme) {
+    const themeIcon = document.querySelector('#theme-toggle i');
+    if (themeIcon) {
+      themeIcon.className = theme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
+    }
+  }
+
+  loadMorePosts() {
+    const { currentPage, hasMore } = appState.state.ui;
+    if (hasMore) {
+      appState.setState({
+        ui: { ...appState.state.ui, currentPage: currentPage + 1 }
+      });
+      this.postsManager.loadPosts();
+    }
+  }
+
+  showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <i class="bi bi-${this.getToastIcon(type)}"></i>
+      <span>${message}</span>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'toastSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) reverse forwards';
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.remove();
+        }
+      }, 500);
+    }, 3000);
+  }
+
+  getToastIcon(type) {
+    const icons = {
+      success: 'check-circle',
+      error: 'exclamation-circle',
+      warning: 'exclamation-triangle',
+      info: 'info-circle'
+    };
+    return icons[type] || 'info-circle';
+  }
+
+  renderPosts(posts) {
+    const container = document.getElementById('posts-container');
+    if (!container) return;
+    
+    if (posts.length === 0) {
+      container.innerHTML = `
+        <div class="card text-center" style="padding: 3rem;">
+          <i class="bi bi-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+          <h5 style="color: var(--text-secondary);">No posts found</h5>
+          <p style="color: var(--text-muted);">Be the first to start a discussion!</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = posts.map(post => `
+      <div class="card post-card" data-post-id="${post.id}">
+        <div class="post-header">
+          <div class="user-avatar" style="background-color: ${post.avatar_color}">
+            ${post.username.charAt(0).toUpperCase()}
+          </div>
+          <div style="flex: 1;">
+            <strong style="display: block; margin-bottom: 0.25rem; cursor: pointer;">${post.username}</strong>
+            <span style="color: var(--text-muted); font-size: 0.875rem;">
+              ${post.formatted_timestamp} • ${post.category}
+            </span>
+          </div>
+        </div>
+        <div class="post-content">${post.content}</div>
+        <div class="post-actions">
+          <div class="action-group" style="display: flex; gap: 0.5rem;">
+            <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
+                    onclick="uiManager.postsManager.likePost(${post.id})">
+              <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
+              <span class="count">${post.likes_count}</span>
+            </button>
+            <button class="action-btn">
+              <i class="bi bi-chat"></i>
+              <span class="count">${post.comments_count}</span>
+            </button>
+            <button class="action-btn">
+              <i class="bi bi-share"></i>
+            </button>
+          </div>
+          <button class="action-btn bookmark-btn">
+            <i class="bi bi-bookmark"></i>
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+// 🚀 Enhanced Search
+class EnhancedSearch {
+  focusSearch() {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      searchInput.focus();
+    }
+  }
+}
+
+// Initialize the application
+let uiManager;
+let enhancedSearch;
+
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🚀 Enhanced EdgePowered Forum Initialized');
+  
+  uiManager = new EnhancedUIManager();
+  enhancedSearch = new EnhancedSearch();
+
+  // Subscribe to state changes
+  appState.subscribe((state) => {
+    if (state.posts.length > 0) {
+      uiManager.renderPosts(state.posts);
+    }
+
+    // Update load more button
+    const loadMoreContainer = document.getElementById('load-more-container');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    
+    if (loadMoreContainer && loadMoreBtn) {
+      if (state.ui.hasMore && state.posts.length > 0) {
+        loadMoreContainer.style.display = 'block';
+        loadMoreBtn.disabled = state.ui.loading;
+        loadMoreBtn.innerHTML = state.ui.loading ? 
+          '<i class="bi bi-arrow-repeat spinner"></i> Loading...' : 
+          '<i class="bi bi-arrow-clockwise"></i> Load More Posts';
+      } else {
+        loadMoreContainer.style.display = 'none';
+      }
+    }
+  });
+
+  // Add some sample posts for demo
+  if (!localStorage.getItem('token')) {
+    setTimeout(() => {
+      const container = document.getElementById('posts-container');
+      if (container && container.children.length === 0) {
+        container.innerHTML = `
+          <div class="card post-card">
+            <div class="post-header">
+              <div class="user-avatar" style="background-color: #007AFF">J</div>
+              <div style="flex: 1;">
+                <strong style="display: block; margin-bottom: 0.25rem;">John</strong>
+                <span style="color: var(--text-muted); font-size: 0.875rem;">Just now • Technology</span>
+              </div>
+            </div>
+            <div class="post-content">
+              <p>Welcome to EdgePowered! This is a demo post to show the beautiful interface. Sign in to start posting and engaging with the community.</p>
+              <p>🚀 Experience lightning-fast performance and modern design!</p>
+            </div>
+            <div class="post-actions">
+              <div class="action-group" style="display: flex; gap: 0.5rem;">
+                <button class="action-btn"><i class="bi bi-heart"></i><span class="count">24</span></button>
+                <button class="action-btn"><i class="bi bi-chat"></i><span class="count">8</span></button>
+                <button class="action-btn"><i class="bi bi-share"></i></button>
+              </div>
+              <button class="action-btn"><i class="bi bi-bookmark"></i></button>
+            </div>
+          </div>
+        `;
+      }
+    }, 1000);
+  }
+});
+
+// Make available globally
+window.uiManager = uiManager;
+window.enhancedSearch = enhancedSearch;
+      </script>
 </body>
 </html>
