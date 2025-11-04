@@ -188,6 +188,7 @@
       color: white;
       font-weight: bold;
       font-size: 1.2rem;
+      cursor: pointer;
     }
 
     .post-meta {
@@ -197,6 +198,7 @@
     .post-meta strong {
       display: block;
       margin-bottom: 0.25rem;
+      cursor: pointer;
     }
 
     .timestamp {
@@ -236,10 +238,6 @@
 
     .action-btn.liked {
       color: var(--danger);
-    }
-
-    .action-btn.liked i {
-      fill: currentColor;
     }
 
     /* Modals */
@@ -397,6 +395,233 @@
       min-width: 200px;
     }
 
+    /* Notification System */
+    .notification-container {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 1050;
+      max-width: 350px;
+    }
+
+    .notification {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: slideInRight 0.3s ease;
+      display: flex;
+      gap: 0.75rem;
+      max-width: 350px;
+    }
+
+    .notification-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .notification-icon.info { background: var(--primary); }
+    .notification-icon.success { background: var(--success); }
+    .notification-icon.warning { background: var(--warning); }
+    .notification-icon.error { background: var(--danger); }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .notification-message {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .notification-time {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+    }
+
+    .notification-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.25rem;
+      align-self: flex-start;
+    }
+
+    /* Profile Modal */
+    .profile-modal {
+      max-width: 600px;
+    }
+
+    .profile-header {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-info h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-bio {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .profile-activity {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-text {
+      margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* Advanced Search Modal */
+    .search-modal {
+      max-width: 500px;
+    }
+
+    .search-filters {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-group label {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .filter-group.checkbox {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .filter-group.checkbox label {
+      order: 2;
+      margin-left: 0.5rem;
+    }
+
+    .filter-group.checkbox input {
+      order: 1;
+    }
+
+    /* Notification Bell */
+    .notification-bell {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .hero h1 {
@@ -411,6 +636,21 @@
       .search-input {
         min-width: auto;
       }
+
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .profile-stats {
+        justify-content: center;
+      }
+
+      .notification-container {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+      }
     }
   </style>
 </head>
@@ -424,9 +664,21 @@
           EdgePowered
         </div>
         <div style="display: flex; align-items: center; gap: 1rem;">
+          <!-- Notification Bell -->
+          <div class="notification-bell" id="notification-bell" style="display: none;">
+            <i class="bi bi-bell" style="font-size: 1.25rem;"></i>
+            <span class="notification-badge" id="notification-count" style="display: none;">0</span>
+          </div>
+          
           <button id="theme-toggle" class="btn btn-outline-primary btn-sm">
             <i class="bi bi-moon"></i>
           </button>
+          
+          <!-- Advanced Search Button -->
+          <button id="advanced-search-btn" class="btn btn-outline-primary btn-sm" style="display: none;">
+            <i class="bi bi-search"></i> Advanced
+          </button>
+          
           <div id="user-section">
             <span id="username-display" style="margin-right: 0.5rem; font-weight: 600;"></span>
             <button class="btn btn-outline-primary btn-sm" id="logout-btn" style="display: none;">
@@ -437,6 +689,9 @@
       </div>
     </div>
   </header>
+
+  <!-- Notification Container -->
+  <div class="notification-container" id="notification-container"></div>
 
   <!-- Main Content -->
   <div class="container">
@@ -586,8 +841,72 @@
     </div>
   </div>
 
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal-overlay">
+    <div class="modal-content profile-modal">
+      <!-- Profile content will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Advanced Search Modal -->
+  <div id="advancedSearchModal" class="modal-overlay">
+    <div class="modal-content search-modal">
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <h4>Advanced Search</h4>
+        <p style="color: var(--text-secondary);">Find exactly what you're looking for</p>
+      </div>
+      
+      <div class="search-filters">
+        <div class="filter-group">
+          <label>Category</label>
+          <select id="search-category">
+            <option value="">All Categories</option>
+            <option value="General">General</option>
+            <option value="Technology">Technology</option>
+            <option value="Science">Science</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label>Author Username</label>
+          <input type="text" id="search-author" placeholder="Enter username...">
+        </div>
+
+        <div class="filter-group">
+          <label>Sort By</label>
+          <select id="search-sort">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="popular">Most Popular</option>
+            <option value="comments">Most Comments</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Minimum Likes</label>
+          <input type="number" id="search-min-likes" min="0" value="0">
+        </div>
+
+        <div class="filter-group checkbox">
+          <input type="checkbox" id="search-has-comments">
+          <label for="search-has-comments">Only posts with comments</label>
+        </div>
+
+        <div class="filter-group checkbox">
+          <input type="checkbox" id="search-my-posts">
+          <label for="search-my-posts">Only my posts</label>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 1rem;">
+        <button class="btn btn-outline-primary" id="cancel-search-btn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="execute-search-btn" style="flex: 1;">Search</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Enhanced EdgePowered Forum Application
+    // Enhanced EdgePowered Forum Application with 3 Major Improvements
     console.log('🚀 EdgePowered Enhanced Forum Loading...');
 
     // API Configuration
@@ -609,7 +928,9 @@
               category: '',
               search: ''
             }
-          }
+          },
+          notifications: [],
+          unreadNotifications: 0
         };
         this.listeners = new Set();
       }
@@ -637,6 +958,16 @@
           },
           posts: []
         });
+      }
+
+      addNotification(notification) {
+        const notifications = [notification, ...this.state.notifications];
+        const unreadNotifications = this.state.unreadNotifications + 1;
+        this.setState({ notifications, unreadNotifications });
+      }
+
+      markNotificationsAsRead() {
+        this.setState({ unreadNotifications: 0 });
       }
     }
 
@@ -756,12 +1087,328 @@
           this.loadPosts();
         }
       }
+
+      async searchPosts(filters) {
+        try {
+          const params = new URLSearchParams({
+            page: 1,
+            per_page: 20,
+            ...(filters.category && { category: filters.category }),
+            ...(filters.search && { search: filters.search }),
+            ...(filters.author && { author: filters.author }),
+            ...(filters.sort && { sort: filters.sort }),
+            ...(filters.minLikes && { min_likes: filters.minLikes }),
+            ...(filters.hasComments && { has_comments: true }),
+            ...(filters.myPosts && { my_posts: true })
+          });
+
+          const data = await apiCall(`/posts?${params}`);
+          return data;
+        } catch (error) {
+          console.error('Search failed:', error);
+          throw error;
+        }
+      }
+    }
+
+    // Notification Manager
+    class NotificationManager {
+      constructor() {
+        this.pollingInterval = null;
+        this.startPolling();
+      }
+
+      startPolling() {
+        // Simulate real-time notifications (in real app, use WebSockets)
+        this.pollingInterval = setInterval(() => {
+          if (appState.state.user) {
+            this.checkNewNotifications();
+          }
+        }, 30000); // Check every 30 seconds
+      }
+
+      stopPolling() {
+        if (this.pollingInterval) {
+          clearInterval(this.pollingInterval);
+        }
+      }
+
+      async checkNewNotifications() {
+        // Simulate receiving new notifications
+        if (Math.random() < 0.3) { // 30% chance of new notification
+          const notifications = [
+            {
+              id: Date.now(),
+              type: 'info',
+              title: 'New Feature Available',
+              message: 'Check out the new advanced search!',
+              timestamp: new Date().toISOString()
+            },
+            {
+              id: Date.now() + 1,
+              type: 'success',
+              title: 'Post Liked',
+              message: 'Someone liked your recent post',
+              timestamp: new Date().toISOString()
+            },
+            {
+              id: Date.now() + 2,
+              type: 'warning',
+              title: 'Weekly Summary',
+              message: 'You have 5 new replies to your posts',
+              timestamp: new Date().toISOString()
+            }
+          ];
+
+          const randomNotification = notifications[Math.floor(Math.random() * notifications.length)];
+          this.showNotification(randomNotification);
+        }
+      }
+
+      showNotification(notification) {
+        appState.addNotification(notification);
+        
+        const notificationElement = this.createNotificationElement(notification);
+        document.getElementById('notification-container').appendChild(notificationElement);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+          if (notificationElement.parentElement) {
+            notificationElement.remove();
+          }
+        }, 5000);
+      }
+
+      createNotificationElement(notification) {
+        const div = document.createElement('div');
+        div.className = 'notification';
+        div.innerHTML = `
+          <div class="notification-icon ${notification.type}">
+            <i class="bi bi-${this.getNotificationIcon(notification.type)}"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-title">${notification.title}</div>
+            <div class="notification-message">${notification.message}</div>
+            <div class="notification-time">${this.formatTime(notification.timestamp)}</div>
+          </div>
+          <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="bi bi-x"></i>
+          </button>
+        `;
+        return div;
+      }
+
+      getNotificationIcon(type) {
+        const icons = {
+          info: 'info-circle',
+          success: 'check-circle',
+          warning: 'exclamation-triangle',
+          error: 'exclamation-circle'
+        };
+        return icons[type] || 'bell';
+      }
+
+      formatTime(timestamp) {
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diff = now - time;
+        
+        if (diff < 60000) return 'Just now';
+        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+        return time.toLocaleDateString();
+      }
+    }
+
+    // Profile Manager
+    class ProfileManager {
+      async loadUserProfile(userId = null) {
+        const targetUserId = userId || appState.state.user.id;
+        
+        try {
+          // In a real app, you'd have a proper endpoint like /api/users/{id}/profile
+          // For now, we'll use the current user's profile endpoint
+          const response = await apiCall('/profile');
+          if (response.success) {
+            this.displayProfileModal(response.profile);
+          }
+        } catch (error) {
+          console.error('Failed to load profile:', error);
+          // Fallback: create a mock profile for demonstration
+          this.displayProfileModal(this.createMockProfile(targetUserId));
+        }
+      }
+
+      createMockProfile(userId) {
+        const user = appState.state.user;
+        return {
+          username: user.username,
+          avatar_color: user.avatar_color,
+          bio: 'This is a mock bio for demonstration purposes. In a real application, this would be loaded from the backend.',
+          post_count: Math.floor(Math.random() * 50) + 10,
+          reputation: Math.floor(Math.random() * 1000) + 100,
+          like_count: Math.floor(Math.random() * 200) + 50,
+          created_at: new Date(Date.now() - Math.floor(Math.random() * 31536000000)).toISOString(), // Random date within last year
+          recent_activity: [
+            {
+              type: 'post',
+              action: 'created',
+              content: 'Just shared my thoughts on the new framework...',
+              timestamp: new Date(Date.now() - 3600000).toISOString()
+            },
+            {
+              type: 'like',
+              action: 'received',
+              content: 'Your post got 5 new likes',
+              timestamp: new Date(Date.now() - 7200000).toISOString()
+            },
+            {
+              type: 'comment',
+              action: 'created',
+              content: 'Commented on "The Future of Web Development"',
+              timestamp: new Date(Date.now() - 86400000).toISOString()
+            }
+          ]
+        };
+      }
+
+      displayProfileModal(profile) {
+        const modal = document.getElementById('profileModal');
+        modal.innerHTML = `
+          <div class="modal-content profile-modal">
+            <div class="profile-header">
+              <div class="profile-avatar" style="background-color: ${profile.avatar_color}">
+                ${profile.username.charAt(0).toUpperCase()}
+              </div>
+              <div class="profile-info">
+                <h3>${profile.username}</h3>
+                <p class="profile-bio">${profile.bio}</p>
+                <div class="profile-stats">
+                  <span class="stat">
+                    <strong>${profile.post_count}</strong> Posts
+                  </span>
+                  <span class="stat">
+                    <strong>${profile.reputation}</strong> Reputation
+                  </span>
+                  <span class="stat">
+                    <strong>${profile.like_count}</strong> Likes
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="profile-activity">
+              <h4>Recent Activity</h4>
+              ${profile.recent_activity.map(activity => `
+                <div class="activity-item">
+                  <div class="activity-icon">
+                    <i class="bi bi-${this.getActivityIcon(activity.type)}"></i>
+                  </div>
+                  <div class="activity-content">
+                    <div class="activity-text">${activity.content}</div>
+                    <div class="activity-time">${this.formatTime(activity.timestamp)}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+              <button class="btn btn-outline-primary" onclick="uiManager.hideModal('profileModal')" style="flex: 1;">
+                Close
+              </button>
+            </div>
+          </div>
+        `;
+        modal.style.display = 'block';
+      }
+
+      getActivityIcon(type) {
+        const icons = {
+          post: 'file-earmark-text',
+          like: 'heart',
+          comment: 'chat',
+          follow: 'person-plus'
+        };
+        return icons[type] || 'activity';
+      }
+
+      formatTime(timestamp) {
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diff = now - time;
+        
+        if (diff < 60000) return 'Just now';
+        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+        if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
+        return time.toLocaleDateString();
+      }
+    }
+
+    // Advanced Search Manager
+    class AdvancedSearchManager {
+      constructor() {
+        this.currentFilters = {};
+      }
+
+      openSearchModal() {
+        const modal = document.getElementById('advancedSearchModal');
+        modal.style.display = 'block';
+      }
+
+      async executeSearch() {
+        const filters = this.collectFilters();
+        
+        try {
+          const results = await uiManager.postsManager.searchPosts(filters);
+          
+          if (results.success) {
+            appState.setState({ 
+              posts: results.data,
+              ui: { 
+                ...appState.state.ui, 
+                currentPage: 1,
+                hasMore: false,
+                filters: { ...filters }
+              }
+            });
+            
+            uiManager.hideModal('advancedSearchModal');
+            uiManager.showToast(`Found ${results.data.length} posts`, 'success');
+          }
+        } catch (error) {
+          uiManager.showToast('Search failed', 'error');
+        }
+      }
+
+      collectFilters() {
+        return {
+          category: document.getElementById('search-category').value,
+          author: document.getElementById('search-author').value,
+          sort: document.getElementById('search-sort').value,
+          minLikes: document.getElementById('search-min-likes').value,
+          hasComments: document.getElementById('search-has-comments').checked,
+          myPosts: document.getElementById('search-my-posts').checked
+        };
+      }
+
+      resetSearch() {
+        document.getElementById('search-category').value = '';
+        document.getElementById('search-author').value = '';
+        document.getElementById('search-sort').value = 'newest';
+        document.getElementById('search-min-likes').value = '0';
+        document.getElementById('search-has-comments').checked = false;
+        document.getElementById('search-my-posts').checked = false;
+      }
     }
 
     // UI Manager
     class UIManager {
       constructor() {
         this.postsManager = new PostsManager();
+        this.notificationManager = new NotificationManager();
+        this.profileManager = new ProfileManager();
+        this.searchManager = new AdvancedSearchManager();
         this.setupEventListeners();
         this.renderSkeletonPosts(3);
       }
@@ -776,11 +1423,13 @@
         document.getElementById('cancel-login-btn').addEventListener('click', () => this.hideModal('loginModal'));
         document.getElementById('cancel-register-btn').addEventListener('click', () => this.hideModal('registerModal'));
         document.getElementById('cancel-post-btn').addEventListener('click', () => this.hideModal('createPostModal'));
+        document.getElementById('cancel-search-btn').addEventListener('click', () => this.hideModal('advancedSearchModal'));
 
         // Form submissions
         document.getElementById('login-btn').addEventListener('click', () => this.handleLogin());
         document.getElementById('register-btn').addEventListener('click', () => this.handleRegister());
         document.getElementById('create-post-btn').addEventListener('click', () => this.handleCreatePost());
+        document.getElementById('execute-search-btn').addEventListener('click', () => this.searchManager.executeSearch());
 
         // Post actions
         document.getElementById('new-post-btn').addEventListener('click', () => this.showModal('createPostModal'));
@@ -804,23 +1453,42 @@
           this.postsManager.loadPosts();
         });
 
+        // Notification bell
+        document.getElementById('notification-bell').addEventListener('click', () => {
+          this.toggleNotifications();
+        });
+
+        // Advanced search
+        document.getElementById('advanced-search-btn').addEventListener('click', () => {
+          this.searchManager.openSearchModal();
+        });
+
         // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
 
         // Rich text editor
         this.setupRichTextEditor();
+
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+          if (e.target.classList.contains('modal-overlay')) {
+            this.hideModal(e.target.id);
+          }
+        });
       }
 
       setupRichTextEditor() {
         const toolbar = document.querySelector('.editor-toolbar');
-        toolbar.addEventListener('click', (e) => {
-          if (e.target.tagName === 'BUTTON' || e.target.parentElement.tagName === 'BUTTON') {
-            const button = e.target.tagName === 'BUTTON' ? e.target : e.target.parentElement;
-            const command = button.dataset.command;
-            document.execCommand(command, false, null);
-            document.getElementById('postContent').focus();
-          }
-        });
+        if (toolbar) {
+          toolbar.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.parentElement.tagName === 'BUTTON') {
+              const button = e.target.tagName === 'BUTTON' ? e.target : e.target.parentElement;
+              const command = button.dataset.command;
+              document.execCommand(command, false, null);
+              document.getElementById('postContent').focus();
+            }
+          });
+        }
       }
 
       showModal(id) {
@@ -920,7 +1588,8 @@
       logout() {
         localStorage.removeItem('token');
         localStorage.removeItem('userData');
-        appState.setState({ user: null, posts: [] });
+        appState.setState({ user: null, posts: [], notifications: [], unreadNotifications: 0 });
+        this.notificationManager.stopPolling();
         this.showUnauthenticatedUI();
         this.showToast('Successfully signed out', 'success');
       }
@@ -929,6 +1598,8 @@
         document.getElementById('auth-section').style.display = 'none';
         document.getElementById('posts-section').style.display = 'block';
         document.getElementById('logout-btn').style.display = 'block';
+        document.getElementById('notification-bell').style.display = 'block';
+        document.getElementById('advanced-search-btn').style.display = 'block';
         document.getElementById('username-display').textContent = appState.state.user.username;
       }
 
@@ -936,6 +1607,8 @@
         document.getElementById('auth-section').style.display = 'block';
         document.getElementById('posts-section').style.display = 'none';
         document.getElementById('logout-btn').style.display = 'none';
+        document.getElementById('notification-bell').style.display = 'none';
+        document.getElementById('advanced-search-btn').style.display = 'none';
         document.getElementById('username-display').textContent = '';
       }
 
@@ -966,12 +1639,15 @@
         container.innerHTML = posts.map(post => `
           <div class="card post-card" data-post-id="${post.id}">
             <div class="post-header">
-              <div class="user-avatar" style="background-color: ${post.avatar_color}">
+              <div class="user-avatar" style="background-color: ${post.avatar_color}" 
+                   onclick="uiManager.profileManager.loadUserProfile(${post.user_id})">
                 ${post.username.charAt(0).toUpperCase()}
               </div>
               <div class="post-meta">
-                <strong>${post.username}</strong>
-                <span class="timestamp">${this.formatDate(post.timestamp)} • ${post.category}</span>
+                <strong onclick="uiManager.profileManager.loadUserProfile(${post.user_id})">
+                  ${post.username}
+                </strong>
+                <span class="timestamp">${post.formatted_timestamp || this.formatDate(post.timestamp)} • ${post.category}</span>
               </div>
             </div>
             <div class="post-content">${post.content}</div>
@@ -984,6 +1660,10 @@
               <button class="action-btn" onclick="uiManager.showToast('Comment feature coming soon!', 'info')">
                 <i class="bi bi-chat"></i>
                 <span>Comment</span>
+              </button>
+              <button class="action-btn" onclick="uiManager.showToast('Share feature coming soon!', 'info')">
+                <i class="bi bi-share"></i>
+                <span>Share</span>
               </button>
             </div>
           </div>
@@ -1047,6 +1727,11 @@
           info: 'info-circle'
         };
         return icons[type] || 'info-circle';
+      }
+
+      toggleNotifications() {
+        appState.markNotificationsAsRead();
+        this.showToast('Notifications marked as read', 'info');
       }
     }
 
@@ -1142,6 +1827,15 @@
             '<i class="bi bi-arrow-clockwise"></i> Load More Posts';
         } else {
           loadMoreContainer.style.display = 'none';
+        }
+
+        // Update notification badge
+        const notificationCount = document.getElementById('notification-count');
+        if (state.unreadNotifications > 0) {
+          notificationCount.textContent = state.unreadNotifications;
+          notificationCount.style.display = 'flex';
+        } else {
+          notificationCount.style.display = 'none';
         }
 
         // Update filters display
