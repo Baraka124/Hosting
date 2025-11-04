@@ -115,7 +115,7 @@ def init_db():
             -- Enhanced Users table
             CREATE TABLE IF NOT EXISTS users(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL COLLATE NOCASE,
+                username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL,
                 email TEXT,
                 full_name TEXT,
@@ -132,14 +132,13 @@ def init_db():
                 notification_preferences TEXT DEFAULT '{"email": true, "push": true}'
             );
             
-            -- Enhanced Posts table with full-text search
+            -- Enhanced Posts table
             CREATE TABLE IF NOT EXISTS posts(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 category TEXT NOT NULL,
                 title TEXT,
                 content TEXT NOT NULL,
-                content_search TEXT GENERATED ALWAYS AS (lower(content)) VIRTUAL,
                 timestamp TEXT NOT NULL DEFAULT (datetime('now')),
                 edited_at TEXT,
                 likes_count INTEGER DEFAULT 0,
@@ -149,7 +148,6 @@ def init_db():
                 is_locked BOOLEAN DEFAULT 0,
                 tags TEXT,
                 media_urls TEXT,
-                search_tsv TEXT,
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
             );
             
@@ -177,14 +175,12 @@ def init_db():
                 user_id INTEGER NOT NULL,
                 post_id INTEGER,
                 comment_id INTEGER,
-                type TEXT NOT NULL CHECK(type IN ('like', 'bookmark', 'view', 'share')),
+                type TEXT NOT NULL,
                 timestamp TEXT NOT NULL DEFAULT (datetime('now')),
                 metadata TEXT,
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
                 FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE,
-                FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE,
-                UNIQUE(user_id, post_id, type) WHERE comment_id IS NULL,
-                UNIQUE(user_id, comment_id, type) WHERE post_id IS NULL
+                FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE
             );
             
             -- User sessions for analytics
@@ -204,7 +200,7 @@ def init_db():
             CREATE TABLE IF NOT EXISTS notifications(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
-                type TEXT NOT NULL CHECK(type IN ('like', 'comment', 'reply', 'mention', 'system')),
+                type TEXT NOT NULL,
                 title TEXT NOT NULL,
                 message TEXT NOT NULL,
                 data TEXT,
@@ -233,8 +229,7 @@ def init_db():
                 following_id INTEGER NOT NULL,
                 created_at TEXT NOT NULL DEFAULT (datetime('now')),
                 FOREIGN KEY(follower_id) REFERENCES users(id) ON DELETE CASCADE,
-                FOREIGN KEY(following_id) REFERENCES users(id) ON DELETE CASCADE,
-                UNIQUE(follower_id, following_id)
+                FOREIGN KEY(following_id) REFERENCES users(id) ON DELETE CASCADE
             );
 
             -- Analytics table
@@ -253,7 +248,6 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
             CREATE INDEX IF NOT EXISTS idx_posts_timestamp ON posts(timestamp);
             CREATE INDEX IF NOT EXISTS idx_posts_likes ON posts(likes_count);
-            CREATE INDEX IF NOT EXISTS idx_posts_search ON posts(content_search);
             CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
             CREATE INDEX IF NOT EXISTS idx_comments_parent ON comments(parent_comment_id);
             CREATE INDEX IF NOT EXISTS idx_comments_path ON comments(path);
@@ -263,15 +257,8 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
             CREATE INDEX IF NOT EXISTS idx_users_reputation ON users(reputation);
             CREATE INDEX IF NOT EXISTS idx_sessions_user ON user_sessions(user_id);
-            
-            -- Full-text search virtual table
-            CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
-                content, 
-                title,
-                username,
-                category,
-                tokenize="porter unicode61"
-            );
+            CREATE INDEX IF NOT EXISTS idx_relationships_follower ON user_relationships(follower_id);
+            CREATE INDEX IF NOT EXISTS idx_relationships_following ON user_relationships(following_id);
         """)
         
         # Insert default categories
