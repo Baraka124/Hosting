@@ -64,7 +64,8 @@ file_handler = RotatingFileHandler(
     encoding='utf-8'
 )
 file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d] - IP: %(client_ip)s'
+    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+))
 ))
 file_handler.setLevel(logging.INFO)
 app.logger.addHandler(file_handler)
@@ -340,6 +341,21 @@ def init_db():
     try:
         c = conn.cursor()
         
+        # Drop existing tables if they exist (for development)
+        # Remove this in production if you want to preserve data
+        c.executescript("""
+            DROP TABLE IF EXISTS notifications;
+            DROP TABLE IF EXISTS reports;
+            DROP TABLE IF EXISTS bookmarks;
+            DROP TABLE IF EXISTS categories;
+            DROP TABLE IF EXISTS user_activity;
+            DROP TABLE IF EXISTS user_sessions;
+            DROP TABLE IF EXISTS likes;
+            DROP TABLE IF EXISTS comments;
+            DROP TABLE IF EXISTS posts;
+            DROP TABLE IF EXISTS users;
+        """)
+        
         # Enhanced tables with better constraints
         c.executescript("""
             -- Enhanced users table
@@ -374,7 +390,7 @@ def init_db():
                 category TEXT NOT NULL,
                 title TEXT,
                 content TEXT NOT NULL,
-                content_search TEXT GENERATED ALWAYS AS (LOWER(content)) VIRTUAL,
+                content_search TEXT,
                 timestamp DATETIME NOT NULL DEFAULT (datetime('now')),
                 last_activity DATETIME NOT NULL DEFAULT (datetime('now')),
                 likes_count INTEGER DEFAULT 0,
@@ -418,7 +434,7 @@ def init_db():
                 post_id INTEGER,
                 comment_id INTEGER,
                 timestamp DATETIME NOT NULL DEFAULT (datetime('now')),
-                type TEXT DEFAULT 'like', -- like, love, laugh, etc.
+                type TEXT DEFAULT 'like',
                 UNIQUE(user_id, post_id, comment_id),
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
                 FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE,
@@ -509,13 +525,12 @@ def init_db():
             );
         """)
         
-        # Enhanced indexes
+        # Create indexes AFTER tables are created
         c.executescript("""
             CREATE INDEX IF NOT EXISTS idx_posts_user_category ON posts(user_id, category);
             CREATE INDEX IF NOT EXISTS idx_posts_timestamp ON posts(timestamp DESC);
             CREATE INDEX IF NOT EXISTS idx_posts_last_activity ON posts(last_activity DESC);
             CREATE INDEX IF NOT EXISTS idx_posts_popularity ON posts(likes_count DESC, comments_count DESC);
-            CREATE INDEX IF NOT EXISTS idx_posts_search ON posts(content_search);
             CREATE INDEX IF NOT EXISTS idx_comments_post_path ON comments(post_id, path);
             CREATE INDEX IF NOT EXISTS idx_comments_user ON comments(user_id, timestamp DESC);
             CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id, timestamp DESC);
@@ -551,7 +566,6 @@ def init_db():
         raise
     finally:
         return_db(conn)
-
 # Initialize database on startup
 init_db()
 
