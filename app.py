@@ -332,8 +332,7 @@ def validate_json(schema=None):
             return f(*args, **kwargs)
         return decorated_function
     return decorator
-
-# ---------- Enhanced Database Schema ----------
+  # ---------- Enhanced Database Schema ----------
 def init_db():
     """Enhanced database initialization"""
     conn = get_db()
@@ -418,7 +417,7 @@ def init_db():
                 post_id INTEGER,
                 comment_id INTEGER,
                 timestamp DATETIME NOT NULL DEFAULT (datetime('now')),
-                type TEXT DEFAULT 'like', -- like, love, laugh, etc.
+                type TEXT DEFAULT 'like',
                 UNIQUE(user_id, post_id, comment_id),
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
                 FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE,
@@ -510,7 +509,6 @@ def init_db():
         """)
         
         # Database migration for existing installations
-        # Add missing columns if they don't exist
         migration_columns = [
             ("posts", "last_activity", "DATETIME DEFAULT (datetime('now'))"),
             ("posts", "content_search", "TEXT"),
@@ -530,10 +528,9 @@ def init_db():
             try:
                 c.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
                 app.logger.info(f"Added column {table}.{column}")
-            except sqlite3.OperationalError as e:
-                if "duplicate column name" not in str(e):
-                    app.logger.warning(f"Failed to add column {table}.{column}: {e}")
+            except sqlite3.OperationalError:
                 # Column already exists, ignore
+                pass
         
         # Enhanced indexes
         c.executescript("""
@@ -553,30 +550,6 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at DESC);
             CREATE INDEX IF NOT EXISTS idx_bookmarks_user ON bookmarks(user_id, created_at DESC);
         """)
-        
-        # Insert default categories
-        default_categories = [
-            ('General', 'General discussions and topics', '#007AFF'),
-            ('Technology', 'Tech news, programming, and gadgets', '#34C759'),
-            ('Science', 'Scientific discoveries and discussions', '#FF9500'),
-            ('Entertainment', 'Movies, games, and entertainment', '#AF52DE'),
-            ('Sports', 'Sports news and discussions', '#FF3B30'),
-            ('Politics', 'Political discussions and news', '#5856D6')
-        ]
-        
-        c.executemany("""
-            INSERT OR IGNORE INTO categories (name, description, color) 
-            VALUES (?, ?, ?)
-        """, default_categories)
-        
-        conn.commit()
-        app.logger.info("Enhanced database schema initialized successfully")
-        
-    except Exception as e:
-        app.logger.error(f"Database initialization error: {e}")
-        raise
-    finally:
-        return_db(conn)
         
         # Insert default categories
         default_categories = [
