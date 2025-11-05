@@ -2,8 +2,6 @@ import os
 import jwt
 import bcrypt
 import redis
-import eventlet
-eventlet.monkey_patch()
 
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -30,7 +28,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 
 # Initialize extensions
 CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000", "https://yourdomain.com"])
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')  # Use threading instead of eventlet
 
 # Security configuration
 csp = {
