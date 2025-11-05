@@ -5,12 +5,9 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_talisman import Talisman
-from flask_socketio import SocketIO, emit, join_room, leave_room
 from datetime import datetime, timedelta
 import sqlite3
 import logging
-from logging.handlers import RotatingFileHandler
 import secrets
 import re
 from functools import wraps
@@ -19,14 +16,10 @@ import json
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
 # Initialize extensions
 CORS(app, origins=["*"])
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
-
-# Security configuration - disable for Railway testing
-Talisman(app, content_security_policy=None, force_https=False)
 
 # Rate limiting
 limiter = Limiter(
@@ -63,29 +56,22 @@ class Config:
 app.config.from_object(Config)
 
 # Enhanced logging
-if not os.path.exists('logs'):
-    os.makedirs('logs')
-
-file_handler = RotatingFileHandler(
-    'logs/edgepowered.log', 
-    maxBytes=10240, 
-    backupCount=10,
-    encoding='utf-8'
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s: %(message)s'
 )
-file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-))
-file_handler.setLevel(logging.INFO)
-app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
 
-# Database connection
+# Database connection with error handling
 def get_db():
-    conn = sqlite3.connect(Config.DB_NAME)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    conn.execute("PRAGMA journal_mode=WAL")
-    return conn
+    try:
+        conn = sqlite3.connect(Config.DB_NAME)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON")
+        return conn
+    except Exception as e:
+        app.logger.error(f"Database connection error: {e}")
+        raise
 
 # Security and Validation Classes
 class ValidationError(Exception):
@@ -94,7 +80,7 @@ class ValidationError(Exception):
 class SecurityUtils:
     @staticmethod
     def validate_username(username):
-        if len(username) < 3:
+        if not username or len(username) < 3:
             raise ValidationError("Username must be at least 3 characters")
         if len(username) > Config.MAX_USERNAME_LENGTH:
             raise ValidationError(f"Username must be less than {Config.MAX_USERNAME_LENGTH} characters")
@@ -104,7 +90,7 @@ class SecurityUtils:
     
     @staticmethod
     def validate_password(password):
-        if len(password) < Config.MIN_PASSWORD_LENGTH:
+        if not password or len(password) < Config.MIN_PASSWORD_LENGTH:
             raise ValidationError(f"Password must be at least {Config.MIN_PASSWORD_LENGTH} characters")
         
         checks = {
@@ -122,26 +108,10 @@ class SecurityUtils:
     @staticmethod
     def sanitize_html(content, max_length=None):
         if not content:
-            return content
+            return ""
         
-        allowed_tags = ['p', 'br', 'div', 'span', 'strong', 'em', 'u', 'ul', 'ol', 'li']
-        
-        allowed_attributes = {
-            '*': ['class', 'style'],
-            'a': ['href', 'title', 'target', 'rel']
-        }
-        
-        cleaned = bleach.clean(
-            content,
-            tags=allowed_tags,
-            attributes=allowed_attributes,
-            strip=True,
-            strip_comments=True
-        )
-        
-        cleaned = re.sub(r'javascript:', '', cleaned, flags=re.IGNORECASE)
-        cleaned = re.sub(r'vbscript:', '', cleaned, flags=re.IGNORECASE)
-        cleaned = re.sub(r'on\w+=', '', cleaned, flags=re.IGNORECASE)
+        # Simple sanitization - remove all HTML tags for safety
+        cleaned = re.sub(r'<[^>]*>', '', str(content))
         
         if max_length and len(cleaned) > max_length:
             cleaned = cleaned[:max_length]
@@ -150,11 +120,17 @@ class SecurityUtils:
     
     @staticmethod
     def hash_password(password):
-        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(Config.BCRYPT_ROUNDS))
+        try:
+            return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(Config.BCRYPT_ROUNDS))
+        except Exception as e:
+            app.logger.error(f"Password hashing error: {e}")
+            raise ValidationError("Password processing failed")
     
     @staticmethod
     def check_password(password, hashed):
         try:
+            if isinstance(hashed, str):
+                hashed = hashed.encode('utf-8')
             return bcrypt.checkpw(password.encode('utf-8'), hashed)
         except Exception:
             return False
@@ -162,7 +138,7 @@ class SecurityUtils:
 # Authentication Decorators
 def token_required(f):
     @wraps(f)
-    def decorated(*args, **kwargs):
+    def decorated_function(*args, **kwargs):
         token = request.headers.get("Authorization")
         
         if not token:
@@ -183,14 +159,16 @@ def token_required(f):
                 conn = get_db()
                 c = conn.cursor()
                 c.execute("SELECT id, username, avatar_color, is_active, is_moderator, is_admin FROM users WHERE id = ?", (decoded["user_id"],))
-                user = c.fetchone()
+                user_row = c.fetchone()
                 conn.close()
                 
-                if user:
-                    user = dict(user)
+                if user_row:
+                    user = dict(user_row)
                     cache.setex(f"user:{user['id']}", 3600, json.dumps(user))
+                else:
+                    user = None
             
-            if not user or not user["is_active"]:
+            if not user or not user.get("is_active", True):
                 return jsonify({"success": False, "error": "Invalid user"}), 401
             
             request.user_id = user["id"]
@@ -206,42 +184,47 @@ def token_required(f):
             return jsonify({"success": False, "error": "Token validation failed"}), 401
         
         return f(*args, **kwargs)
-    return decorated
+    return decorated_function
+
 def validate_json(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not request.is_json:
             return jsonify({"success": False, "error": "Content-Type must be application/json"}), 400
         
-        data = request.get_json(silent=True)
-        if data is None:
+        try:
+            data = request.get_json()
+            if data is None:
+                return jsonify({"success": False, "error": "Invalid JSON data"}), 400
+            
+            request.json_data = data
+        except Exception as e:
+            app.logger.error(f"JSON parsing error: {e}")
             return jsonify({"success": False, "error": "Invalid JSON data"}), 400
         
-        request.json_data = data
         return f(*args, **kwargs)
-    return decorated_function  # ← Fixed this line
+    return decorated_function
 
-
-
-# Database Initialization with better error handling
+# Database Initialization with robust error handling
 def init_db():
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         
-        # Check if tables exist
+        # Check if users table exists
         c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
         tables_exist = c.fetchone() is not None
         
         if tables_exist:
-            app.logger.info("Tables already exist, skipping initialization")
-            return
+            app.logger.info("Database tables already exist")
+            return True
         
         app.logger.info("Creating new database tables...")
         
-        # Create all tables
-        c.executescript("""
-            CREATE TABLE users(
+        # Create tables in correct order
+        tables_sql = [
+            """CREATE TABLE users(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL COLLATE NOCASE,
                 password TEXT NOT NULL,
@@ -257,9 +240,9 @@ def init_db():
                 like_count INTEGER DEFAULT 0,
                 is_moderator BOOLEAN DEFAULT 0,
                 is_admin BOOLEAN DEFAULT 0
-            );
-
-            CREATE TABLE posts(
+            )""",
+            
+            """CREATE TABLE posts(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 category TEXT NOT NULL,
@@ -275,9 +258,9 @@ def init_db():
                 edited_at DATETIME,
                 view_count INTEGER DEFAULT 0,
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-            );
-
-            CREATE TABLE comments(
+            )""",
+            
+            """CREATE TABLE comments(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 post_id INTEGER NOT NULL,
                 user_id INTEGER NOT NULL,
@@ -289,9 +272,9 @@ def init_db():
                 FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE,
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
                 FOREIGN KEY(parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE
-            );
-
-            CREATE TABLE likes(
+            )""",
+            
+            """CREATE TABLE likes(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 post_id INTEGER,
@@ -302,9 +285,9 @@ def init_db():
                 FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE,
                 FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE,
                 CHECK((post_id IS NOT NULL AND comment_id IS NULL) OR (post_id IS NULL AND comment_id IS NOT NULL))
-            );
-
-            CREATE TABLE bookmarks(
+            )""",
+            
+            """CREATE TABLE bookmarks(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 post_id INTEGER NOT NULL,
@@ -312,26 +295,9 @@ def init_db():
                 UNIQUE(user_id, post_id),
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
                 FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE
-            );
-
-            CREATE TABLE reports(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                reporter_id INTEGER NOT NULL,
-                post_id INTEGER,
-                comment_id INTEGER,
-                reason TEXT NOT NULL,
-                description TEXT,
-                status TEXT DEFAULT 'pending',
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                resolved_at DATETIME,
-                resolved_by INTEGER,
-                FOREIGN KEY(reporter_id) REFERENCES users(id) ON DELETE CASCADE,
-                FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE,
-                FOREIGN KEY(comment_id) REFERENCES comments(id) ON DELETE CASCADE,
-                FOREIGN KEY(resolved_by) REFERENCES users(id) ON DELETE SET NULL
-            );
-
-            CREATE TABLE notifications(
+            )""",
+            
+            """CREATE TABLE notifications(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 type TEXT NOT NULL,
@@ -340,32 +306,41 @@ def init_db():
                 is_read BOOLEAN DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-            );
-        """)
-
+            )"""
+        ]
+        
+        for sql in tables_sql:
+            c.execute(sql)
+        
         # Create indexes
-        c.executescript("""
-            CREATE INDEX IF NOT EXISTS idx_posts_timestamp ON posts(timestamp DESC);
-            CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
-            CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
-            CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id);
-            CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at DESC);
-        """)
-
+        indexes_sql = [
+            "CREATE INDEX IF NOT EXISTS idx_posts_timestamp ON posts(timestamp DESC)",
+            "CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category)",
+            "CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id)",
+            "CREATE INDEX IF NOT EXISTS idx_likes_user ON likes(user_id)",
+            "CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at DESC)"
+        ]
+        
+        for sql in indexes_sql:
+            c.execute(sql)
+        
         # Insert default admin user
         hashed_pw = SecurityUtils.hash_password("admin123")
-        c.execute("INSERT INTO users (username, password, is_admin, is_moderator) VALUES (?, ?, 1, 1)", 
+        c.execute("INSERT OR IGNORE INTO users (username, password, is_admin, is_moderator) VALUES (?, ?, 1, 1)", 
                  ("admin", hashed_pw))
-
+        
         conn.commit()
         app.logger.info("Database initialized successfully")
+        return True
         
     except Exception as e:
         app.logger.error(f"Database initialization error: {e}")
-        conn.rollback()
-        # Don't crash the app if DB init fails
+        if conn:
+            conn.rollback()
+        return False
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 # Initialize database (with error handling)
 try:
@@ -373,7 +348,7 @@ try:
     app.logger.info("Database setup completed")
 except Exception as e:
     app.logger.error(f"Database setup failed: {e}")
-    # Continue running - tables might already exist
+    # Continue running - app might work with existing tables
 
 # Utility Functions
 def format_timestamp(timestamp):
@@ -382,9 +357,12 @@ def format_timestamp(timestamp):
     
     try:
         if isinstance(timestamp, str):
-            post_time = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+            # Handle different timestamp formats
+            timestamp = timestamp.replace('Z', '+00:00')
+            post_time = datetime.fromisoformat(timestamp)
         else:
             post_time = timestamp
+            
         now = datetime.now()
         diff = now - post_time
         
@@ -402,68 +380,42 @@ def format_timestamp(timestamp):
             return f"{diff.seconds // 60}m ago"
         else:
             return "Just now"
-    except:
+    except Exception as e:
+        app.logger.debug(f"Timestamp formatting error: {e}")
         return "Recently"
 
 def create_notification(user_id, type, title, message):
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         c.execute("INSERT INTO notifications (user_id, type, title, message) VALUES (?, ?, ?, ?)",
                  (user_id, type, title, message))
         conn.commit()
-        
-        # Emit real-time notification
-        socketio.emit('new_notification', {
-            'user_id': user_id,
-            'notification': {
-                'type': type,
-                'title': title,
-                'message': message,
-                'timestamp': datetime.now().isoformat()
-            }
-        }, room=f'user_{user_id}')
-        
     except Exception as e:
         app.logger.error(f"Notification creation error: {e}")
+        if conn:
+            conn.rollback()
     finally:
-        conn.close()
-
-def update_post_activity(post_id):
-    conn = get_db()
-    try:
-        c = conn.cursor()
-        c.execute("UPDATE posts SET last_activity = CURRENT_TIMESTAMP WHERE id = ?", (post_id,))
-        conn.commit()
-    except Exception as e:
-        app.logger.error(f"Post activity update error: {e}")
-    finally:
-        conn.close()
-
-# SocketIO Events
-@socketio.on('connect')
-def handle_connect():
-    app.logger.info(f"Client connected: {request.sid}")
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    app.logger.info(f"Client disconnected: {request.sid}")
-
-@socketio.on('join_user_room')
-def handle_join_user_room(data):
-    user_id = data.get('user_id')
-    if user_id:
-        join_room(f'user_{user_id}')
-        app.logger.info(f"User {user_id} joined their room")
+        if conn:
+            conn.close()
 
 # API Routes
 @app.route('/')
 def serve_index():
-    return send_from_directory('.', 'index.html')
+    try:
+        return send_from_directory('.', 'index.html')
+    except Exception as e:
+        app.logger.error(f"Error serving index: {e}")
+        return jsonify({"error": "Frontend not available"}), 500
 
 @app.route('/<path:path>')
 def serve_static(path):
-    return send_from_directory('.', path)
+    try:
+        return send_from_directory('.', path)
+    except Exception as e:
+        app.logger.error(f"Error serving static file {path}: {e}")
+        return jsonify({"error": "File not found"}), 404
 
 @app.route('/api/health')
 def health_check():
@@ -476,21 +428,22 @@ def health_check():
 
 @app.route('/api/stats')
 def get_stats():
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         
         c.execute("SELECT COUNT(*) FROM users WHERE is_active = 1")
-        user_count = c.fetchone()[0]
+        user_count = c.fetchone()[0] or 0
         
         c.execute("SELECT COUNT(*) FROM posts WHERE is_deleted = 0")
-        post_count = c.fetchone()[0]
+        post_count = c.fetchone()[0] or 0
         
         c.execute("SELECT COUNT(*) FROM comments WHERE is_deleted = 0")
-        comment_count = c.fetchone()[0]
+        comment_count = c.fetchone()[0] or 0
         
         c.execute("SELECT COUNT(*) FROM likes")
-        like_count = c.fetchone()[0]
+        like_count = c.fetchone()[0] or 0
         
         return jsonify({
             "success": True,
@@ -506,13 +459,15 @@ def get_stats():
         app.logger.error(f"Stats error: {e}")
         return jsonify({"success": False, "error": "Failed to get stats"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/register', methods=['POST'])
 @limiter.limit("10 per hour")
 @validate_json
 def register():
     data = request.json_data
+    conn = None
     
     try:
         username = SecurityUtils.validate_username(data.get("username", ""))
@@ -522,6 +477,7 @@ def register():
         conn = get_db()
         c = conn.cursor()
         
+        # Check for existing user
         c.execute("SELECT id FROM users WHERE username = ? OR email = ?", (username, email))
         if c.fetchone():
             raise ValidationError("Username or email already exists")
@@ -547,15 +503,19 @@ def register():
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
         app.logger.error(f"Registration error: {e}")
+        if conn:
+            conn.rollback()
         return jsonify({"success": False, "error": "Registration failed"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/login', methods=['POST'])
 @limiter.limit("20 per 15 minutes")
 @validate_json
 def login():
     data = request.json_data
+    conn = None
     
     try:
         username = data.get("username", "").strip().lower()
@@ -612,9 +572,12 @@ def login():
         return jsonify({"success": False, "error": str(e)}), 401
     except Exception as e:
         app.logger.error(f"Login error: {e}")
+        if conn:
+            conn.rollback()
         return jsonify({"success": False, "error": "Login failed"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 @token_required
@@ -626,6 +589,7 @@ def posts():
 
 def create_post():
     data = request.json_data
+    conn = None
     
     try:
         category = data.get("category", "General")
@@ -648,13 +612,6 @@ def create_post():
         
         conn.commit()
         
-        # Emit real-time update
-        socketio.emit('new_post', {
-            'post_id': post_id,
-            'category': category,
-            'username': request.username
-        })
-        
         return jsonify({
             "success": True, 
             "message": "Post created successfully", 
@@ -665,13 +622,17 @@ def create_post():
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
         app.logger.error(f"Post creation error: {e}")
+        if conn:
+            conn.rollback()
         return jsonify({"success": False, "error": "Failed to create post"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 def get_posts():
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         
         page = max(1, request.args.get('page', 1, type=int))
@@ -720,7 +681,7 @@ def get_posts():
         
         # Get total count
         c.execute(count_query, count_params)
-        total_count = c.fetchone()[0]
+        total_count = c.fetchone()[0] or 0
         
         # Get posts
         c.execute(query, params)
@@ -746,7 +707,7 @@ def get_posts():
                 "page": page,
                 "per_page": per_page,
                 "total": total_count,
-                "pages": (total_count + per_page - 1) // per_page
+                "pages": (total_count + per_page - 1) // per_page if total_count > 0 else 0
             }
         })
         
@@ -754,13 +715,15 @@ def get_posts():
         app.logger.error(f"Posts retrieval error: {e}")
         return jsonify({"success": False, "error": "Failed to retrieve posts"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/posts/<int:post_id>/like', methods=['POST'])
 @token_required
 def like_post(post_id):
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         
         # Check if already liked
@@ -791,15 +754,19 @@ def like_post(post_id):
         
     except Exception as e:
         app.logger.error(f"Like error: {e}")
+        if conn:
+            conn.rollback()
         return jsonify({"success": False, "error": "Failed to like post"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/posts/<int:post_id>/bookmark', methods=['POST'])
 @token_required
 def bookmark_post(post_id):
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         
         # Check if already bookmarked
@@ -824,9 +791,12 @@ def bookmark_post(post_id):
         
     except Exception as e:
         app.logger.error(f"Bookmark error: {e}")
+        if conn:
+            conn.rollback()
         return jsonify({"success": False, "error": "Failed to bookmark post"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/posts/<int:post_id>/comments', methods=['GET', 'POST'])
 @token_required
@@ -838,6 +808,7 @@ def post_comments(post_id):
 
 def create_comment(post_id):
     data = request.json_data
+    conn = None
     
     try:
         content = SecurityUtils.sanitize_html(data.get("content", ""), Config.MAX_COMMENT_LENGTH)
@@ -864,12 +835,6 @@ def create_comment(post_id):
         
         conn.commit()
         
-        # Emit real-time update
-        socketio.emit('new_comment', {
-            'post_id': post_id,
-            'username': request.username
-        })
-        
         return jsonify({
             "success": True,
             "message": "Comment added successfully"
@@ -879,13 +844,17 @@ def create_comment(post_id):
         return jsonify({"success": False, "error": str(e)}), 400
     except Exception as e:
         app.logger.error(f"Comment creation error: {e}")
+        if conn:
+            conn.rollback()
         return jsonify({"success": False, "error": "Failed to add comment"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 def get_comments(post_id):
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         
         c.execute("""
@@ -914,13 +883,15 @@ def get_comments(post_id):
         app.logger.error(f"Comments retrieval error: {e}")
         return jsonify({"success": False, "error": "Failed to retrieve comments"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/profile')
 @token_required
 def get_profile():
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         
         c.execute("""
@@ -944,13 +915,15 @@ def get_profile():
         app.logger.error(f"Profile error: {e}")
         return jsonify({"success": False, "error": "Failed to get profile"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/notifications')
 @token_required
 def get_notifications():
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         
         c.execute("""
@@ -976,13 +949,15 @@ def get_notifications():
         app.logger.error(f"Notifications error: {e}")
         return jsonify({"success": False, "error": "Failed to get notifications"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 @app.route('/api/bookmarks')
 @token_required
 def get_bookmarks():
-    conn = get_db()
+    conn = None
     try:
+        conn = get_db()
         c = conn.cursor()
         
         c.execute("""
@@ -1009,12 +984,17 @@ def get_bookmarks():
         app.logger.error(f"Bookmarks error: {e}")
         return jsonify({"success": False, "error": "Failed to get bookmarks"}), 500
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 # Error handlers
 @app.errorhandler(404)
 def not_found(e):
     return jsonify({"success": False, "error": "Endpoint not found"}), 404
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return jsonify({"success": False, "error": "Method not allowed"}), 405
 
 @app.errorhandler(500)
 def server_error(e):
@@ -1025,17 +1005,14 @@ def server_error(e):
 def ratelimit_handler(e):
     return jsonify({"success": False, "error": "Rate limit exceeded"}), 429
 
+# Handle all other exceptions
+@app.errorhandler(Exception)
+def handle_exception(e):
+    app.logger.error(f"Unhandled exception: {str(e)}")
+    return jsonify({"success": False, "error": "Internal server error"}), 500
+
+# Simple startup - Railway will use Gunicorn
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
     app.run(host='0.0.0.0', port=port, debug=debug)
-else:
-    # For Railway deployment
-    port = int(os.environ.get('PORT', 5000))
-    if __name__ == 'app':
-        socketio.run(
-            app,
-            host='0.0.0.0',
-            port=port,
-            debug=False
-        )
