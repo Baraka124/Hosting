@@ -36,12 +36,14 @@ class Config:
 
 app.config.from_object(Config)
 
-# Security Headers
+# More permissive CSP for development
 csp = {
-    'default-src': ['\'self\''],
-    'style-src': ['\'self\'', '\'unsafe-inline\'', 'https://cdn.jsdelivr.net'],
-    'script-src': ['\'self\'', 'https://cdn.jsdelivr.net'],
-    'font-src': ['\'self\'', 'https://cdn.jsdelivr.net']
+    'default-src': ["'self'", 'https://cdn.jsdelivr.net'],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+    'script-src': ["'self'", 'https://cdn.jsdelivr.net'],
+    'font-src': ["'self'", 'https://cdn.jsdelivr.net'],
+    'img-src': ["'self'", 'data:', 'https:'],
+    'connect-src': ["'self'", 'https://cdn.jsdelivr.net']
 }
 
 Talisman(app, content_security_policy=csp, force_https=False)
