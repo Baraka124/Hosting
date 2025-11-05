@@ -207,7 +207,6 @@ def token_required(f):
         
         return f(*args, **kwargs)
     return decorated
-
 def validate_json(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -220,7 +219,9 @@ def validate_json(f):
         
         request.json_data = data
         return f(*args, **kwargs)
-    return decorated
+    return decorated_function  # ← Fixed this line
+
+
 
 # Database Initialization with better error handling
 def init_db():
