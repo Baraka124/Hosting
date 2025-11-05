@@ -1,2299 +1,2116 @@
-              </label>
-            </div>
-            <div class="report-reason" data-reason="misinformation">
-              <input type="radio" name="report-reason" id="reason-misinformation" style="display: none;">
-              <label for="reason-misinformation" style="cursor: pointer; margin: 0; flex: 1;">
-                <strong>Misinformation</strong>
-                <div style="font-size: 0.875rem; color: var(--text-secondary);">False or misleading information</div>
-              </label>
-            </div>
-            <div class="report-reason" data-reason="other">
-              <input type="radio" name="report-reason" id="reason-other" style="display: none;">
-              <label for="reason-other" style="cursor: pointer; margin: 0; flex: 1;">
-                <strong>Other</strong>
-                <div style="font-size: 0.875rem; color: var(--text-secondary);">Another reason not listed</div>
-              </label>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EdgePowered • Advanced Community Forum</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary: #0066FF;
+      --primary-dark: #0052CC;
+      --secondary: #00CCFF;
+      --success: #34C759;
+      --danger: #FF3B30;
+      --warning: #FF9500;
+      --info: #17a2b8;
+      --dark: #1a1d21;
+      --light: #f5f7fa;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --bg-tertiary: #e9ecef;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --text-muted: #8a8f98;
+      --border: #dee2e6;
+      --border-light: #e9ecef;
+      --shadow: 0 2px 8px rgba(0,0,0,0.1);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1a1d21;
+      --bg-secondary: #2d3239;
+      --bg-tertiary: #373c43;
+      --text-primary: #ffffff;
+      --text-secondary: #8a8f98;
+      --text-muted: #6c757d;
+      --border: #40444b;
+      --border-light: #2d3239;
+      --shadow: 0 2px 8px rgba(0,0,0,0.3);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Enhanced Header */
+    .header {
+      background: var(--bg-primary);
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      background: rgba(var(--bg-primary-rgb), 0.95);
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .logo:hover {
+      color: var(--primary-dark);
+    }
+
+    /* Enhanced Buttons */
+    .btn {
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 24px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+    }
+
+    .btn-outline-primary {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline-primary:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-info { background: var(--info); color: white; }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.8125rem;
+    }
+
+    .btn-xs {
+      padding: 6px 12px;
+      font-size: 0.75rem;
+    }
+
+    /* Enhanced Hero Section */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      border-radius: var(--radius);
+      color: white;
+      margin: 2rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Enhanced Cards */
+    .card {
+      background: var(--bg-primary);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius) var(--radius) 0 0;
+      margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    }
+
+    /* Enhanced Post Cards */
+    .post-card {
+      animation: slideInUp 0.5s ease;
+      position: relative;
+    }
+
+    .post-card.featured {
+      border-left: 4px solid var(--warning);
+      background: linear-gradient(90deg, rgba(255, 149, 0, 0.05) 0%, transparent 100%);
+    }
+
+    .post-card.pinned {
+      border-left: 4px solid var(--success);
+      background: linear-gradient(90deg, rgba(52, 199, 89, 0.05) 0%, transparent 100%);
+    }
+
+    .post-card.locked::after {
+      content: '🔒';
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.2rem;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .post-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .user-avatar:hover {
+      transform: scale(1.05);
+    }
+
+    .user-avatar-sm {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .user-avatar-xs {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .post-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .post-meta strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .post-meta strong:hover {
+      color: var(--primary);
+    }
+
+    .timestamp {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .category-tag {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: 1px solid var(--border-light);
+    }
+
+    .post-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .post-content {
+      margin-bottom: 1rem;
+      line-height: 1.6;
+      word-wrap: break-word;
+    }
+
+    .post-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-sm);
+      margin: 0.5rem 0;
+    }
+
+    .post-content pre {
+      background: var(--bg-secondary);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      margin: 0.5rem 0;
+    }
+
+    .post-content code {
+      background: var(--bg-secondary);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 0.875rem;
+    }
+
+    .post-stats {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+      position: relative;
+    }
+
+    .action-btn:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .action-btn.liked {
+      color: var(--danger);
+    }
+
+    .action-btn.bookmarked {
+      color: var(--warning);
+    }
+
+    .action-btn.reported {
+      color: var(--danger);
+    }
+
+    .action-btn .count {
+      font-size: 0.8rem;
+      min-width: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .action-btn .badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Enhanced Modals */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 2000;
+      backdrop-filter: blur(8px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-primary);
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      z-index: 2001;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-close:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Enhanced Comments Modal */
+    .comments-modal .modal-content {
+      max-width: 700px;
+    }
+
+    .comments-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comments-list {
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 1.5rem;
+    }
+
+    .comment {
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .comment:last-child {
+      border-bottom: none;
+    }
+
+    .comment.reply {
+      margin-left: 2rem;
+      border-left: 2px solid var(--border);
+      padding-left: 1rem;
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .comment-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .comment-meta strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+    .comment-content {
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .replies {
+      margin-top: 1rem;
+    }
+
+    .comment-form {
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+
+    .comment-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+      resize: vertical;
+      min-height: 80px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: inherit;
+    }
+
+    .comment-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.1);
+    }
+
+    /* Enhanced Rich Text Editor */
+    .editor-toolbar {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    .editor-toolbar button {
+      background: none;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+
+    .editor-toolbar button:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .editor-toolbar button.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .editor-content {
+      min-height: 150px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      outline: none;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .editor-content:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.1);
+    }
+
+    .editor-content img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .editor-content pre {
+      background: var(--bg-secondary);
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+
+    /* Enhanced Skeleton Loading */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border-light) 50%, var(--bg-secondary) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-text {
+      height: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .skeleton-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .skeleton-card {
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Enhanced Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 3000;
+    }
+
+    .toast {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      box-shadow: var(--shadow-lg);
+      animation: slideInRight 0.3s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      max-width: 350px;
+      min-width: 300px;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--success);
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--danger);
+    }
+
+    .toast.warning {
+      border-left: 4px solid var(--warning);
+    }
+
+    .toast.info {
+      border-left: 4px solid var(--info);
+    }
+
+    .toast-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .toast-message {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .toast-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .toast-close:hover {
+      background: var(--bg-secondary);
+    }
+
+    /* Enhanced Filter Bar */
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+      background: var(--bg-secondary);
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .filter-select, .search-input {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .filter-select:focus, .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.1);
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Enhanced Notification System */
+    .notification-container {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      z-index: 2500;
+      max-width: 400px;
+    }
+
+    .notification {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      box-shadow: var(--shadow-lg);
+      animation: slideInRight 0.3s ease;
+      display: flex;
+      gap: 0.75rem;
+      max-width: 400px;
+      cursor: pointer;
+    }
+
+    .notification:hover {
+      transform: translateX(-4px);
+    }
+
+    .notification-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+      font-size: 0.875rem;
+    }
+
+    .notification-icon.info { background: var(--primary); }
+    .notification-icon.success { background: var(--success); }
+    .notification-icon.warning { background: var(--warning); }
+    .notification-icon.error { background: var(--danger); }
+
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .notification-message {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .notification-time {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .notification-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.25rem;
+      align-self: flex-start;
+      border-radius: 4px;
+    }
+
+    .notification-close:hover {
+      background: var(--bg-secondary);
+    }
+
+    /* Enhanced Notification Bell */
+    .notification-bell {
+      position: relative;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .notification-bell:hover {
+      background: var(--bg-secondary);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* Enhanced Notifications Panel */
+    .notifications-panel {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      width: 380px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      z-index: 2002;
+      display: none;
+      max-height: 500px;
+      flex-direction: column;
+      animation: slideInDown 0.3s ease;
+    }
+
+    @keyframes slideInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .notifications-panel.active {
+      display: flex;
+    }
+
+    .panel-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-secondary);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .notifications-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 400px;
+    }
+
+    .notification-item {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0.75rem;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .notification-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .notification-item.unread {
+      background: var(--bg-secondary);
+    }
+
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+
+    .unread-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+
+    .panel-footer {
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      background: var(--bg-secondary);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    /* Enhanced Profile Modal */
+    .profile-modal {
+      max-width: 800px;
+    }
+
+    .profile-header {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .profile-avatar-large {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-info h3 {
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .profile-bio {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .stat-item strong {
+      display: block;
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-item span {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .profile-activity {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--primary);
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-text {
+      margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    /* Enhanced Search */
+    .search-modal {
+      max-width: 600px;
+    }
+
+    .search-filters {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-group label {
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: inherit;
+    }
+
+    .filter-group.checkbox {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .filter-group.checkbox label {
+      order: 2;
+      margin-left: 0.5rem;
+      font-weight: normal;
+    }
+
+    .filter-group.checkbox input {
+      order: 1;
+    }
+
+    /* Enhanced Analytics Dashboard */
+    .analytics-dashboard {
+      max-width: 1000px;
+      width: 90vw;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .analytics-grid {
+      display: grid;
+      gap: 2rem;
+    }
+
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-card {
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      text-align: center;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-card.primary { border-left: 4px solid var(--primary); }
+    .stat-card.success { border-left: 4px solid var(--success); }
+    .stat-card.warning { border-left: 4px solid var(--warning); }
+    .stat-card.info { border-left: 4px solid var(--info); }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .stat-change {
+      font-size: 0.875rem;
+      color: var(--success);
+    }
+
+    .chart-section {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .categories-chart {
+      margin-top: 1rem;
+    }
+
+    .category-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .category-name {
+      min-width: 100px;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .category-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+
+    .category-count {
+      min-width: 40px;
+      text-align: right;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .top-users-section {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .top-users-list {
+      margin-top: 1rem;
+    }
+
+    .top-user {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .top-user:last-child {
+      border-bottom: none;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .username {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .user-stats {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Enhanced Search Suggestions */
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .suggestion-item {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .suggestion-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion-content {
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .suggestion-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    mark {
+      background: rgba(255, 255, 0, 0.3);
+      color: inherit;
+      padding: 0.1rem 0.2rem;
+      border-radius: 2px;
+    }
+
+    /* Enhanced Edit Controls */
+    .edit-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Report Modal */
+    .report-modal {
+      max-width: 500px;
+    }
+
+    .report-reasons {
+      display: grid;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .report-reason {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .report-reason:hover {
+      background: var(--bg-secondary);
+    }
+
+    .report-reason.selected {
+      border-color: var(--primary);
+      background: rgba(0, 102, 255, 0.05);
+    }
+
+    /* Enhanced Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .hero p {
+        font-size: 1.1rem;
+      }
+      
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-input {
+        min-width: auto;
+      }
+
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+
+      .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .notification-container {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+      }
+
+      .notifications-panel {
+        right: 10px;
+        left: 10px;
+        width: auto;
+      }
+
+      .post-actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .action-group {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .stat-cards {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+      }
+
+      .editor-toolbar {
+        gap: 0.25rem;
+      }
+
+      .editor-toolbar button {
+        padding: 0.4rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 3rem 1rem;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .stat-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .post-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+    }
+
+    /* Utility Classes */
+    .text-truncate-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .text-truncate-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+
+    .slide-in-up {
+      animation: slideInUp 0.5s ease;
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Focus styles for accessibility */
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Print styles */
+    @media print {
+      .header,
+      .filter-bar,
+      .post-actions,
+      .modal-overlay {
+        display: none !important;
+      }
+
+      .card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Enhanced Header -->
+  <header class="header">
+    <div class="container">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <a href="#" class="logo" onclick="event.preventDefault(); uiManager.showMainView()">
+          <i class="bi bi-lightning-charge-fill"></i>
+          EdgePowered
+        </a>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <!-- Notification Bell -->
+          <div class="notification-bell" id="notification-bell" style="display: none;">
+            <i class="bi bi-bell" style="font-size: 1.25rem;"></i>
+            <span class="notification-badge" id="notification-count" style="display: none;">0</span>
+          </div>
+          
+          <!-- User Reputation -->
+          <div id="user-reputation" class="btn btn-outline-primary btn-sm" style="display: none;">
+            <i class="bi bi-star-fill"></i> <span id="reputation-score">0</span>
+          </div>
+          
+          <!-- Analytics Button -->
+          <button id="analytics-btn" class="btn btn-outline-primary btn-sm" style="display: none;">
+            <i class="bi bi-graph-up"></i> <span class="d-none d-md-inline">Analytics</span>
+          </button>
+          
+          <!-- Bookmarks Button -->
+          <button id="bookmarks-btn" class="btn btn-outline-primary btn-sm" style="display: none;">
+            <i class="bi bi-bookmark"></i> <span class="d-none d-md-inline">Saved</span>
+          </button>
+
+          <!-- Moderation Button -->
+          <button id="moderation-btn" class="btn btn-outline-warning btn-sm" style="display: none;">
+            <i class="bi bi-shield-check"></i> <span class="d-none d-md-inline">Mod</span>
+          </button>
+          
+          <button id="theme-toggle" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-moon"></i>
+          </button>
+          
+          <!-- Enhanced Search Button -->
+          <button id="advanced-search-btn" class="btn btn-outline-primary btn-sm" style="display: none;">
+            <i class="bi bi-search"></i> <span class="d-none d-md-inline">Search</span>
+          </button>
+          
+          <div id="user-section" style="display: flex; align-items: center; gap: 0.5rem;">
+            <span id="username-display" style="font-weight: 600; color: var(--text-primary);"></span>
+            <button class="btn btn-outline-primary btn-sm" id="logout-btn" style="display: none;">
+              <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline">Log Out</span>
+            </button>
           </div>
         </div>
-        
-        <div class="filter-group" style="margin-top: 1rem;">
-          <label for="report-description">Additional Details (Optional)</label>
-          <textarea id="report-description" placeholder="Please provide any additional information that might help us understand your report..." class="form-control" rows="3"></textarea>
+      </div>
+    </div>
+  </header>
+
+  <!-- Enhanced Notification Container -->
+  <div class="notification-container" id="notification-container"></div>
+
+  <!-- Enhanced Notifications Panel -->
+  <div class="notifications-panel" id="notifications-panel">
+    <div class="panel-header">
+      <h5 style="margin: 0; font-weight: 600;">Notifications</h5>
+      <button class="btn-close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="notifications-list" id="notifications-list">
+      <div class="text-center" style="padding: 2rem; color: var(--text-secondary);">
+        <i class="bi bi-bell" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+        <p>No notifications yet</p>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-sm btn-outline-primary" id="mark-all-read-btn">
+        Mark all as read
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Enhanced Welcome Section -->
+    <div id="auth-section">
+      <div class="hero">
+        <div class="hero-content">
+          <h1>Welcome to EdgePowered</h1>
+          <p>Where cutting-edge ideas meet community power. Join our vibrant community of thinkers, creators, and innovators.</p>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-light" id="sign-in-btn">
+              <i class="bi bi-box-arrow-in-right"></i> Sign In
+            </button>
+            <button class="btn btn-outline-light" id="create-account-btn">
+              <i class="bi bi-person-plus"></i> Create Account
+            </button>
+          </div>
         </div>
       </div>
       
-      <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-outline-primary" id="cancel-report-btn" style="flex: 1;">Cancel</button>
-        <button class="btn btn-danger" id="submit-report-btn" style="flex: 1;" disabled>
-          <i class="bi bi-flag"></i> Submit Report
+      <!-- Enhanced Features Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 3rem 0;">
+        <div class="card text-center">
+          <i class="bi bi-lightning" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+          <h5 style="font-weight: 700; margin-bottom: 0.5rem;">Lightning Fast</h5>
+          <p style="color: var(--text-secondary);">Real-time updates and instant notifications with WebSocket support</p>
+        </div>
+        <div class="card text-center">
+          <i class="bi bi-graph-up" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+          <h5 style="font-weight: 700; margin-bottom: 0.5rem;">Smart Analytics</h5>
+          <p style="color: var(--text-secondary);">Track engagement, post performance, and community insights</p>
+        </div>
+        <div class="card text-center">
+          <i class="bi bi-shield-check" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+          <h5 style="font-weight: 700; margin-bottom: 0.5rem;">Secure & Private</h5>
+          <p style="color: var(--text-secondary);">Enterprise-grade security with end-to-end encryption</p>
+        </div>
+        <div class="card text-center">
+          <i class="bi bi-people" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+          <h5 style="font-weight: 700; margin-bottom: 0.5rem;">Vibrant Community</h5>
+          <p style="color: var(--text-secondary);">Join thousands of passionate users sharing knowledge</p>
+        </div>
+      </div>
+
+      <!-- Community Stats -->
+      <div class="card text-center" style="margin: 2rem 0;">
+        <h4 style="margin-bottom: 1rem; font-weight: 700;">Community Statistics</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+          <div>
+            <div class="stat-value" style="color: var(--primary);" id="stats-users">0</div>
+            <div class="stat-label">Active Users</div>
+          </div>
+          <div>
+            <div class="stat-value" style="color: var(--success);" id="stats-posts">0</div>
+            <div class="stat-label">Total Posts</div>
+          </div>
+          <div>
+            <div class="stat-value" style="color: var(--warning);" id="stats-comments">0</div>
+            <div class="stat-label">Comments</div>
+          </div>
+          <div>
+            <div class="stat-value" style="color: var(--info);" id="stats-likes">0</div>
+            <div class="stat-label">Likes Given</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Posts Section -->
+    <div id="posts-section" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 style="margin: 0; font-weight: 700;">Community Posts</h3>
+          <p style="color: var(--text-secondary); margin: 0.25rem 0 0 0; font-size: 0.875rem;" id="posts-count">Loading...</p>
+        </div>
+        <button class="btn btn-primary" id="new-post-btn">
+          <i class="bi bi-plus-circle"></i> New Post
+        </button>
+      </div>
+
+      <!-- Enhanced Filter Bar -->
+      <div class="filter-bar">
+        <select id="category-filter" class="filter-select">
+          <option value="">All Categories</option>
+          <option value="General">General</option>
+          <option value="Technology">Technology</option>
+          <option value="Science">Science</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Sports">Sports</option>
+          <option value="Politics">Politics</option>
+        </select>
+        
+        <div style="position: relative; flex: 1;">
+          <input type="text" id="search-input" class="search-input" placeholder="Search posts, users, or content...">
+        </div>
+
+        <select id="sort-filter" class="filter-select">
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="popular">Most Popular</option>
+          <option value="active">Most Active</option>
+          <option value="trending">Trending</option>
+        </select>
+        
+        <button class="btn btn-outline-primary" id="clear-filters-btn">
+          <i class="bi bi-x-circle"></i> Clear
+        </button>
+      </div>
+
+      <!-- Posts Container -->
+      <div id="posts-container">
+        <!-- Posts will be loaded here -->
+      </div>
+
+      <!-- Enhanced Load More -->
+      <div id="load-more-container" style="text-align: center; margin: 2rem 0; display: none;">
+        <button class="btn btn-outline-primary" id="load-more-btn">
+          <i class="bi bi-arrow-clockwise"></i> Load More Posts
+        </button>
+      </div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="card text-center" style="display: none;">
+        <i class="bi bi-inbox" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+        <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">No posts found</h4>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Try adjusting your filters or be the first to post in this category!</p>
+        <button class="btn btn-primary" id="empty-state-post-btn">
+          <i class="bi bi-plus-circle"></i> Create First Post
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Moderation Panel Modal -->
-  <div id="moderationModal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 900px;">
+  <!-- Enhanced Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Enhanced Modals -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Moderation Panel</h4>
-        <button class="btn-close" onclick="uiManager.hideModal('moderationModal')">
+        <h4 class="modal-title">Sign In</h4>
+        <button class="btn-close" onclick="uiManager.hideModal('loginModal')">
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
       
       <div style="margin: 1.5rem 0;">
-        <div class="filter-bar">
-          <select id="moderation-status" class="filter-select">
-            <option value="pending">Pending Reports</option>
-            <option value="resolved">Resolved</option>
-            <option value="all">All Reports</option>
-          </select>
-          <button class="btn btn-outline-primary" id="refresh-reports-btn">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
+        <div class="filter-group">
+          <label for="loginUsername">Username or Email</label>
+          <input type="text" id="loginUsername" placeholder="Enter your username or email" class="form-control">
         </div>
-        
-        <div id="moderation-content" style="max-height: 500px; overflow-y: auto;">
-          <!-- Moderation content will be loaded here -->
+        <div class="filter-group" style="margin-top: 1rem;">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" class="form-control">
         </div>
+        <div class="filter-group checkbox" style="margin-top: 1rem;">
+          <input type="checkbox" id="remember-me">
+          <label for="remember-me">Remember me for 24 hours</label>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 1rem;">
+        <button class="btn btn-outline-primary" id="cancel-login-btn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="login-btn" style="flex: 1;">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-loading" style="display: none;">
+            <i class="bi bi-arrow-repeat spinner"></i> Signing In...
+          </span>
+        </button>
       </div>
     </div>
   </div>
 
-  <script>
-    // Enhanced EdgePowered Forum Application with All New Features
-    console.log('🚀 EdgePowered Enhanced Forum Loading...');
-
-    // API Configuration
-    const API_BASE = "https://hosting-production-a352.up.railway.app/api";
-    
-    // Enhanced Application State Manager
-    class StateManager {
-      constructor() {
-        this.state = {
-          user: null,
-          posts: [],
-          categories: ['General', 'Technology', 'Science', 'Entertainment', 'Sports', 'Politics'],
-          ui: {
-            loading: false,
-            theme: localStorage.getItem('theme') || 'light',
-            currentPage: 1,
-            hasMore: true,
-            filters: {
-              category: '',
-              search: '',
-              sort: 'newest'
-            },
-            onlineUsers: 0
-          },
-          notifications: [],
-          unreadNotifications: 0,
-          userStats: {
-            reputation: 0,
-            postCount: 0,
-            likeCount: 0
-          },
-          communityStats: {
-            users: 0,
-            posts: 0,
-            comments: 0,
-            likes: 0
-          }
-        };
-        this.listeners = new Set();
-      }
-
-      setState(newState) {
-        this.state = { ...this.state, ...newState };
-        this.notifyListeners();
-      }
-
-      subscribe(listener) {
-        this.listeners.add(listener);
-        return () => this.listeners.delete(listener);
-      }
-
-      notifyListeners() {
-        this.listeners.forEach(listener => listener(this.state));
-      }
-
-      updateFilters(newFilters) {
-        this.setState({
-          ui: {
-            ...this.state.ui,
-            filters: { ...this.state.ui.filters, ...newFilters },
-            currentPage: 1
-          },
-          posts: []
-        });
-      }
-
-      addNotification(notification) {
-        const notifications = [notification, ...this.state.notifications];
-        const unreadNotifications = this.state.unreadNotifications + 1;
-        this.setState({ notifications, unreadNotifications });
-      }
-
-      markNotificationsAsRead() {
-        this.setState({ unreadNotifications: 0 });
-      }
-
-      updateUserStats(stats) {
-        this.setState({
-          userStats: { ...this.state.userStats, ...stats }
-        });
-      }
-
-      updateCommunityStats(stats) {
-        this.setState({
-          communityStats: { ...this.state.communityStats, ...stats }
-        });
-      }
-    }
-
-    const appState = new StateManager();
-
-    // Enhanced Posts Manager
-    class PostsManager {
-      constructor() {
-        this.loading = false;
-        this.cache = new Map();
-        this.cacheTimeout = 300000; // 5 minutes
-      }
-
-      async loadPosts(useCache = true) {
-        if (this.loading) return;
-        
-        this.loading = true;
-        appState.setState({ ui: { ...appState.state.ui, loading: true } });
-
-        try {
-          const { currentPage, filters } = appState.state.ui;
-          const cacheKey = `posts_${currentPage}_${JSON.stringify(filters)}`;
-          
-          // Check cache first
-          if (useCache && this.cache.has(cacheKey)) {
-            const cached = this.cache.get(cacheKey);
-            if (Date.now() - cached.timestamp < this.cacheTimeout) {
-              appState.setState({ 
-                posts: currentPage === 1 ? 
-                  cached.data : 
-                  [...appState.state.posts, ...cached.data],
-                ui: { 
-                  ...appState.state.ui, 
-                  loading: false,
-                  hasMore: cached.hasMore
-                }
-              });
-              return;
-            }
-          }
-
-          const params = new URLSearchParams({
-            page: currentPage,
-            per_page: 10,
-            ...(filters.category && { category: filters.category }),
-            ...(filters.search && { search: filters.search }),
-            ...(filters.sort && { sort: filters.sort })
-          });
-
-          const data = await this.apiCall(`/posts?${params}`);
-          
-          if (data.success) {
-            const posts = currentPage === 1 ? 
-              data.data : 
-              [...appState.state.posts, ...data.data];
-            
-            // Update cache
-            this.cache.set(cacheKey, {
-              data: data.data,
-              hasMore: currentPage < data.pagination.pages,
-              timestamp: Date.now()
-            });
-
-            // Update posts count
-            document.getElementById('posts-count').textContent = 
-              `Showing ${posts.length} of ${data.pagination.total} posts`;
-            
-            appState.setState({ 
-              posts,
-              ui: { 
-                ...appState.state.ui, 
-                loading: false,
-                hasMore: currentPage < data.pagination.pages
-              }
-            });
-
-            // Show/hide empty state
-            this.toggleEmptyState(posts.length === 0);
-          }
-        } catch (error) {
-          console.error('Failed to load posts:', error);
-          appState.setState({ ui: { ...appState.state.ui, loading: false } });
-          this.toggleEmptyState(true);
-        } finally {
-          this.loading = false;
-        }
-      }
-
-      toggleEmptyState(show) {
-        const emptyState = document.getElementById('empty-state');
-        const postsContainer = document.getElementById('posts-container');
-        const loadMoreContainer = document.getElementById('load-more-container');
-        
-        if (show) {
-          emptyState.style.display = 'block';
-          postsContainer.style.display = 'none';
-          loadMoreContainer.style.display = 'none';
-        } else {
-          emptyState.style.display = 'none';
-          postsContainer.style.display = 'block';
-        }
-      }
-
-      async createPost(category, content, title = '') {
-        try {
-          const data = await this.apiCall('/posts', {
-            method: 'POST',
-            body: { category, content, title }
-          });
-
-          if (data.success) {
-            const newPost = {
-              id: data.post_id,
-              content,
-              title,
-              category,
-              user_id: appState.state.user.id,
-              username: appState.state.user.username,
-              avatar_color: appState.state.user.avatar_color,
-              timestamp: new Date().toISOString(),
-              last_activity: new Date().toISOString(),
-              likes_count: 0,
-              comments_count: 0,
-              user_has_liked: false,
-              user_has_bookmarked: false
-            };
-
-            appState.setState({
-              posts: [newPost, ...appState.state.posts]
-            });
-
-            // Clear cache for first page
-            this.clearCacheForPage(1);
-            
-            return true;
-          }
-        } catch (error) {
-          console.error('Failed to create post:', error);
-          return false;
-        }
-      }
-
-      async likePost(postId) {
-        try {
-          const data = await this.apiCall(`/posts/${postId}/like`, {
-            method: 'POST'
-          });
-
-          if (data.success) {
-            const posts = appState.state.posts.map(post => {
-              if (post.id === postId) {
-                return {
-                  ...post,
-                  likes_count: data.likes_count,
-                  user_has_liked: data.action === 'liked'
-                };
-              }
-              return post;
-            });
-
-            appState.setState({ posts });
-            return true;
-          }
-        } catch (error) {
-          console.error('Failed to like post:', error);
-          return false;
-        }
-      }
-
-      async bookmarkPost(postId) {
-        try {
-          const data = await this.apiCall(`/posts/${postId}/bookmark`, {
-            method: 'POST'
-          });
-          
-          if (data.success) {
-            this.updateBookmarkUI(postId, data.action === 'bookmarked');
-            return true;
-          }
-        } catch (error) {
-          console.error('Bookmark operation failed:', error);
-          return false;
-        }
-      }
-
-      updateBookmarkUI(postId, isBookmarked) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        if (postElement) {
-          const bookmarkBtn = postElement.querySelector('.bookmark-btn');
-          if (bookmarkBtn) {
-            bookmarkBtn.classList.toggle('bookmarked', isBookmarked);
-            bookmarkBtn.innerHTML = isBookmarked ? 
-              '<i class="bi bi-bookmark-fill"></i>' : 
-              '<i class="bi bi-bookmark"></i>';
-          }
-        }
-
-        // Update in state
-        const posts = appState.state.posts.map(post => {
-          if (post.id === postId) {
-            return { ...post, user_has_bookmarked: isBookmarked };
-          }
-          return post;
-        });
-        appState.setState({ posts });
-      }
-
-      loadMore() {
-        const { currentPage, hasMore } = appState.state.ui;
-        if (hasMore && !this.loading) {
-          appState.setState({
-            ui: { ...appState.state.ui, currentPage: currentPage + 1 }
-          });
-          this.loadPosts(false); // Don't use cache for pagination
-        }
-      }
-
-      async searchPosts(filters) {
-        try {
-          const params = new URLSearchParams({
-            page: 1,
-            per_page: 20,
-            ...(filters.category && { category: filters.category }),
-            ...(filters.search && { search: filters.search }),
-            ...(filters.author && { author: filters.author }),
-            ...(filters.sort && { sort: filters.sort }),
-            ...(filters.minLikes && { min_likes: filters.minLikes }),
-            ...(filters.hasComments && { has_comments: true }),
-            ...(filters.myPosts && { my_posts: true }),
-            ...(filters.featured && { featured: true })
-          });
-
-          const data = await this.apiCall(`/search?${params}`);
-          return data;
-        } catch (error) {
-          console.error('Search failed:', error);
-          throw error;
-        }
-      }
-
-      async deletePost(postId) {
-        try {
-          const response = await this.apiCall(`/posts/${postId}`, {
-            method: 'DELETE'
-          });
-
-          if (response.success) {
-            const posts = appState.state.posts.filter(post => post.id !== postId);
-            appState.setState({ posts });
-            uiManager.showToast('Post deleted successfully', 'success');
-            return true;
-          }
-        } catch (error) {
-          console.error('Failed to delete post:', error);
-          uiManager.showToast('Failed to delete post', 'error');
-          return false;
-        }
-      }
-
-      async updatePost(postId, content, category, title = '') {
-        try {
-          const response = await this.apiCall(`/posts/${postId}`, {
-            method: 'PUT',
-            body: { content, category, title }
-          });
-
-          if (response.success) {
-            const posts = appState.state.posts.map(post => {
-              if (post.id === postId) {
-                return { 
-                  ...post, 
-                  content, 
-                  category, 
-                  title,
-                  edited_at: new Date().toISOString() 
-                };
-              }
-              return post;
-            });
-
-            appState.setState({ posts });
-            return true;
-          }
-        } catch (error) {
-          console.error('Failed to update post:', error);
-          return false;
-        }
-      }
-
-      async reportPost(postId, reason, description = '') {
-        try {
-          const response = await this.apiCall('/moderation/reports', {
-            method: 'POST',
-            body: {
-              post_id: postId,
-              reason: reason,
-              description: description
-            }
-          });
-
-          return response.success;
-        } catch (error) {
-          console.error('Failed to report post:', error);
-          return false;
-        }
-      }
-
-      clearCacheForPage(page) {
-        const keysToDelete = [];
-        for (const key of this.cache.keys()) {
-          if (key.startsWith(`posts_${page}_`)) {
-            keysToDelete.push(key);
-          }
-        }
-        keysToDelete.forEach(key => this.cache.delete(key));
-      }
-
-      async apiCall(endpoint, options = {}) {
-        return await apiCall(endpoint, options);
-      }
-    }
-
-    // Enhanced Comments System
-    class CommentsSystem {
-      constructor() {
-        this.currentPostId = null;
-      }
-
-      async loadComments(postId) {
-        this.currentPostId = postId;
-        
-        try {
-          const response = await apiCall(`/posts/${postId}/comments`);
-          if (response.success) {
-            this.displayComments(postId, response.data);
-          }
-        } catch (error) {
-          console.error('Failed to load comments:', error);
-          uiManager.showToast('Failed to load comments', 'error');
-        }
-      }
-
-      displayComments(postId, comments) {
-        const modal = document.getElementById('commentsModal');
-        modal.innerHTML = this.createCommentsModal(postId, comments);
-        modal.style.display = 'block';
-      }
-
-      createCommentsModal(postId, comments) {
-        return `
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Comments</h4>
-              <button class="btn-close" onclick="uiManager.hideModal('commentsModal')">
-                <i class="bi bi-x-lg"></i>
-              </button>
-            </div>
-            <div class="comments-list">
-              ${comments.length > 0 ? this.renderCommentsTree(comments) : `
-                <div class="text-center" style="padding: 2rem; color: var(--text-secondary);">
-                  <i class="bi bi-chat" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
-                  <p>No comments yet. Be the first to comment!</p>
-                </div>
-              `}
-            </div>
-            <div class="comment-form">
-              <textarea placeholder="Write a comment..." class="comment-input" id="comment-input-${postId}"></textarea>
-              <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-                <button class="btn btn-outline-primary" onclick="uiManager.hideModal('commentsModal')">
-                  Cancel
-                </button>
-                <button class="btn btn-primary" onclick="commentsSystem.postComment(${postId})">
-                  Post Comment
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      renderCommentsTree(comments) {
-        return comments.map(comment => `
-          <div class="comment ${comment.parent_comment_id ? 'reply' : ''}" data-comment-id="${comment.id}">
-            <div class="comment-header">
-              <div class="user-avatar-sm" style="background-color: ${comment.avatar_color}" 
-                   onclick="profileSystem.loadUserProfile(${comment.user_id})">
-                ${comment.username.charAt(0).toUpperCase()}
-              </div>
-              <div class="comment-meta">
-                <strong onclick="profileSystem.loadUserProfile(${comment.user_id})">${comment.username}</strong>
-                <span class="timestamp">${comment.formatted_timestamp}</span>
-              </div>
-              ${comment.user_id !== appState.state.user.id ? `
-                <button class="action-btn report-btn" onclick="commentsSystem.reportComment(${comment.id})" title="Report comment">
-                  <i class="bi bi-flag"></i>
-                </button>
-              ` : ''}
-            </div>
-            <div class="comment-content">${comment.content}</div>
-            <div class="comment-actions">
-              <button class="action-btn like-btn ${comment.user_has_liked ? 'liked' : ''}" 
-                      onclick="commentsSystem.likeComment(${comment.id})">
-                <i class="bi bi-heart${comment.user_has_liked ? '-fill' : ''}"></i>
-                <span class="count">${comment.likes_count}</span>
-              </button>
-              <button class="action-btn" onclick="commentsSystem.replyToComment(${comment.id}, '${comment.username}')">
-                <i class="bi bi-reply"></i> Reply
-              </button>
-            </div>
-            ${comment.replies && comment.replies.length > 0 ? 
-              `<div class="replies">${this.renderCommentsTree(comment.replies)}</div>` : ''}
-          </div>
-        `).join('');
-      }
-
-      async postComment(postId, parentCommentId = null) {
-        const input = document.getElementById(`comment-input-${postId}`);
-        const content = input.value.trim();
-
-        if (!content) {
-          uiManager.showToast('Please enter a comment', 'warning');
-          return;
-        }
-
-        try {
-          const response = await apiCall('/comments', {
-            method: 'POST',
-            body: {
-              post_id: postId,
-              content: content,
-              parent_comment_id: parentCommentId
-            }
-          });
-
-          if (response.success) {
-            input.value = '';
-            this.loadComments(postId); // Reload comments
-            uiManager.showToast('Comment posted successfully', 'success');
-            
-            // Update post activity
-            uiManager.postsManager.clearCacheForPage(1);
-          }
-        } catch (error) {
-          console.error('Failed to post comment:', error);
-          uiManager.showToast('Failed to post comment', 'error');
-        }
-      }
-
-      async likeComment(commentId) {
-        try {
-          // Note: You'll need to add a comment like endpoint to your backend
-          uiManager.showToast('Comment liking coming soon!', 'info');
-        } catch (error) {
-          console.error('Failed to like comment:', error);
-        }
-      }
-
-      replyToComment(commentId, username) {
-        const input = document.querySelector('.comment-input');
-        input.focus();
-        input.value = `@${username} `;
-        uiManager.showToast(`Replying to ${username}`, 'info');
-      }
-
-      async reportComment(commentId) {
-        const reason = prompt('Please enter the reason for reporting this comment:');
-        if (reason) {
-          try {
-            const success = await uiManager.postsManager.reportPost(null, reason, `Comment ID: ${commentId}`);
-            if (success) {
-              uiManager.showToast('Comment reported successfully', 'success');
-            }
-          } catch (error) {
-            uiManager.showToast('Failed to report comment', 'error');
-          }
-        }
-      }
-    }
-
-    // Enhanced Bookmarks Manager
-    class BookmarksManager {
-      async loadBookmarks() {
-        try {
-          const response = await apiCall('/bookmarks');
-          if (response.success) {
-            this.displayBookmarks(response.data);
-          }
-        } catch (error) {
-          console.error('Failed to load bookmarks:', error);
-          uiManager.showToast('Failed to load bookmarks', 'error');
-        }
-      }
-
-      displayBookmarks(posts) {
-        const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Saved Posts</h4>
-              <button class="btn-close" onclick="this.closest('.modal-overlay').remove()">
-                <i class="bi bi-x-lg"></i>
-              </button>
-            </div>
-            <div class="comments-list">
-              ${posts.length > 0 ? posts.map(post => `
-                <div class="card post-card" data-post-id="${post.id}">
-                  <div class="post-header">
-                    <div class="user-avatar" style="background-color: ${post.avatar_color}" 
-                         onclick="profileSystem.loadUserProfile(${post.user_id})">
-                      ${post.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div class="post-meta">
-                      <strong onclick="profileSystem.loadUserProfile(${post.user_id})">${post.username}</strong>
-                      <span class="timestamp">${post.formatted_timestamp} • ${post.category}</span>
-                    </div>
-                  </div>
-                  ${post.title ? `<div class="post-title">${post.title}</div>` : ''}
-                  <div class="post-content text-truncate-3">${post.content}</div>
-                  <div class="post-actions">
-                    <div class="action-group">
-                      <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
-                              onclick="uiManager.handleLike(${post.id})">
-                        <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
-                        <span class="count">${post.likes_count}</span>
-                      </button>
-                      <button class="action-btn comment-btn" 
-                              onclick="commentsSystem.loadComments(${post.id})">
-                        <i class="bi bi-chat"></i>
-                        <span class="count">${post.comments_count}</span>
-                      </button>
-                      <button class="action-btn bookmark-btn bookmarked" 
-                              onclick="bookmarksManager.toggleBookmark(${post.id})">
-                        <i class="bi bi-bookmark-fill"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              `).join('') : `
-                <div class="text-center" style="padding: 2rem; color: var(--text-secondary);">
-                  <i class="bi bi-bookmark" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
-                  <p>No saved posts yet. Start bookmarking posts you want to save!</p>
-                  <button class="btn btn-primary" onclick="uiManager.showModal('createPostModal')">
-                    Create Your First Post
-                  </button>
-                </div>
-              `}
-            </div>
-          </div>
-        `;
-        document.body.appendChild(modal);
-        modal.style.display = 'block';
-      }
-
-      async toggleBookmark(postId) {
-        try {
-          const success = await uiManager.postsManager.bookmarkPost(postId);
-          if (success) {
-            // UI is updated in the postsManager method
-          }
-        } catch (error) {
-          console.error('Bookmark operation failed:', error);
-        }
-      }
-    }
-
-    // Enhanced Profile System
-    class ProfileSystem {
-      async loadUserProfile(userId = null) {
-        const targetUserId = userId || appState.state.user.id;
-        
-        try {
-          const endpoint = userId ? `/users/${userId}/profile` : '/profile';
-          const response = await apiCall(endpoint);
-          
-          if (response.success) {
-            this.displayProfileModal(response.profile);
-          }
-        } catch (error) {
-          console.error('Failed to load profile:', error);
-          // Fallback: create a mock profile for demonstration
-          this.displayProfileModal(this.createMockProfile(targetUserId));
-        }
-      }
-
-      createMockProfile(userId) {
-        const user = appState.state.user;
-        return {
-          username: user.username,
-          avatar_color: user.avatar_color,
-          bio: 'This is a mock bio for demonstration purposes. In a real application, this would be loaded from the backend.',
-          post_count: Math.floor(Math.random() * 50) + 10,
-          reputation: Math.floor(Math.random() * 1000) + 100,
-          like_count: Math.floor(Math.random() * 200) + 50,
-          total_likes_received: Math.floor(Math.random() * 500) + 200,
-          created_at: new Date(Date.now() - Math.floor(Math.random() * 31536000000)).toISOString(),
-          recent_activity: [
-            {
-              action: 'post_created',
-              details: 'Created a new post about web development',
-              timestamp: new Date(Date.now() - 3600000).toISOString()
-            },
-            {
-              action: 'post_liked',
-              details: 'Liked a post about AI technology',
-              timestamp: new Date(Date.now() - 7200000).toISOString()
-            },
-            {
-              action: 'comment_created',
-              details: 'Commented on "The Future of Web Development"',
-              timestamp: new Date(Date.now() - 86400000).toISOString()
-            }
-          ]
-        };
-      }
-
-      displayProfileModal(profile) {
-        const modal = document.getElementById('profileModal');
-        modal.innerHTML = `
-          <div class="modal-content profile-modal">
-            <div class="profile-header">
-              <div class="profile-avatar-large" style="background-color: ${profile.avatar_color}">
-                ${profile.username.charAt(0).toUpperCase()}
-              </div>
-              <div class="profile-info">
-                <h3>${profile.username}</h3>
-                <p class="profile-bio">${profile.bio}</p>
-                <div class="profile-stats">
-                  <div class="stat-item">
-                    <strong>${profile.post_count}</strong>
-                    <span>Posts</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>${profile.reputation}</strong>
-                    <span>Reputation</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>${profile.total_likes_received}</strong>
-                    <span>Likes Received</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>${profile.like_count}</strong>
-                    <span>Likes Given</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="profile-activity">
-              <h4>Recent Activity</h4>
-              ${profile.recent_activity.map(activity => `
-                <div class="activity-item">
-                  <div class="activity-icon">
-                    <i class="bi bi-${this.getActivityIcon(activity.action)}"></i>
-                  </div>
-                  <div class="activity-content">
-                    <div class="activity-text">${activity.details}</div>
-                    <div class="activity-time">${this.formatTime(activity.timestamp)}</div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-            
-            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-              <button class="btn btn-outline-primary" onclick="uiManager.hideModal('profileModal')" style="flex: 1;">
-                Close
-              </button>
-            </div>
-          </div>
-        `;
-        modal.style.display = 'block';
-      }
-
-      getActivityIcon(action) {
-        const icons = {
-          'post_created': 'file-earmark-text',
-          'post_liked': 'heart',
-          'comment_created': 'chat',
-          'user_followed': 'person-plus',
-          'login': 'box-arrow-in-right'
-        };
-        return icons[action] || 'activity';
-      }
-
-      formatTime(timestamp) {
-        const now = new Date();
-        const time = new Date(timestamp);
-        const diff = now - time;
-        
-        if (diff < 60000) return 'Just now';
-        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-        if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
-        return time.toLocaleDateString();
-      }
-    }
-
-    // Enhanced Post Editor
-    class PostEditor {
-      enablePostEditing(postId) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        const contentElement = postElement.querySelector('.post-content');
-        const titleElement = postElement.querySelector('.post-title');
-        
-        // Store original content
-        const originalContent = contentElement.innerHTML;
-        const originalTitle = titleElement ? titleElement.textContent : '';
-        
-        // Make content editable
-        contentElement.contentEditable = true;
-        contentElement.focus();
-        
-        if (titleElement) {
-          titleElement.contentEditable = true;
-        }
-        
-        // Add edit controls
-        const editControls = this.createEditControls(postId, originalContent, originalTitle);
-        postElement.appendChild(editControls);
-      }
-
-      createEditControls(postId, originalContent, originalTitle) {
-        const div = document.createElement('div');
-        div.className = 'edit-controls';
-        div.innerHTML = `
-          <button class="btn btn-success btn-sm" onclick="postEditor.savePost(${postId})">
-            <i class="bi bi-check"></i> Save
-          </button>
-          <button class="btn btn-outline-secondary btn-sm" 
-                  onclick="postEditor.cancelEdit(${postId}, '${this.escapeHtml(originalContent)}', '${this.escapeHtml(originalTitle)}')">
-            <i class="bi bi-x"></i> Cancel
-          </button>
-        `;
-        return div;
-      }
-
-      escapeHtml(unsafe) {
-        return unsafe
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-      }
-
-      async savePost(postId) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        const content = postElement.querySelector('.post-content').innerHTML;
-        const titleElement = postElement.querySelector('.post-title');
-        const title = titleElement ? titleElement.textContent : '';
-        const category = postElement.querySelector('.category-tag')?.textContent || 'General';
-        
-        try {
-          const success = await uiManager.postsManager.updatePost(postId, content, category, title);
-          if (success) {
-            this.disableEditing(postId);
-            uiManager.showToast('Post updated successfully', 'success');
-          }
-        } catch (error) {
-          console.error('Failed to update post:', error);
-        }
-      }
-
-      cancelEdit(postId, originalContent, originalTitle) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        const contentElement = postElement.querySelector('.post-content');
-        const titleElement = postElement.querySelector('.post-title');
-        
-        contentElement.innerHTML = originalContent;
-        if (titleElement) {
-          titleElement.textContent = originalTitle;
-        }
-        this.disableEditing(postId);
-      }
-
-      disableEditing(postId) {
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        const contentElement = postElement.querySelector('.post-content');
-        const titleElement = postElement.querySelector('.post-title');
-        const editControls = postElement.querySelector('.edit-controls');
-        
-        contentElement.contentEditable = false;
-        if (titleElement) {
-          titleElement.contentEditable = false;
-        }
-        if (editControls) {
-          editControls.remove();
-        }
-      }
-    }
-
-    // Enhanced Search
-    class EnhancedSearch {
-      constructor() {
-        this.searchTimeout = null;
-        this.setupRealTimeSearch();
-      }
-
-      setupRealTimeSearch() {
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-          searchInput.addEventListener('input', (e) => {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = setTimeout(() => {
-              this.performRealTimeSearch(e.target.value);
-            }, 300);
-          });
-
-          // Close suggestions when clicking outside
-          document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-suggestions') && !e.target.closest('.search-input')) {
-              this.hideSuggestions();
-            }
-          });
-        }
-      }
-
-      async performRealTimeSearch(query) {
-        if (query.length < 2) {
-          this.hideSuggestions();
-          return;
-        }
-        
-        try {
-          const response = await apiCall(`/search?q=${encodeURIComponent(query)}&per_page=5`);
-          if (response.success) {
-            this.showSearchSuggestions(response.data, query);
-          }
-        } catch (error) {
-          console.error('Search failed:', error);
-        }
-      }
-
-      showSearchSuggestions(results, query) {
-        const suggestions = this.createSearchSuggestions(results, query);
-        
-        // Remove existing suggestions
-        this.hideSuggestions();
-        
-        const searchInput = document.getElementById('search-input');
-        searchInput.parentNode.appendChild(suggestions);
-      }
-
-      createSearchSuggestions(results, query) {
-        const div = document.createElement('div');
-        div.className = 'search-suggestions';
-        
-        if (results.length === 0) {
-          div.innerHTML = `<div class="suggestion-item">No results for "${query}"</div>`;
-        } else {
-          div.innerHTML = results.map(post => `
-            <div class="suggestion-item" onclick="enhancedSearch.selectSuggestion(${post.id})">
-              <div class="suggestion-content">${this.highlightText(this.truncateText(post.content, 100), query)}</div>
-              <div class="suggestion-meta">
-                <span class="username">by ${post.username}</span>
-                <span class="likes"><i class="bi bi-heart"></i> ${post.likes_count}</span>
-              </div>
-            </div>
-          `).join('');
-        }
-        
-        return div;
-      }
-
-      hideSuggestions() {
-        const existingSuggestions = document.querySelector('.search-suggestions');
-        if (existingSuggestions) {
-          existingSuggestions.remove();
-        }
-      }
-
-      selectSuggestion(postId) {
-        this.hideSuggestions();
-        // Scroll to the post or highlight it
-        const postElement = document.querySelector(`[data-post-id="${postId}"]`);
-        if (postElement) {
-          postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          postElement.style.animation = 'pulse 2s infinite';
-          setTimeout(() => {
-            postElement.style.animation = '';
-          }, 2000);
-        }
-      }
-
-      highlightText(text, query) {
-        const regex = new RegExp(`(${this.escapeRegex(query)})`, 'gi');
-        return text.replace(regex, '<mark>$1</mark>');
-      }
-
-      escapeRegex(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      }
-
-      truncateText(text, length) {
-        if (text.length <= length) return text;
-        return text.substr(0, length) + '...';
-      }
-    }
-
-    // Enhanced Analytics Dashboard
-    class AnalyticsDashboard {
-      async loadDashboard() {
-        try {
-          const [analytics, stats] = await Promise.all([
-            apiCall('/analytics/overview'),
-            apiCall('/api/stats')
-          ]);
-          
-          if (analytics.success) {
-            this.renderDashboard(analytics.analytics, stats.stats);
-          }
-        } catch (error) {
-          console.error('Failed to load analytics:', error);
-          uiManager.showToast('Failed to load analytics', 'error');
-        }
-      }
-
-      renderDashboard(analytics, stats) {
-        const dashboard = this.createDashboard(analytics, stats);
-        
-        const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-          <div class="modal-content analytics-dashboard">
-            <div class="dashboard-header">
-              <h4>Forum Analytics</h4>
-              <button class="btn-close" onclick="this.closest('.modal-overlay').remove()">
-                <i class="bi bi-x-lg"></i>
-              </button>
-            </div>
-            ${dashboard}
-          </div>
-        `;
-        
-        document.body.appendChild(modal);
-        modal.style.display = 'block';
-      }
-
-      createDashboard(analytics, stats) {
-        return `
-          <div class="analytics-grid">
-            <!-- Overview Cards -->
-            <div class="stat-cards">
-              <div class="stat-card primary">
-                <div class="stat-value">${analytics.total_users}</div>
-                <div class="stat-label">Total Users</div>
-                <div class="stat-change">+${analytics.growth.new_users_week} this week</div>
-              </div>
-              <div class="stat-card success">
-                <div class="stat-value">${analytics.total_posts}</div>
-                <div class="stat-label">Total Posts</div>
-                <div class="stat-change">+${analytics.growth.new_posts_week} this week</div>
-              </div>
-              <div class="stat-card warning">
-                <div class="stat-value">${analytics.total_comments}</div>
-                <div class="stat-label">Total Comments</div>
-              </div>
-              <div class="stat-card info">
-                <div class="stat-value">${analytics.total_likes}</div>
-                <div class="stat-label">Total Likes</div>
-              </div>
-            </div>
-
-            <!-- Popular Categories -->
-            <div class="chart-section">
-              <h5>Popular Categories</h5>
-              <div class="categories-chart">
-                ${analytics.popular_categories.map(cat => `
-                  <div class="category-item">
-                    <div class="category-name">${cat.category}</div>
-                    <div class="category-bar">
-                      <div class="bar-fill" style="width: ${(cat.count / analytics.total_posts) * 100}%"></div>
-                    </div>
-                    <div class="category-count">${cat.count}</div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- Top Users -->
-            <div class="top-users-section">
-              <h5>Top Contributors</h5>
-              <div class="top-users-list">
-                ${analytics.top_users.slice(0, 5).map(user => `
-                  <div class="top-user">
-                    <div class="user-avatar-sm" style="background-color: #007AFF">
-                      ${user.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div class="user-info">
-                      <div class="username">${user.username}</div>
-                      <div class="user-stats">
-                        <span class="reputation">${user.reputation} rep</span>
-                        <span class="posts">${user.post_count} posts</span>
-                      </div>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    // Enhanced Advanced Search Manager
-    class AdvancedSearchManager {
-      constructor() {
-        this.currentFilters = {};
-      }
-
-      openSearchModal() {
-        const modal = document.getElementById('advancedSearchModal');
-        modal.style.display = 'block';
-      }
-
-      async executeSearch() {
-        const filters = this.collectFilters();
-        
-        try {
-          const results = await uiManager.postsManager.searchPosts(filters);
-          
-          if (results.success) {
-            appState.setState({ 
-              posts: results.data,
-              ui: { 
-                ...appState.state.ui, 
-                currentPage: 1,
-                hasMore: false,
-                filters: { ...filters }
-              }
-            });
-            
-            uiManager.hideModal('advancedSearchModal');
-            uiManager.showToast(`Found ${results.data.length} posts`, 'success');
-          }
-        } catch (error) {
-          uiManager.showToast('Search failed', 'error');
-        }
-      }
-
-      collectFilters() {
-        return {
-          category: document.getElementById('search-category').value,
-          author: document.getElementById('search-author').value,
-          sort: document.getElementById('search-sort').value,
-          minLikes: document.getElementById('search-min-likes').value,
-          hasComments: document.getElementById('search-has-comments').checked,
-          myPosts: document.getElementById('search-my-posts').checked,
-          featured: document.getElementById('search-featured').checked
-        };
-      }
-
-      resetSearch() {
-        document.getElementById('search-category').value = '';
-        document.getElementById('search-author').value = '';
-        document.getElementById('search-sort').value = 'newest';
-        document.getElementById('search-min-likes').value = '0';
-        document.getElementById('search-has-comments').checked = false;
-        document.getElementById('search-my-posts').checked = false;
-        document.getElementById('search-featured').checked = false;
-      }
-    }
-
-    // Enhanced Notification Manager
-    class NotificationManager {
-      constructor() {
-        this.pollingInterval = null;
-        this.startPolling();
-      }
-
-      startPolling() {
-        // Simulate real-time notifications (in real app, use WebSockets)
-        this.pollingInterval = setInterval(() => {
-          if (appState.state.user) {
-            this.checkNewNotifications();
-          }
-        }, 30000); // Check every 30 seconds
-      }
-
-      stopPolling() {
-        if (this.pollingInterval) {
-          clearInterval(this.pollingInterval);
-        }
-      }
-
-      async checkNewNotifications() {
-        try {
-          const response = await apiCall('/notifications');
-          if (response.success && response.notifications.length > 0) {
-            response.notifications.forEach(notification => {
-              if (!this.notificationExists(notification.id)) {
-                this.showNotification(notification);
-              }
-            });
-          }
-        } catch (error) {
-          console.error('Failed to check notifications:', error);
-        }
-      }
-
-      notificationExists(notificationId) {
-        return appState.state.notifications.some(n => n.id === notificationId);
-      }
-
-      showNotification(notification) {
-        appState.addNotification(notification);
-        
-        const notificationElement = this.createNotificationElement(notification);
-        document.getElementById('notification-container').appendChild(notificationElement);
-        
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-          if (notificationElement.parentElement) {
-            notificationElement.remove();
-          }
-        }, 5000);
-      }
-
-      createNotificationElement(notification) {
-        const div = document.createElement('div');
-        div.className = 'notification';
-        div.innerHTML = `
-          <div class="notification-icon ${notification.type}">
-            <i class="bi bi-${this.getNotificationIcon(notification.type)}"></i>
-          </div>
-          <div class="notification-content">
-            <div class="notification-title">${notification.title}</div>
-            <div class="notification-message">${notification.message}</div>
-            <div class="notification-time">${this.formatTime(notification.timestamp)}</div>
-          </div>
-          <button class="notification-close" onclick="this.parentElement.remove()">
-            <i class="bi bi-x"></i>
-          </button>
-        `;
-        return div;
-      }
-
-      getNotificationIcon(type) {
-        const icons = {
-          info: 'info-circle',
-          success: 'check-circle',
-          warning: 'exclamation-triangle',
-          error: 'exclamation-circle'
-        };
-        return icons[type] || 'bell';
-      }
-
-      formatTime(timestamp) {
-        const now = new Date();
-        const time = new Date(timestamp);
-        const diff = now - time;
-        
-        if (diff < 60000) return 'Just now';
-        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-        return time.toLocaleDateString();
-      }
-
-      async loadNotifications() {
-        try {
-          const response = await apiCall('/notifications');
-          if (response.success) {
-            this.renderNotifications(response.notifications);
-          }
-        } catch (error) {
-          console.error('Failed to load notifications:', error);
-        }
-      }
-
-      renderNotifications(notifications) {
-        const list = document.getElementById('notifications-list');
-        
-        if (notifications.length === 0) {
-          list.innerHTML = '<div class="text-center" style="padding: 2rem; color: var(--text-secondary);"><i class="bi bi-bell" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i><p>No notifications yet</p></div>';
-          return;
-        }
-
-        list.innerHTML = notifications.map(notification => `
-          <div class="notification-item ${notification.unread ? 'unread' : ''}">
-            <div class="notification-icon ${notification.type}">
-              <i class="bi bi-${this.getNotificationIcon(notification.type)}"></i>
-            </div>
-            <div class="notification-content">
-              <div class="notification-text">${notification.message}</div>
-              <div class="notification-time">${this.formatTime(notification.timestamp)}</div>
-            </div>
-            ${notification.unread ? '<div class="unread-dot"></div>' : ''}
-          </div>
-        `).join('');
-      }
-
-      togglePanel() {
-        const panel = document.getElementById('notifications-panel');
-        panel.classList.toggle('active');
-        
-        if (panel.classList.contains('active')) {
-          this.loadNotifications();
-        }
-      }
-
-      markAllAsRead() {
-        appState.markNotificationsAsRead();
-        this.renderNotifications([]);
-        uiManager.showToast('All notifications marked as read', 'success');
-      }
-    }
-
-    // Moderation Manager
-    class ModerationManager {
-      constructor() {
-        this.currentReports = [];
-      }
-
-      async loadReports(status = 'pending') {
-        try {
-          const response = await apiCall(`/moderation/reports?status=${status}`);
-          if (response.success) {
-            this.currentReports = response.data;
-            this.renderReports(response.data);
-          }
-        } catch (error) {
-          console.error('Failed to load reports:', error);
-          uiManager.showToast('Failed to load reports', 'error');
-        }
-      }
-
-      renderReports(reports) {
-        const content = document.getElementById('moderation-content');
-        
-        if (reports.length === 0) {
-          content.innerHTML = `
-            <div class="text-center" style="padding: 2rem; color: var(--text-secondary);">
-              <i class="bi bi-shield-check" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
-              <p>No ${document.getElementById('moderation-status').value} reports</p>
-            </div>
-          `;
-          return;
-        }
-
-        content.innerHTML = reports.map(report => `
-          <div class="card" style="margin-bottom: 1rem;">
-            <div class="post-header">
-              <div class="user-avatar-sm" style="background-color: #007AFF">
-                ${report.reporter_username.charAt(0).toUpperCase()}
-              </div>
-              <div class="post-meta">
-                <strong>Reported by ${report.reporter_username}</strong>
-                <span class="timestamp">${formatTimestamp(report.created_at)} • ${report.status}</span>
-              </div>
-            </div>
-            <div class="post-content">
-              <p><strong>Reason:</strong> ${report.reason}</p>
-              ${report.description ? `<p><strong>Details:</strong> ${report.description}</p>` : ''}
-              ${report.post_content ? `<div class="reported-content" style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius-sm); margin-top: 0.5rem;">
-                <strong>Reported Post:</strong>
-                <div>${report.post_content}</div>
-                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                  by ${report.post_username}
-                </div>
-              </div>` : ''}
-              ${report.comment_content ? `<div class="reported-content" style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius-sm); margin-top: 0.5rem;">
-                <strong>Reported Comment:</strong>
-                <div>${report.comment_content}</div>
-                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                  by ${report.comment_username}
-                </div>
-              </div>` : ''}
-            </div>
-            ${report.status === 'pending' ? `
-              <div class="post-actions">
-                <div class="action-group">
-                  <button class="btn btn-success btn-sm" onclick="moderationManager.resolveReport(${report.id}, 'approved')">
-                    <i class="bi bi-check"></i> Approve
-                  </button>
-                  <button class="btn btn-danger btn-sm" onclick="moderationManager.resolveReport(${report.id}, 'rejected')">
-                    <i class="bi bi-x"></i> Reject
-                  </button>
-                  <button class="btn btn-outline-secondary btn-sm" onclick="moderationManager.viewContent(${report.id})">
-                    <i class="bi bi-eye"></i> View
-                  </button>
-                </div>
-              </div>
-            ` : ''}
-          </div>
-        `).join('');
-      }
-
-      async resolveReport(reportId, action) {
-        try {
-          const response = await apiCall(`/moderation/reports/${reportId}`, {
-            method: 'PUT',
-            body: { action }
-          });
-
-          if (response.success) {
-            uiManager.showToast(`Report ${action} successfully`, 'success');
-            this.loadReports(document.getElementById('moderation-status').value);
-          }
-        } catch (error) {
-          console.error('Failed to resolve report:', error);
-          uiManager.showToast('Failed to resolve report', 'error');
-        }
-      }
-
-      viewContent(reportId) {
-        const report = this.currentReports.find(r => r.id === reportId);
-        if (report && report.post_id) {
-          commentsSystem.loadComments(report.post_id);
-          uiManager.hideModal('moderationModal');
-        }
-      }
-    }
-
-    // Report Manager
-    class ReportManager {
-      constructor() {
-        this.currentReport = {
-          postId: null,
-          commentId: null,
-          reason: '',
-          description: ''
-        };
-      }
-
-      openReportModal(postId = null, commentId = null) {
-        this.currentReport = { postId, commentId, reason: '', description: '' };
-        
-        // Reset form
-        document.querySelectorAll('.report-reason').forEach(el => {
-          el.classList.remove('selected');
-        });
-        document.getElementById('report-description').value = '';
-        document.getElementById('submit-report-btn').disabled = true;
-        
-        uiManager.showModal('reportModal');
-      }
-
-      setupReportListeners() {
-        // Reason selection
-        document.querySelectorAll('.report-reason').forEach(el => {
-          el.addEventListener('click', (e) => {
-            document.querySelectorAll('.report-reason').forEach(r => r.classList.remove('selected'));
-            el.classList.add('selected');
-            this.currentReport.reason = el.dataset.reason;
-            document.getElementById('submit-report-btn').disabled = false;
-          });
-        });
-
-        // Description input
-        document.getElementById('report-description').addEventListener('input', (e) => {
-          this.currentReport.description = e.target.value;
-        });
-
-        // Submit button
-        document.getElementById('submit-report-btn').addEventListener('click', () => {
-          this.submitReport();
-        });
-
-        // Cancel button
-        document.getElementById('cancel-report-btn').addEventListener('click', () => {
-          uiManager.hideModal('reportModal');
-        });
-      }
-
-      async submitReport() {
-        if (!this.currentReport.reason) {
-          uiManager.showToast('Please select a reason for reporting', 'warning');
-          return;
-        }
-
-        try {
-          const success = await uiManager.postsManager.reportPost(
-            this.currentReport.postId,
-            this.currentReport.reason,
-            this.currentReport.description
-          );
-
-          if (success) {
-            uiManager.showToast('Content reported successfully', 'success');
-            uiManager.hideModal('reportModal');
-          } else {
-            uiManager.showToast('Failed to report content', 'error');
-          }
-        } catch (error) {
-          uiManager.showToast('Failed to report content', 'error');
-        }
-      }
-    }
-
-    // Enhanced UI Manager
-    class UIManager {
-      constructor() {
-        this.postsManager = new PostsManager();
-        this.notificationManager = new NotificationManager();
-        this.profileSystem = new ProfileSystem();
-        this.commentsSystem = new CommentsSystem();
-        this.bookmarksManager = new BookmarksManager();
-        this.postEditor = new PostEditor();
-        this.enhancedSearch = new EnhancedSearch();
-        this.analyticsDashboard = new AnalyticsDashboard();
-        this.searchManager = new AdvancedSearchManager();
-        this.moderationManager = new ModerationManager();
-        this.reportManager = new ReportManager();
-        this.setupEventListeners();
-        this.renderSkeletonPosts(3);
-        this.loadCommunityStats();
-      }
-
-      setupEventListeners() {
-        // Auth buttons
-        document.getElementById('sign-in-btn').addEventListener('click', () => this.showModal('loginModal'));
-        document.getElementById('create-account-btn').addEventListener('click', () => this.showModal('registerModal'));
-        document.getElementById('logout-btn').addEventListener('click', () => this.logout());
-
-        // Modal buttons
-        document.getElementById('cancel-login-btn').addEventListener('click', () => this.hideModal('loginModal'));
-        document.getElementById('cancel-register-btn').addEventListener('click', () => this.hideModal('registerModal'));
-        document.getElementById('cancel-post-btn').addEventListener('click', () => this.hideModal('createPostModal'));
-        document.getElementById('cancel-search-btn').addEventListener('click', () => this.hideModal('advancedSearchModal'));
-
-        // Form submissions
-        document.getElementById('login-btn').addEventListener('click', () => this.handleLogin());
-        document.getElementById('register-btn').addEventListener('click', () => this.handleRegister());
-        document.getElementById('create-post-btn').addEventListener('click', () => this.handleCreatePost());
-        document.getElementById('execute-search-btn').addEventListener('click', () => this.searchManager.executeSearch());
-
-        // Post actions
-        document.getElementById('new-post-btn').addEventListener('click', () => this.showModal('createPostModal'));
-        document.getElementById('load-more-btn').addEventListener('click', () => this.postsManager.loadMore());
-        document.getElementById('empty-state-post-btn').addEventListener('click', () => this.showModal('createPostModal'));
-
-        // Feature buttons
-        document.getElementById('notification-bell').addEventListener('click', () => {
-          this.notificationManager.togglePanel();
-        });
-        document.getElementById('analytics-btn').addEventListener('click', () => {
-          this.analyticsDashboard.loadDashboard();
-        });
-        document.getElementById('bookmarks-btn').addEventListener('click', () => {
-          this.bookmarksManager.loadBookmarks();
-        });
-        document.getElementById('advanced-search-btn').addEventListener('click', () => {
-          this.searchManager.openSearchModal();
-        });
-        document.getElementById('moderation-btn').addEventListener('click', () => {
-          this.showModerationPanel();
-        });
-
-        // Notifications panel
-        document.querySelector('#notifications-panel .btn-close').addEventListener('click', () => {
-          document.getElementById('notifications-panel').classList.remove('active');
-        });
-        document.getElementById('mark-all-read-btn').addEventListener('click', () => {
-          this.notificationManager.markAllAsRead();
-        });
-
-        // Filters
-        document.getElementById('category-filter').addEventListener('change', (e) => {
-          appState.updateFilters({ category: e.target.value });
-          this.postsManager.loadPosts();
-        });
-
-        document.getElementById('search-input').addEventListener('input', debounce((e) => {
-          appState.updateFilters({ search: e.target.value });
-          this.postsManager.loadPosts();
-        }, 500));
-
-        document.getElementById('sort-filter').addEventListener('change', (e) => {
-          appState.updateFilters({ sort: e.target.value });
-          this.postsManager.loadPosts();
-        });
-
-        document.getElementById('clear-filters-btn').addEventListener('click', () => {
-          document.getElementById('category-filter').value = '';
-          document.getElementById('search-input').value = '';
-          document.getElementById('sort-filter').value = 'newest';
-          appState.updateFilters({ category: '', search: '', sort: 'newest' });
-          this.postsManager.loadPosts();
-        });
-
-        // Theme toggle
-        document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
-
-        // Rich text editor
-        this.setupRichTextEditor();
-
-        // Report system
-        this.reportManager.setupReportListeners();
-
-        // Moderation panel
-        document.getElementById('moderation-status').addEventListener('change', (e) => {
-          this.moderationManager.loadReports(e.target.value);
-        });
-        document.getElementById('refresh-reports-btn').addEventListener('click', () => {
-          this.moderationManager.loadReports(document.getElementById('moderation-status').value);
-        });
-
-        // Close modals when clicking outside
-        document.addEventListener('click', (e) => {
-          if (e.target.classList.contains('modal-overlay')) {
-            this.hideModal(e.target.id);
-          }
-        });
-
-        // Close notifications panel when clicking outside
-        document.addEventListener('click', (e) => {
-          if (!e.target.closest('#notifications-panel') && !e.target.closest('#notification-bell')) {
-            document.getElementById('notifications-panel').classList.remove('active');
-          }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-          if (e.ctrlKey || e.metaKey) {
-            switch(e.key) {
-              case 'k':
-                e.preventDefault();
-                document.getElementById('search-input').focus();
-                break;
-              case 'n':
-                e.preventDefault();
-                if (appState.state.user) {
-                  this.showModal('createPostModal');
-                }
-                break;
-            }
-          }
-        });
-      }
-
-      setupRichTextEditor() {
-        const toolbar = document.querySelector('.editor-toolbar');
-        if (toolbar) {
-          toolbar.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON' || e.target.parentElement.tagName === 'BUTTON') {
-              const button = e.target.tagName === 'BUTTON' ? e.target : e.target.parentElement;
-              const command = button.dataset.command;
-              const value = button.dataset.value;
-              
-              if (command === 'formatBlock') {
-                document.execCommand(command, false, value);
-              } else if (command === 'createLink') {
-                const url = prompt('Enter URL:');
-                if (url) {
-                  document.execCommand(command, false, url);
-                }
-              } else {
-                document.execCommand(command, false, null);
-              }
-              
-              document.getElementById('postContent').focus();
-            }
-          });
-        }
-      }
-
-      showModal(id) {
-        document.getElementById(id).style.display = 'block';
-      }
-
-      hideModal(id) {
-        document.getElementById(id).style.display = 'none';
-        if (id === 'createPostModal') {
-          document.getElementById('postContent').innerHTML = '';
-          document.getElementById('postTitle').value = '';
-        }
-      }
-
-      showMainView() {
-        // Scroll to top and reload posts
-        window.scrollTo(0, 0);
-        this.postsManager.loadPosts();
-      }
-
-      async handleLogin() {
-        const username = document.getElementById('loginUsername').value;
-        const password = document.getElementById('loginPassword').value;
-        const rememberMe = document.getElementById('remember-me').checked;
-
-        if (!username || !password) {
-          this.showToast('Please fill in all fields', 'error');
-          return;
-        }
-
-        this.setButtonLoading('login-btn', true);
-
-        try {
-          const data = await apiCall('/login', {
-            method: 'POST',
-            body: { username, password, remember_me: rememberMe }
-          });
-
-          if (data.success && data.token) {
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('userData', JSON.stringify(data.user));
-            if (data.session_token) {
-              localStorage.setItem('sessionToken', data.session_token);
-            }
-            appState.setState({ user: data.user });
-
-            this.hideModal('loginModal');
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            
-            this.showAuthenticatedUI();
-            this.showToast('Successfully signed in!', 'success');
-            this.postsManager.loadPosts();
-            this.loadUserStats();
-          }
-        } catch (error) {
-          // Error handled in apiCall
-        } finally {
-          this.setButtonLoading('login-btn', false);
-        }
-      }
-
-      async handleRegister() {
-        const username = document.getElementById('registerUsername').value;
-        const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
-        const email = document.getElementById('registerEmail').value;
-
-        if (!username || !password || !confirmPassword) {
-          this.showToast('Please fill in all fields', 'error');
-          return;
-        }
-
-        if (password !== confirmPassword) {
-          this.showToast('Passwords do not match', 'error');
-          return;
-        }
-
-        this.setButtonLoading('register-btn', true);
-
-        try {
-          const data = await apiCall('/register', {
-            method: 'POST',
-            body: { username, password, email }
-          });
-
-          if (data.success) {
-            this.hideModal('registerModal');
-            document.getElementById('registerUsername').value = '';
-            document.getElementById('registerPassword').value = '';
-            document.getElementById('registerConfirmPassword').value = '';
-            document.getElementById('registerEmail').value = '';
-            this.showToast('Account created! Please sign in.', 'success');
-          }
-        } catch (error) {
-          // Error handled in apiCall
-        } finally {
-          this.setButtonLoading('register-btn', false);
-        }
-      }
-
-      async handleCreatePost() {
-        const category = document.getElementById('postCategory').value;
-        const content = document.getElementById('postContent').innerHTML;
-        const title = document.getElementById('postTitle').value;
-
-        if (!category || !content || content === '<br>') {
-          this.showToast('Please fill in all fields', 'error');
-          return;
-        }
-
-        this.setButtonLoading('create-post-btn', true);
-
-        const success = await this.postsManager.createPost(category, content, title);
-        if (success) {
-          this.hideModal('createPostModal');
-          document.getElementById('postContent').innerHTML = '';
-          document.getElementById('postTitle').value = '';
-          this.showToast('Post published successfully!', 'success');
-        }
-
-        this.setButtonLoading('create-post-btn', false);
-      }
-
-      setButtonLoading(buttonId, loading) {
-        const button = document.getElementById(buttonId);
-        const text = button.querySelector('.btn-text');
-        const loadingEl = button.querySelector('.btn-loading');
-        
-        if (loading) {
-          text.style.display = 'none';
-          loadingEl.style.display = 'block';
-          button.disabled = true;
-        } else {
-          text.style.display = 'block';
-          loadingEl.style.display = 'none';
-          button.disabled = false;
-        }
-      }
-
-      logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
-        localStorage.removeItem('sessionToken');
-        appState.setState({ 
-          user: null, 
-          posts: [], 
-          notifications: [], 
-          unreadNotifications: 0 
-        });
-        this.notificationManager.stopPolling();
-        this.showUnauthenticatedUI();
-        this.showToast('Successfully signed out', 'success');
-      }
-
-      showAuthenticatedUI() {
-        document.getElementById('auth-section').style.display = 'none';
-        document.getElementById('posts-section').style.display = 'block';
-        document.getElementById('logout-btn').style.display = 'block';
-        document.getElementById('notification-bell').style.display = 'block';
-        document.getElementById('analytics-btn').style.display = 'block';
-        document.getElementById('bookmarks-btn').style.display = 'block';
-        document.getElementById('advanced-search-btn').style.display = 'block';
-        document.getElementById('username-display').textContent = appState.state.user.username;
-        
-        // Show moderation button if user is moderator
-        if (appState.state.user.is_moderator || appState.state.user.is_admin) {
-          document.getElementById('moderation-btn').style.display = 'block';
-        }
-        
-        // Show reputation if available
-        if (appState.state.userStats.reputation > 0) {
-          document.getElementById('user-reputation').style.display = 'block';
-          document.getElementById('reputation-score').textContent = appState.state.userStats.reputation;
-        }
-      }
-
-      showUnauthenticatedUI() {
-        document.getElementById('auth-section').style.display = 'block';
-        document.getElementById('posts-section').style.display = 'none';
-        document.getElementById('logout-btn').style.display = 'none';
-        document.getElementById('notification-bell').style.display = 'none';
-        document.getElementById('analytics-btn').style.display = 'none';
-        document.getElementById('bookmarks-btn').style.display = 'none';
-        document.getElementById('advanced-search-btn').style.display = 'none';
-        document.getElementById('moderation-btn').style.display = 'none';
-        document.getElementById('user-reputation').style.display = 'none';
-        document.getElementById('username-display').textContent = '';
-      }
-
-      toggleTheme() {
-        const newTheme = appState.state.ui.theme === 'light' ? 'dark' : 'light';
-        appState.setState({ 
-          ui: { ...appState.state.ui, theme: newTheme }
-        });
-        localStorage.setItem('theme', newTheme);
-        document.body.setAttribute('data-theme', newTheme);
-        
-        const themeIcon = document.querySelector('#theme-toggle i');
-        themeIcon.className = newTheme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
-      }
-
-      renderPosts(posts) {
-        const container = document.getElementById('posts-container');
-        
-        if (posts.length === 0) {
-          this.postsManager.toggleEmptyState(true);
-          return;
-        }
-
-        container.innerHTML = posts.map(post => `
-          <div class="card post-card ${post.is_pinned ? 'pinned' : ''} ${post.is_locked ? 'locked' : ''} ${post.featured_until ? 'featured' : ''}" data-post-id="${post.id}">
-            ${post.is_pinned ? '<div class="card-header"><i class="bi bi-pin-angle"></i> Pinned Post</div>' : ''}
-            ${post.featured_until ? '<div class="card-header"><i class="bi bi-star"></i> Featured Post</div>' : ''}
-            
-            <div class="post-header">
-              <div class="user-avatar" style="background-color: ${post.avatar_color}" 
-                   onclick="uiManager.profileSystem.loadUserProfile(${post.user_id})">
-                ${post.username.charAt(0).toUpperCase()}
-              </div>
-              <div class="post-meta">
-                <strong onclick="uiManager.profileSystem.loadUserProfile(${post.user_id})">
-                  ${post.username}
-                </strong>
-                <span class="timestamp">
-                  ${post.formatted_timestamp}
-                  <span class="category-tag">${post.category}</span>
-                  ${post.edited_at ? '<i class="bi bi-pencil" title="Edited"></i>' : ''}
-                </span>
-              </div>
-              ${post.user_id !== appState.state.user.id ? `
-                <button class="action-btn report-btn" onclick="uiManager.reportManager.openReportModal(${post.id})" title="Report post">
-                  <i class="bi bi-flag"></i>
-                </button>
-              ` : ''}
-            </div>
-
-            ${post.title ? `<div class="post-title">${post.title}</div>` : ''}
-            
-            <div class="post-content">${post.content}</div>
-            
-            <div class="post-stats">
-              <div class="stat-item">
-                <i class="bi bi-eye"></i> ${post.view_count || 0} views
-              </div>
-              <div class="stat-item">
-                <i class="bi bi-activity"></i> Last active ${post.formatted_last_activity}
-              </div>
-            </div>
-
-            <div class="post-actions">
-              <div class="action-group">
-                <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
-                        onclick="uiManager.handleLike(${post.id})">
-                  <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
-                  <span class="count">${post.likes_count}</span>
-                </button>
-                
-                <button class="action-btn comment-btn" 
-                        onclick="uiManager.commentsSystem.loadComments(${post.id})">
-                  <i class="bi bi-chat"></i>
-                  <span class="count">${post.comments_count}</span>
-                </button>
-                
-                <button class="action-btn bookmark-btn ${post.user_has_bookmarked ? 'bookmarked' : ''}" 
-                        onclick="uiManager.bookmarksManager.toggleBookmark(${post.id})">
-                  <i class="bi bi-bookmark${post.user_has_bookmarked ? '-fill' : ''}"></i>
-                </button>
-
-                <button class="action-btn share-btn" onclick="uiManager.sharePost(${post.id})">
-                  <i class="bi bi-share"></i>
-                </button>
-              </div>
-              
-              <div class="action-group">
-                ${post.user_id === appState.state.user.id ? `
-                  <button class="action-btn edit-btn" onclick="uiManager.postEditor.enablePostEditing(${post.id})">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="action-btn delete-btn" onclick="uiManager.deletePost(${post.id})">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                ` : ''}
-                
-                ${(appState.state.user.is_moderator || appState.state.user.is_admin) ? `
-                  <button class="action-btn moderate-btn" onclick="uiManager.moderatePost(${post.id})">
-                    <i class="bi bi-shield-check"></i>
-                  </button>
-                ` : ''}
-              </div>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      renderSkeletonPosts(count) {
-        const container = document.getElementById('posts-container');
-        container.innerHTML = Array.from({ length: count }, () => `
-          <div class="card skeleton-card">
-            <div class="post-header">
-              <div class="skeleton skeleton-avatar"></div>
-              <div style="flex: 1;">
-                <div class="skeleton skeleton-text" style="width: 40%;"></div>
-                <div class="skeleton skeleton-text" style="width: 60%;"></div>
-              </div>
-            </div>
-            <div class="skeleton skeleton-text"></div>
-            <div class="skeleton skeleton-text"></div>
-            <div class="skeleton skeleton-text" style="width: 80%;"></div>
-            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-              <div class="skeleton skeleton-text" style="width: 60px; height: 20px;"></div>
-              <div class="skeleton skeleton-text" style="width: 80px; height: 20px;"></div>
-              <div class="skeleton skeleton-text" style="width: 40px; height: 20px;"></div>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      async handleLike(postId) {
-        await this.postsManager.likePost(postId);
-      }
-
-      async deletePost(postId) {
-        if (confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
-          await this.postsManager.deletePost(postId);
-        }
-      }
-
-      sharePost(postId) {
-        const post = appState.state.posts.find(p => p.id === postId);
-        if (post) {
-          const shareText = `Check out this post by ${post.username} on EdgePowered: "${post.content.substring(0, 100)}..."`;
-          if (navigator.share) {
-            navigator.share({
-              title: 'EdgePowered Post',
-              text: shareText,
-              url: window.location.href + `#post-${postId}`
-            });
-          } else {
-            // Fallback: copy to clipboard
-            navigator.clipboard.writeText(shareText);
-            this.showToast('Post content copied to clipboard!', 'success');
-          }
-        }
-      }
-
-      showModerationPanel() {
-        this.showModal('moderationModal');
-        this.moderationManager.loadReports('pending');
-      }
-
-      async loadUserStats() {
-        try {
-          const response = await apiCall('/profile');
-          if (response.success) {
-            appState.updateUserStats({
-              reputation: response.profile.reputation,
-              postCount: response.profile.post_count,
-              likeCount: response.profile.like_count
-            });
-            
-            // Update UI
-            document.getElementById('user-reputation').style.display = 'block';
-            document.getElementById('reputation-score').textContent = response.profile.reputation;
-          }
-        } catch (error) {
-          console.error('Failed to load user stats:', error);
-        }
-      }
-
-      async loadCommunityStats() {
-        try {
-          const response = await apiCall('/api/health');
-          if (response.stats) {
-            appState.updateCommunityStats({
-              users: response.stats.users.total,
-              posts: response.stats.posts.total,
-              comments: response.stats.posts.total_comments || 0,
-              likes: response.stats.posts.total_likes || 0
-            });
-            
-            // Update UI
-            document.getElementById('stats-users').textContent = response.stats.users.total;
-            document.getElementById('stats-posts').textContent = response.stats.posts.total;
-            document.getElementById('stats-comments').textContent = response.stats.posts.total_comments || 0;
-            document.getElementById('stats-likes').textContent = response.stats.posts.total_likes || 0;
-          }
-        } catch (error) {
-          console.error('Failed to load community stats:', error);
-        }
-      }
-
-      showToast(message, type = 'info', duration = 3000) {
-        const toastContainer = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerHTML = `
-          <div class="toast-icon">
-            <i class="bi bi-${this.getToastIcon(type)}"></i>
-          </div>
-          <div class="toast-content">
-            <div class="toast-title">${this.getToastTitle(type)}</div>
-            <div class="toast-message">${message}</div>
-          </div>
-          <button class="toast-close" onclick="this.parentElement.remove()">
-            <i class="bi bi-x"></i>
-          </button>
-        `;
-        
-        toastContainer.appendChild(toast);
-        
-        setTimeout(() => {
-          if (toast.parentElement) {
-            toast.remove();
-          }
-        }, duration);
-      }
-
-      getToastIcon(type) {
-        const icons = {
-          success: 'check-circle',
-          error: 'exclamation-circle',
-          warning: 'exclamation-triangle',
-          info: 'info-circle'
-        };
-        return icons[type] || 'info-circle';
-      }
-
-      getToastTitle(type) {
-        const titles = {
-          success: 'Success',
-          error: 'Error',
-          warning: 'Warning',
-          info: 'Information'
-        };
-        return titles[type] || 'Notification';
-      }
-    }
-
-    // Utility Functions
-    function debounce(func, wait) {
-      let timeout;
-      return function executedFunction(...args) {
-        const later = () => {
-          clearTimeout(timeout);
-          func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-      };
-    }
-
-    function formatTimestamp(timestamp) {
-      if (!timestamp) return "Recently";
+  <!-- Enhanced Register Modal -->
+  <div id="registerModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Create Account</h4>
+        <button class="btn-close" onclick="uiManager.hideModal('registerModal')">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
       
-      try {
-        const postTime = new Date(timestamp);
-        const now = new Date();
-        const diff = now - postTime;
-        
-        if (diff < 60000) return 'Just now';
-        if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-        if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
-        return postTime.toLocaleDateString();
-      } catch {
-        return timestamp;
-      }
-    }
-
-    async function apiCall(endpoint, options = {}) {
-      try {
-        const token = localStorage.getItem('token');
-        const sessionToken = localStorage.getItem('sessionToken');
-        const config = {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` }),
-            ...(sessionToken && { 'X-Session-Token': sessionToken }),
-          },
-          ...options
-        };
-
-        if (config.body) {
-          config.body = JSON.stringify(config.body);
-        }
-
-        const response = await fetch(API_BASE + endpoint, config);
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.error || 'Request failed');
-        }
-
-        return data;
-      } catch (error) {
-        uiManager.showToast('Error: ' + error.message, 'error');
-        throw error;
-      }
-    }
-
-    // Initialize Application
-    let uiManager;
-
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('✅ DOM Loaded - Initializing Enhanced EdgePowered Forum');
+      <div style="margin: 1.5rem 0;">
+        <div class="filter-group">
+          <label for="registerUsername">Username</label>
+          <input type="text" id="registerUsername" placeholder="Choose a username" class="form-control">
+          <div class="form-text" style="font-size: 0.75rem; color: var(--text-secondary);">
+            Must be 3-20 characters, letters, numbers, underscores and hyphens only.
+          </div>
+        </div>
+        <div class="filter-group" style="margin-top: 1rem;">
+          <label for="registerEmail">Email (Optional)</label>
+          <input type="email" id="registerEmail" placeholder="Enter your email" class="form-control">
+        </div>
+        <div class="filter-group" style="margin-top: 1rem;">
+          <label for="registerPassword">Password</label>
+          <input type="password" id="registerPassword" placeholder="Create a strong password" class="form-control">
+          <div class="form-text" style="font-size: 0.75rem; color: var(--text-secondary);">
+            Minimum 8 characters with uppercase, lowercase, and numbers.
+          </div>
+        </div>
+        <div class="filter-group" style="margin-top: 1rem;">
+          <label for="registerConfirmPassword">Confirm Password</label>
+          <input type="password" id="registerConfirmPassword" placeholder="Confirm your password" class="form-control">
+        </div>
+      </div>
       
-      // Initialize UI Manager
-      uiManager = new UIManager();
+      <div style="display: flex; gap: 1rem;">
+        <button class="btn btn-outline-primary" id="cancel-register-btn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="register-btn" style="flex: 1;">
+          <span class="btn-text">Create Account</span>
+          <span class="btn-loading" style="display: none;">
+            <i class="bi bi-arrow-repeat spinner"></i> Creating...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-      // Initialize theme
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      document.body.setAttribute('data-theme', savedTheme);
-      const themeIcon = document.querySelector('#theme-toggle i');
-      themeIcon.className = savedTheme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
-
-      // Check authentication status
-      const token = localStorage.getItem('token');
-      const userData = localStorage.getItem('userData');
+  <!-- Enhanced Create Post Modal -->
+  <div id="createPostModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Create Post</h4>
+        <button class="btn-close" onclick="uiManager.hideModal('createPostModal')">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
       
-      if (token && userData) {
-        try {
-          const user = JSON.parse(userData);
-          appState.setState({ user });
-          uiManager.showAuthenticatedUI();
-          uiManager.postsManager.loadPosts();
-          uiManager.loadUserStats();
-        } catch (error) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('userData');
-          localStorage.removeItem('sessionToken');
-        }
-      }
+      <div style="margin: 1.5rem 0;">
+        <div class="filter-group">
+          <label for="postCategory">Category</label>
+          <select id="postCategory" class="form-control">
+            <option value="General">General Discussion</option>
+            <option value="Technology">Technology</option>
+            <option value="Science">Science</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Sports">Sports</option>
+            <option value="Politics">Politics</option>
+          </select>
+        </div>
+        <div class="filter-group" style="margin-top: 1rem;">
+          <label for="postTitle">Title (Optional)</label>
+          <input type="text" id="postTitle" placeholder="Add a title to your post" class="form-control">
+        </div>
+        <div class="filter-group" style="margin-top: 1rem;">
+          <label>Content</label>
+          <div id="richTextEditor">
+            <div class="editor-toolbar">
+              <button type="button" data-command="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+              <button type="button" data-command="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+              <button type="button" data-command="underline" title="Underline"><i class="bi bi-type-underline"></i></button>
+              <button type="button" data-command="insertUnorderedList" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+              <button type="button" data-command="insertOrderedList" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+              <button type="button" data-command="createLink" title="Insert Link"><i class="bi bi-link"></i></button>
+              <button type="button" data-command="formatBlock" data-value="pre" title="Code Block"><i class="bi bi-code-slash"></i></button>
+              <button type="button" data-command="formatBlock" data-value="blockquote" title="Quote"><i class="bi bi-quote"></i></button>
+            </div>
+            <div class="editor-content" contenteditable="true" id="postContent" placeholder="Share your thoughts..."></div>
+          </div>
+          <div class="form-text" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem;">
+            Supports rich text formatting. Minimum 10 characters.
+          </div>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 1rem;">
+        <button class="btn btn-outline-primary" id="cancel-post-btn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="create-post-btn" style="flex: 1;">
+          <span class="btn-text">Publish Post</span>
+          <span class="btn-loading" style="display: none;">
+            <i class="bi bi-arrow-repeat spinner"></i> Publishing...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-      // Subscribe to state changes
-      appState.subscribe((state) => {
-        // Update posts display
-        if (state.posts.length > 0) {
-          uiManager.renderPosts(state.posts);
-        }
+  <!-- Enhanced Profile Modal -->
+  <div id="profileModal" class="modal-overlay">
+    <div class="modal-content profile-modal">
+      <!-- Profile content will be loaded here -->
+    </div>
+  </div>
 
-        // Update load more button
-        const loadMoreContainer = document.getElementById('load-more-container');
-        const loadMoreBtn = document.getElementById('load-more-btn');
+  <!-- Enhanced Advanced Search Modal -->
+  <div id="advancedSearchModal" class="modal-overlay">
+    <div class="modal-content search-modal">
+      <div class="modal-header">
+        <h4 class="modal-title">Advanced Search</h4>
+        <button class="btn-close" onclick="uiManager.hideModal('advancedSearchModal')">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div class="search-filters">
+        <div class="filter-group">
+          <label>Category</label>
+          <select id="search-category">
+            <option value="">All Categories</option>
+            <option value="General">General</option>
+            <option value="Technology">Technology</option>
+            <option value="Science">Science</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Sports">Sports</option>
+            <option value="Politics">Politics</option>
+          </select>
+        </div>
         
-        if (state.ui.hasMore && state.posts.length > 0) {
-          loadMoreContainer.style.display = 'block';
-          loadMoreBtn.disabled = state.ui.loading;
-          loadMoreBtn.innerHTML = state.ui.loading ? 
-            '<i class="bi bi-arrow-repeat spinner"></i> Loading...' : 
-            '<i class="bi bi-arrow-clockwise"></i> Load More Posts';
-        } else {
-          loadMoreContainer.style.display = 'none';
-        }
+        <div class="filter-group">
+          <label>Author Username</label>
+          <input type="text" id="search-author" placeholder="Enter username...">
+        </div>
 
-        // Update notification badge
-        const notificationCount = document.getElementById('notification-count');
-        if (state.unreadNotifications > 0) {
-          notificationCount.textContent = state.unreadNotifications;
-          notificationCount.style.display = 'flex';
-        } else {
-          notificationCount.style.display = 'none';
-        }
+        <div class="filter-group">
+          <label>Sort By</label>
+          <select id="search-sort">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="popular">Most Popular</option>
+            <option value="active">Most Active</option>
+            <option value="trending">Trending</option>
+          </select>
+        </div>
 
-        // Update filters display
-        document.getElementById('category-filter').value = state.ui.filters.category;
-        document.getElementById('search-input').value = state.ui.filters.search;
-        document.getElementById('sort-filter').value = state.ui.filters.sort;
+        <div class="filter-group">
+          <label>Minimum Likes</label>
+          <input type="number" id="search-min-likes" min="0" value="0">
+        </div>
 
-        // Update community stats
-        if (state.communityStats.users > 0) {
-          document.getElementById('stats-users').textContent = state.communityStats.users;
-          document.getElementById('stats-posts').textContent = state.communityStats.posts;
-          document.getElementById('stats-comments').textContent = state.communityStats.comments;
-          document.getElementById('stats-likes').textContent = state.communityStats.likes;
-        }
-      });
+        <div class="filter-group checkbox">
+          <input type="checkbox" id="search-has-comments">
+          <label for="search-has-comments">Only posts with comments</label>
+        </div>
 
-      console.log('✅ Enhanced EdgePowered Forum Initialized Successfully!');
-    });
+        <div class="filter-group checkbox">
+          <input type="checkbox" id="search-my-posts">
+          <label for="search-my-posts">Only my posts</label>
+        </div>
 
-    // Make managers globally available for event handlers
-    window.uiManager = uiManager;
-    window.commentsSystem = uiManager.commentsSystem;
-    window.bookmarksManager = uiManager.bookmarksManager;
-    window.profileSystem = uiManager.profileSystem;
-    window.postEditor = uiManager.postEditor;
-    window.enhancedSearch = uiManager.enhancedSearch;
-    window.notificationManager = uiManager.notificationManager;
-    window.moderationManager = uiManager.moderationManager;
-    window.reportManager = uiManager.reportManager;
-  </script>
-</body>
-</html>
+        <div class="filter-group checkbox">
+          <input type="checkbox" id="search-featured">
+          <label for="search-featured">Featured posts only</label>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: 1rem;">
+        <button class="btn btn-outline-primary" id="cancel-search-btn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-primary" id="execute-search-btn" style="flex: 1;">
+          <i class="bi bi-search"></i> Search
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Comments Modal -->
+  <div id="commentsModal" class="modal-overlay">
+    <!-- Comments content will be loaded here -->
+  </div>
+
+  <!-- Enhanced Bookmarks Modal -->
+  <div id="bookmarksModal" class="modal-overlay">
+    <!-- Bookmarks content will be loaded here -->
+  </div>
+
+  <!-- Enhanced Analytics Modal -->
+  <div id="analyticsModal" class="modal-overlay">
+    <!-- Analytics content will be loaded here -->
+  </div>
+
+  <!-- New Report Modal -->
+  <div id="reportModal" class="modal-overlay">
+    <div class="modal-content report-modal">
+      <div class="modal-header">
+        <h4 class="modal-title">Report Content</h4>
+        <button class="btn-close" onclick="uiManager.hideModal('reportModal')">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div style="margin: 1.5rem 0;">
+        <div class="filter-group">
+          <label>Reason for Report</label>
+          <div class="report-reasons">
+            <div class="report-reason" data-reason="spam">
+              <input type="radio" name="report-reason" id="reason-spam" style="display: none;">
+              <label for="reason-spam" style="cursor: pointer; margin: 0; flex: 1;">
+                <strong>Spam</strong>
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">Unsolicited commercial content</div>
+              </label>
+            </div>
+            <div class="report-reason" data-reason="harassment">
+              <input type="radio" name="report-reason" id="reason-harassment" style="display: none;">
+              <label for="reason-harassment" style="cursor: pointer; margin: 0; flex: 1;">
+                <strong>Harassment</strong>
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">Bullying or targeted attacks</div>
+              </label>
+            </div>
+            <div class="report-reason" data-reason="inappropriate">
+              <input type="radio" name="report-reason" id="reason-inappropriate" style="display: none;">
+              <label for="reason-inappropriate" style="cursor: pointer; margin: 0; flex: 1;">
+                <strong>Inappropriate Content</strong>
+                <div style="font-size: 0.875
