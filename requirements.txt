@@ -11,3 +11,4 @@ aiohttp==3.9.1
 Flask-Limiter==3.3.0
 Flask-Talisman==1.1.0
 bleach==6.0.0
+setuptools==68.2.2  # This includes distutils
