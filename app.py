@@ -374,7 +374,7 @@ def init_db():
                 category TEXT NOT NULL,
                 title TEXT,
                 content TEXT NOT NULL,
-                content_search TEXT GENERATED ALWAYS AS (LOWER(content)) VIRTUAL,
+                content_search TEXT,
                 timestamp DATETIME NOT NULL DEFAULT (datetime('now')),
                 last_activity DATETIME NOT NULL DEFAULT (datetime('now')),
                 likes_count INTEGER DEFAULT 0,
@@ -508,10 +508,33 @@ def init_db():
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
             );
         """)
-           # Add this before creating indexes in init_db():
-c.execute("""
-    ALTER TABLE posts ADD COLUMN last_activity DATETIME DEFAULT (datetime('now'))
-""")
+        
+        # Database migration for existing installations
+        # Add missing columns if they don't exist
+        migration_columns = [
+            ("posts", "last_activity", "DATETIME DEFAULT (datetime('now'))"),
+            ("posts", "content_search", "TEXT"),
+            ("posts", "is_locked", "BOOLEAN DEFAULT 0"),
+            ("posts", "is_deleted", "BOOLEAN DEFAULT 0"),
+            ("posts", "featured_until", "DATETIME"),
+            ("users", "is_moderator", "BOOLEAN DEFAULT 0"),
+            ("users", "is_admin", "BOOLEAN DEFAULT 0"),
+            ("users", "email_verified", "BOOLEAN DEFAULT 0"),
+            ("users", "verification_token", "TEXT"),
+            ("users", "reset_token", "TEXT"),
+            ("users", "reset_token_expiry", "DATETIME"),
+            ("users", "last_password_change", "DATETIME DEFAULT (datetime('now'))")
+        ]
+        
+        for table, column, definition in migration_columns:
+            try:
+                c.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
+                app.logger.info(f"Added column {table}.{column}")
+            except sqlite3.OperationalError as e:
+                if "duplicate column name" not in str(e):
+                    app.logger.warning(f"Failed to add column {table}.{column}: {e}")
+                # Column already exists, ignore
+        
         # Enhanced indexes
         c.executescript("""
             CREATE INDEX IF NOT EXISTS idx_posts_user_category ON posts(user_id, category);
@@ -530,6 +553,30 @@ c.execute("""
             CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, created_at DESC);
             CREATE INDEX IF NOT EXISTS idx_bookmarks_user ON bookmarks(user_id, created_at DESC);
         """)
+        
+        # Insert default categories
+        default_categories = [
+            ('General', 'General discussions and topics', '#007AFF'),
+            ('Technology', 'Tech news, programming, and gadgets', '#34C759'),
+            ('Science', 'Scientific discoveries and discussions', '#FF9500'),
+            ('Entertainment', 'Movies, games, and entertainment', '#AF52DE'),
+            ('Sports', 'Sports news and discussions', '#FF3B30'),
+            ('Politics', 'Political discussions and news', '#5856D6')
+        ]
+        
+        c.executemany("""
+            INSERT OR IGNORE INTO categories (name, description, color) 
+            VALUES (?, ?, ?)
+        """, default_categories)
+        
+        conn.commit()
+        app.logger.info("Enhanced database schema initialized successfully")
+        
+    except Exception as e:
+        app.logger.error(f"Database initialization error: {e}")
+        raise
+    finally:
+        return_db(conn)
         
         # Insert default categories
         default_categories = [
