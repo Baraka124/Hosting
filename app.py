@@ -1028,14 +1028,7 @@ def ratelimit_handler(e):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('DEBUG', 'False').lower() == 'true'
-    
-    socketio.run(
-        app,
-        host='0.0.0.0',
-        port=port,
-        debug=debug,
-        allow_unsafe_werkzeug=True
-    )
+    app.run(host='0.0.0.0', port=port, debug=debug)
 else:
     # For Railway deployment
     port = int(os.environ.get('PORT', 5000))
