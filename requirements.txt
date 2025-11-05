@@ -8,3 +8,6 @@ gunicorn==21.2.0
 eventlet==0.33.3
 python-dotenv==1.0.0
 aiohttp==3.9.1
+Flask-Limiter==3.3.0
+Flask-Talisman==1.1.0
+bleach==6.0.0
