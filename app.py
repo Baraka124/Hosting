@@ -25,7 +25,7 @@ class Config:
     DB_NAME = os.environ.get('DB_NAME', 'edgepowered_forum.db')
     RATE_LIMIT_PER_HOUR = int(os.environ.get('RATE_LIMIT_PER_HOUR', '1000'))
     JWT_EXPIRY_HOURS = int(os.environ.get('JWT_EXPIRY_HOURS', '24'))
-    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', '16 * 1024 * 1024'))  # 16MB
+    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', 16777216))  # 16MB
     
     # Security settings
     BCRYPT_ROUNDS = 12
