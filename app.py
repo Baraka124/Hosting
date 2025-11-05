@@ -25,17 +25,8 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 CORS(app, origins=["*"])
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
-# Security configuration
-csp = {
-    'default-src': ["'self'", 'https://cdn.jsdelivr.net'],
-    'style-src': ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
-    'script-src': ["'self'", 'https://cdn.jsdelivr.net'],
-    'font-src': ["'self'", 'https://cdn.jsdelivr.net'],
-    'img-src': ["'self'", 'data:', 'https:'],
-    'connect-src': ["'self'", 'ws:', 'wss:']
-}
-
-Talisman(app, content_security_policy=csp, force_https=False)
+# Security configuration - disable for Railway testing
+Talisman(app, content_security_policy=None, force_https=False)
 
 # Rate limiting
 limiter = Limiter(
@@ -133,16 +124,11 @@ class SecurityUtils:
         if not content:
             return content
         
-        allowed_tags = bleach.sanitizer.ALLOWED_TAGS + [
-            'p', 'br', 'div', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-            'ul', 'ol', 'li', 'strong', 'em', 'u', 'strike', 'blockquote',
-            'code', 'pre', 'hr'
-        ]
+        allowed_tags = ['p', 'br', 'div', 'span', 'strong', 'em', 'u', 'ul', 'ol', 'li']
         
         allowed_attributes = {
             '*': ['class', 'style'],
-            'a': ['href', 'title', 'target', 'rel'],
-            'img': ['src', 'alt', 'width', 'height']
+            'a': ['href', 'title', 'target', 'rel']
         }
         
         cleaned = bleach.clean(
@@ -236,24 +222,23 @@ def validate_json(f):
         return f(*args, **kwargs)
     return decorated
 
-# Database Initialization
+# Database Initialization with better error handling
 def init_db():
     conn = get_db()
     try:
         c = conn.cursor()
         
-        # Drop all tables to start fresh
-        c.executescript("""
-            DROP TABLE IF EXISTS notifications;
-            DROP TABLE IF EXISTS reports;
-            DROP TABLE IF EXISTS bookmarks;
-            DROP TABLE IF EXISTS likes;
-            DROP TABLE IF EXISTS comments;
-            DROP TABLE IF EXISTS posts;
-            DROP TABLE IF EXISTS users;
-        """)
+        # Check if tables exist
+        c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+        tables_exist = c.fetchone() is not None
         
-        # Recreate all tables with updated schema
+        if tables_exist:
+            app.logger.info("Tables already exist, skipping initialization")
+            return
+        
+        app.logger.info("Creating new database tables...")
+        
+        # Create all tables
         c.executescript("""
             CREATE TABLE users(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -376,12 +361,18 @@ def init_db():
         
     except Exception as e:
         app.logger.error(f"Database initialization error: {e}")
-        raise
+        conn.rollback()
+        # Don't crash the app if DB init fails
     finally:
         conn.close()
 
-# Initialize database
-init_db()
+# Initialize database (with error handling)
+try:
+    init_db()
+    app.logger.info("Database setup completed")
+except Exception as e:
+    app.logger.error(f"Database setup failed: {e}")
+    # Continue running - tables might already exist
 
 # Utility Functions
 def format_timestamp(timestamp):
@@ -389,7 +380,10 @@ def format_timestamp(timestamp):
         return "Recently"
     
     try:
-        post_time = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+        if isinstance(timestamp, str):
+            post_time = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+        else:
+            post_time = timestamp
         now = datetime.now()
         diff = now - post_time
         
@@ -408,7 +402,7 @@ def format_timestamp(timestamp):
         else:
             return "Just now"
     except:
-        return timestamp
+        return "Recently"
 
 def create_notification(user_id, type, title, message):
     conn = get_db()
@@ -461,23 +455,22 @@ def handle_join_user_room(data):
         join_room(f'user_{user_id}')
         app.logger.info(f"User {user_id} joined their room")
 
-@socketio.on('leave_user_room')
-def handle_leave_user_room(data):
-    user_id = data.get('user_id')
-    if user_id:
-        leave_room(f'user_{user_id}')
-
 # API Routes
 @app.route('/')
 def serve_index():
     return send_from_directory('.', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('.', path)
 
 @app.route('/api/health')
 def health_check():
     return jsonify({
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
-        "version": "2.0.0"
+        "version": "2.0.0",
+        "environment": "production"
     })
 
 @app.route('/api/stats')
@@ -501,12 +494,10 @@ def get_stats():
         return jsonify({
             "success": True,
             "stats": {
-                "users": {"total": user_count},
-                "posts": {
-                    "total": post_count,
-                    "total_comments": comment_count,
-                    "total_likes": like_count
-                }
+                "users": user_count,
+                "posts": post_count,
+                "comments": comment_count,
+                "likes": like_count
             }
         })
         
@@ -517,7 +508,7 @@ def get_stats():
         conn.close()
 
 @app.route('/api/register', methods=['POST'])
-@limiter.limit("5 per hour")
+@limiter.limit("10 per hour")
 @validate_json
 def register():
     data = request.json_data
@@ -560,7 +551,7 @@ def register():
         conn.close()
 
 @app.route('/api/login', methods=['POST'])
-@limiter.limit("10 per 15 minutes")
+@limiter.limit("20 per 15 minutes")
 @validate_json
 def login():
     data = request.json_data
@@ -636,7 +627,7 @@ def create_post():
     data = request.json_data
     
     try:
-        category = SecurityUtils.sanitize_html(data.get("category", "General"), 50)
+        category = data.get("category", "General")
         content = SecurityUtils.sanitize_html(data.get("content", ""), Config.MAX_POST_LENGTH)
         title = SecurityUtils.sanitize_html(data.get("title", ""), 200)
         
@@ -691,8 +682,7 @@ def get_posts():
         offset = (page - 1) * per_page
         
         query = """
-            SELECT p.*, u.username, u.avatar_color,
-                   (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.is_deleted = 0) as real_comments_count
+            SELECT p.*, u.username, u.avatar_color
             FROM posts p 
             JOIN users u ON p.user_id = u.id 
             WHERE p.is_deleted = 0 AND u.is_active = 1
@@ -781,13 +771,14 @@ def like_post(post_id):
             c.execute("DELETE FROM likes WHERE id = ?", (existing_like['id'],))
             c.execute("UPDATE posts SET likes_count = likes_count - 1 WHERE id = ?", (post_id,))
             action = "unliked"
-            new_count = c.execute("SELECT likes_count FROM posts WHERE id = ?", (post_id,)).fetchone()['likes_count']
         else:
             # Like
             c.execute("INSERT INTO likes (user_id, post_id) VALUES (?, ?)", (request.user_id, post_id))
             c.execute("UPDATE posts SET likes_count = likes_count + 1 WHERE id = ?", (post_id,))
             action = "liked"
-            new_count = c.execute("SELECT likes_count FROM posts WHERE id = ?", (post_id,)).fetchone()['likes_count']
+        
+        # Get updated count
+        new_count = c.execute("SELECT likes_count FROM posts WHERE id = ?", (post_id,)).fetchone()['likes_count']
         
         conn.commit()
         
@@ -849,7 +840,6 @@ def create_comment(post_id):
     
     try:
         content = SecurityUtils.sanitize_html(data.get("content", ""), Config.MAX_COMMENT_LENGTH)
-        parent_comment_id = data.get("parent_comment_id")
         
         if len(content.strip()) < 1:
             raise ValidationError("Comment cannot be empty")
@@ -862,8 +852,8 @@ def create_comment(post_id):
         if not c.fetchone():
             raise ValidationError("Post not found")
         
-        c.execute("INSERT INTO comments (post_id, user_id, content, parent_comment_id) VALUES (?, ?, ?, ?)",
-                 (post_id, request.user_id, content, parent_comment_id))
+        c.execute("INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)",
+                 (post_id, request.user_id, content))
         
         # Update post comment count and activity
         c.execute("UPDATE posts SET comments_count = comments_count + 1, last_activity = CURRENT_TIMESTAMP WHERE id = ?", (post_id,))
@@ -1030,10 +1020,28 @@ def server_error(e):
     app.logger.error(f"500 error: {str(e)}")
     return jsonify({"success": False, "error": "Internal server error"}), 500
 
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({"success": False, "error": "Rate limit exceeded"}), 429
+
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('DEBUG', 'False').lower() == 'true'
+    
     socketio.run(
         app,
         host='0.0.0.0',
-        port=int(os.environ.get('PORT', 5000)),
-        debug=os.environ.get('DEBUG', 'False').lower() == 'true'
+        port=port,
+        debug=debug,
+        allow_unsafe_werkzeug=True
     )
+else:
+    # For Railway deployment
+    port = int(os.environ.get('PORT', 5000))
+    if __name__ == 'app':
+        socketio.run(
+            app,
+            host='0.0.0.0',
+            port=port,
+            debug=False
+        )
