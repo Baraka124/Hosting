@@ -64,7 +64,7 @@ file_handler = RotatingFileHandler(
     encoding='utf-8'
 )
 file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d] - IP: %(client_ip)s'
+    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
 ))
 file_handler.setLevel(logging.INFO)
 app.logger.addHandler(file_handler)
@@ -508,7 +508,10 @@ def init_db():
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
             );
         """)
-        
+           # Add this before creating indexes in init_db():
+c.execute("""
+    ALTER TABLE posts ADD COLUMN last_activity DATETIME DEFAULT (datetime('now'))
+""")
         # Enhanced indexes
         c.executescript("""
             CREATE INDEX IF NOT EXISTS idx_posts_user_category ON posts(user_id, category);
