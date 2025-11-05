@@ -326,6 +326,7 @@ def validate_json(schema=None):
     return decorator
 
 # ---------- Enhanced Database Schema ----------
+
 def init_db():
     """Enhanced database initialization"""
     conn = get_db()
@@ -491,7 +492,7 @@ def init_db():
             );
         """)
         
-        # Create indexes
+        # Create indexes AFTER tables are created
         c.executescript("""
             CREATE INDEX IF NOT EXISTS idx_posts_user_category ON posts(user_id, category);
             CREATE INDEX IF NOT EXISTS idx_posts_timestamp ON posts(timestamp DESC);
@@ -532,201 +533,6 @@ def init_db():
         raise
     finally:
         return_db(conn)
-
-# Initialize database on startup
-init_db()
-
-# ---------- Enhanced Utility Functions ----------
-def log_user_activity(user_id, action, details=None, log_ip=True):
-    """Enhanced activity logging"""
-    conn = get_db()
-    try:
-        c = conn.cursor()
-        ip_address = request.remote_addr if log_ip else None
-        user_agent = request.headers.get('User-Agent') if log_ip else None
-        
-        c.execute("""INSERT INTO user_activity 
-                    (user_id, action, details, ip_address, user_agent) 
-                    VALUES (?, ?, ?, ?, ?)""",
-                 (user_id, action, str(details) if details else None, ip_address, user_agent))
-        conn.commit()
-    except Exception as e:
-        app.logger.error(f"Activity logging error: {e}")
-    finally:
-        return_db(conn)
-
-def create_notification(user_id, type, title, message, data=None, expires_hours=24):
-    """Create user notification"""
-    conn = get_db()
-    try:
-        c = conn.cursor()
-        expires_at = datetime.now() + timedelta(hours=expires_hours) if expires_hours else None
-        
-        c.execute("""
-            INSERT INTO notifications (user_id, type, title, message, data, expires_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (user_id, type, title, message, data, expires_at))
-        
-        conn.commit()
-        return c.lastrowid
-    except Exception as e:
-        app.logger.error(f"Notification creation error: {e}")
-        return None
-    finally:
-        return_db(conn)
-
-def update_post_activity(post_id):
-    """Update post last activity timestamp"""
-    conn = get_db()
-    try:
-        c = conn.cursor()
-        c.execute("""
-            UPDATE posts SET last_activity = datetime('now') 
-            WHERE id = ?
-        """, (post_id,))
-        conn.commit()
-    except Exception as e:
-        app.logger.error(f"Post activity update error: {e}")
-    finally:
-        return_db(conn)
-
-def format_timestamp(timestamp):
-    """Enhanced timestamp formatting"""
-    if not timestamp:
-        return "Recently"
-    
-    try:
-        post_time = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
-        now = datetime.now(post_time.tzinfo) if post_time.tzinfo else datetime.now()
-        diff = now - post_time
-        
-        if diff.days > 365:
-            years = diff.days // 365
-            return f"{years} year{'s' if years > 1 else ''} ago"
-        elif diff.days > 30:
-            months = diff.days // 30
-            return f"{months} month{'s' if months > 1 else ''} ago"
-        elif diff.days > 0:
-            return f"{diff.days}d ago"
-        elif diff.seconds > 3600:
-            return f"{diff.seconds // 3600}h ago"
-        elif diff.seconds > 60:
-            return f"{diff.seconds // 60}m ago"
-        else:
-            return "Just now"
-    except:
-        return timestamp
-
-# ---------- Enhanced Routes ----------
-@app.route('/')
-def serve_index():
-    return send_from_directory('.', 'index.html')
-
-@app.route('/api/health')
-def health_check():
-    """Enhanced health check with more metrics"""
-    conn = get_db()
-    try:
-        c = conn.cursor()
-        
-        # Database health
-        c.execute("SELECT 1")
-        db_status = "healthy"
-        
-        # System metrics
-        c.execute("SELECT COUNT(*) as user_count FROM users WHERE is_active = 1")
-        user_count = c.fetchone()[0]
-        
-        c.execute("SELECT COUNT(*) as post_count FROM posts WHERE is_deleted = 0")
-        post_count = c.fetchone()[0]
-        
-        c.execute("SELECT COUNT(*) as active_users FROM users WHERE last_login > datetime('now', '-7 days')")
-        active_users = c.fetchone()[0]
-        
-        return jsonify({
-            "status": "healthy",
-            "timestamp": datetime.now().isoformat(),
-            "version": "2.0.0",
-            "database": db_status,
-            "metrics": {
-                "users": {
-                    "total": user_count,
-                    "active_week": active_users
-                },
-                "content": {
-                    "posts": post_count
-                }
-            }
-        })
-        
-    except Exception as e:
-        db_status = f"unhealthy: {str(e)}"
-        return jsonify({
-            "status": "degraded",
-            "database": db_status,
-            "error": str(e)
-        }), 500
-    finally:
-        return_db(conn)
-
-@app.route('/api/register', methods=['POST'])
-@enhanced_rate_limit(limit=5, window=3600)
-@validate_json()
-def register():
-    """Enhanced user registration"""
-    data = request.json_data
-    
-    try:
-        username = SecurityUtils.validate_username(data.get("username", ""))
-        password = SecurityUtils.validate_password(data.get("password", ""))
-        email = data.get("email")
-        
-        if email:
-            if not re.match(r'^[^@]+@[^@]+\.[^@]+$', email):
-                raise ValidationError("Invalid email format")
-        
-        full_name = SecurityUtils.sanitize_html(data.get("full_name", ""), 50)
-        bio = SecurityUtils.sanitize_html(data.get("bio", ""), 200)
-        
-        conn = get_db()
-        c = conn.cursor()
-        
-        c.execute("SELECT id FROM users WHERE username = ? OR email = ?", (username, email))
-        if c.fetchone():
-            raise ValidationError("Username or email already exists")
-        
-        hashed_pw = SecurityUtils.hash_password(password)
-        avatar_color = generate_avatar_color()
-        verification_token = SecurityUtils.generate_secure_token() if email else None
-        
-        c.execute("""INSERT INTO users 
-                    (username, password, email, full_name, avatar_color, bio, verification_token) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                 (username, hashed_pw, email, full_name, avatar_color, bio, verification_token))
-        
-        user_id = c.lastrowid
-        conn.commit()
-        
-        log_user_activity(user_id, "user_registered", {"email_provided": bool(email)})
-        app.logger.info(f"New user registered: {username} (ID: {user_id})")
-        
-        return jsonify({
-            "success": True, 
-            "message": "Account created successfully",
-            "user_id": user_id,
-            "requires_verification": bool(email)
-        })
-    
-    except ValidationError as e:
-        return jsonify({"success": False, "error": str(e)}), 400
-    except sqlite3.IntegrityError:
-        return jsonify({"success": False, "error": "Username or email already exists"}), 400
-    except Exception as e:
-        app.logger.error(f"Registration error: {e}")
-        return jsonify({"success": False, "error": "Registration failed"}), 500
-    finally:
-        return_db(conn)
-
 @app.route('/api/login', methods=['POST'])
 @enhanced_rate_limit(limit=10, window=900)
 @validate_json()
