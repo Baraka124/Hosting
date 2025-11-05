@@ -214,6 +214,12 @@
             border-radius: var(--radius);
         }
 
+        .password-requirements {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
         @keyframes loading {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
@@ -371,11 +377,11 @@
                 <form id="login-form">
                     <div class="mb-3">
                         <label class="form-label">Username or Email</label>
-                        <input type="text" id="loginUsername" class="form-control" required>
+                        <input type="text" id="loginUsername" class="form-control" autocomplete="username" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" id="loginPassword" class="form-control" required>
+                        <input type="password" id="loginPassword" class="form-control" autocomplete="current-password" required>
                     </div>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-outline-primary w-50" onclick="hideModal('loginModal')">Cancel</button>
@@ -396,19 +402,23 @@
                 <form id="register-form">
                     <div class="mb-3">
                         <label class="form-label">Username</label>
-                        <input type="text" id="registerUsername" class="form-control" required>
+                        <input type="text" id="registerUsername" class="form-control" autocomplete="username" required minlength="3">
+                        <div class="form-text">Username must be at least 3 characters</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Email (Optional)</label>
-                        <input type="email" id="registerEmail" class="form-control">
+                        <input type="email" id="registerEmail" class="form-control" autocomplete="email">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" id="registerPassword" class="form-control" required>
+                        <input type="password" id="registerPassword" class="form-control" autocomplete="new-password" required minlength="8">
+                        <div class="password-requirements">
+                            Password must be at least 8 characters and contain 3 of: uppercase, lowercase, digits, special characters
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Confirm Password</label>
-                        <input type="password" id="registerConfirmPassword" class="form-control" required>
+                        <input type="password" id="registerConfirmPassword" class="form-control" autocomplete="new-password" required minlength="8">
                     </div>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-outline-primary w-50" onclick="hideModal('registerModal')">Cancel</button>
@@ -441,7 +451,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Content</label>
-                        <textarea id="postContent" class="form-control" rows="6" required></textarea>
+                        <textarea id="postContent" class="form-control" rows="6" required minlength="10"></textarea>
+                        <div class="form-text">Content must be at least 10 characters</div>
                     </div>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-outline-primary w-50" onclick="hideModal('createPostModal')">Cancel</button>
@@ -519,6 +530,27 @@
             }
         }
 
+        // Frontend password validation
+        function validatePassword(password) {
+            if (password.length < 8) {
+                return "Password must be at least 8 characters";
+            }
+            
+            const checks = {
+                'uppercase': /[A-Z]/.test(password),
+                'lowercase': /[a-z]/.test(password),
+                'digit': /\d/.test(password),
+                'special': /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+            
+            const passedChecks = Object.values(checks).filter(Boolean).length;
+            if (passedChecks < 3) {
+                return "Password must contain at least 3 of: uppercase, lowercase, digits, special characters";
+            }
+            
+            return null;
+        }
+
         // Authentication Functions
         async function handleLogin(event) {
             if (event) event.preventDefault();
@@ -563,6 +595,18 @@
 
             if (!username || !password || !confirmPassword) {
                 showToast('Please fill in all required fields', 'error');
+                return;
+            }
+
+            if (username.length < 3) {
+                showToast('Username must be at least 3 characters', 'error');
+                return;
+            }
+
+            // Frontend password validation
+            const passwordError = validatePassword(password);
+            if (passwordError) {
+                showToast(passwordError, 'error');
                 return;
             }
 
@@ -708,6 +752,11 @@
 
             if (!category || !content) {
                 showToast('Please fill in all required fields', 'error');
+                return;
+            }
+
+            if (content.length < 10) {
+                showToast('Content must be at least 10 characters', 'error');
                 return;
             }
 
