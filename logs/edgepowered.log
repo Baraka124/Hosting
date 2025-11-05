@@ -1,1 +1,2 @@
 2025-11-05 08:53:42,232 INFO: Database initialized successfully [in C:\Users\barak\OneDrive\Documents\AaINIBIC\GroupsResearch\Hosting\app.py:389]
+2025-11-05 12:31:52,905 ERROR: Database initialization error: no such column: last_activity [in C:\Users\barak\OneDrive\Documents\AaINIBIC\GroupsResearch\Hosting\app.py:531]

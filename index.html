@@ -8,52 +8,44 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #007AFF;
-            --success: #34C759;
-            --warning: #FF9500;
-            --danger: #FF3B30;
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-tertiary: #e9ecef;
-            --text-primary: #212529;
-            --text-secondary: #6c757d;
-            --text-muted: #adb5bd;
-            --border: #dee2e6;
-            --radius: 0.375rem;
-            --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-
-        [data-theme="dark"] {
-            --bg-primary: #1a1a1a;
-            --bg-secondary: #2d2d2d;
-            --bg-tertiary: #3d3d3d;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --text-muted: #666666;
-            --border: #404040;
+            --primary-color: #007AFF;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --danger-color: #FF3B30;
+            --purple-color: #AF52DE;
+            --indigo-color: #5856D6;
+            --dark-color: #1a1a1a;
+            --light-color: #f8f9fa;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
         }
 
         body {
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding-top: 70px;
         }
 
-        .navbar {
-            background: var(--bg-primary) !important;
-            border-bottom: 1px solid var(--border);
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
         }
 
         .card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
+            border: none;
+            border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            margin-bottom: 1rem;
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
         }
 
-        .user-avatar {
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -65,860 +57,1242 @@
             font-size: 1.1rem;
         }
 
-        .timestamp {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
+        .post-content {
+            line-height: 1.6;
         }
 
-        .category-tag {
-            background: var(--primary);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 1rem;
-            font-size: 0.75rem;
+        .category-badge {
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
 
-        .post-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .post-stats {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .post-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .action-btn {
-            background: none;
+        .like-btn, .bookmark-btn {
             border: none;
-            padding: 0.5rem;
-            border-radius: var(--radius);
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            font-size: 0.875rem;
+            background: transparent;
+            transition: var(--transition);
         }
 
-        .action-btn:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
+        .like-btn:hover, .bookmark-btn:hover {
+            transform: scale(1.1);
         }
 
         .like-btn.liked {
-            color: var(--danger);
+            color: var(--danger-color);
         }
 
         .bookmark-btn.bookmarked {
-            color: var(--warning);
+            color: var(--warning-color);
         }
 
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+        .stats-number {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .stats-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .comment {
+            border-left: 3px solid #e9ecef;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .comment-reply {
+            margin-left: 2rem;
+            border-left-color: #dee2e6;
+        }
+
+        .user-reputation {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
         .modal-content {
-            background: var(--bg-primary);
-            border-radius: var(--radius);
-            max-width: 600px;
-            margin: 2rem auto;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        .form-control {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 0.75rem;
-            color: var(--text-primary);
-            width: 100%;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius);
-            font-weight: 500;
+            border-radius: var(--border-radius);
             border: none;
-            cursor: pointer;
         }
 
         .btn-primary {
-            background: var(--primary);
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: #0062cc;
+            transform: translateY(-1px);
+        }
+
+        .featured-post {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .pinned-post {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .trending-badge {
+            background: linear-gradient(45deg, #FF9500, #FF3B30);
             color: white;
         }
 
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1rem;
-            box-shadow: var(--shadow);
-            z-index: 1001;
-            min-width: 300px;
-        }
-
-        .toast.success {
-            border-left: 4px solid var(--success);
-        }
-
-        .toast.error {
-            border-left: 4px solid var(--danger);
-        }
-
-        .empty-state {
+        .loading-spinner {
+            display: none;
             text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-secondary);
+            padding: 2rem;
         }
 
-        .skeleton {
-            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: var(--radius);
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .password-requirements {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-top: 0.5rem;
+        .search-box {
+            border-radius: 25px;
+            padding: 8px 20px;
+            border: 1px solid #dee2e6;
         }
 
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+        @media (max-width: 768px) {
+            body {
+                padding-top: 60px;
+            }
+            
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
         }
     </style>
 </head>
-<body data-theme="light">
+<body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#" style="color: var(--primary);">
-                <i class="bi bi-lightning-charge-fill"></i> EdgePowered
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-cpu-fill me-2"></i>EdgePowered
             </a>
             
-            <div class="d-flex align-items-center gap-3">
-                <!-- Theme Toggle -->
-                <button id="theme-toggle" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-moon"></i>
-                </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="home-link">
+                            <i class="bi bi-house-door me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="categories-link">
+                            <i class="bi bi-tags me-1"></i>Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="leaderboard-link">
+                            <i class="bi bi-trophy me-1"></i>Leaderboard
+                        </a>
+                    </li>
+                </ul>
                 
-                <!-- Authenticated User Section -->
-                <div id="user-section" style="display: none;">
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="username-display"></span>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#" onclick="loadUserProfile()">Profile</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="loadBookmarks()">Bookmarks</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#" id="logout-btn">Logout</a></li>
-                            </ul>
-                        </div>
+                <div class="d-flex">
+                    <input class="form-control search-box me-2" type="search" placeholder="Search posts..." id="search-input">
+                    <div class="nav-item dropdown me-2" id="user-menu" style="display: none;">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                            <span id="user-avatar" class="avatar me-2 d-inline-flex"></span>
+                            <span id="username-display"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="profile-link"><i class="bi bi-person me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#" id="notifications-link">
+                                <i class="bi bi-bell me-2"></i>Notifications
+                                <span class="notification-badge" id="notification-count" style="display: none;">0</span>
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="bookmarks-link"><i class="bi bi-bookmark me-2"></i>Bookmarks</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logout-btn"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        </ul>
                     </div>
-                </div>
-                
-                <!-- Auth Buttons -->
-                <div id="auth-section">
-                    <button class="btn btn-outline-primary btn-sm" id="sign-in-btn">Sign In</button>
-                    <button class="btn btn-primary btn-sm" id="create-account-btn">Create Account</button>
+                    <div id="auth-buttons">
+                        <button class="btn btn-outline-light me-2" id="login-btn">Login</button>
+                        <button class="btn btn-primary" id="register-btn">Register</button>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Toast Container -->
-    <div id="toast-container"></div>
-
     <!-- Main Content -->
     <div class="container mt-4">
-        <!-- Stats Overview -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card text-center">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card">
                     <div class="card-body">
-                        <h3 id="stats-users">0</h3>
-                        <p class="text-muted">Users</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 id="stats-posts">0</h3>
-                        <p class="text-muted">Posts</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 id="stats-comments">0</h3>
-                        <p class="text-muted">Comments</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h3 id="stats-likes">0</h3>
-                        <p class="text-muted">Likes</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Posts Section -->
-        <div id="posts-section" style="display: none;">
-            <!-- Filter Bar -->
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <select id="category-filter" class="form-control">
-                        <option value="">All Categories</option>
-                        <option value="General">General</option>
-                        <option value="Technology">Technology</option>
-                        <option value="Science">Science</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <input type="text" id="search-input" class="form-control" placeholder="Search posts...">
-                </div>
-                <div class="col-md-3">
-                    <select id="sort-filter" class="form-control">
-                        <option value="newest">Newest</option>
-                        <option value="popular">Most Popular</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100" id="new-post-btn">
-                        <i class="bi bi-plus-lg"></i> New Post
-                    </button>
-                </div>
-            </div>
-
-            <!-- Posts Container -->
-            <div id="posts-container">
-                <!-- Posts will be loaded here -->
-            </div>
-
-            <!-- Empty State -->
-            <div id="empty-state" class="empty-state" style="display: none;">
-                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                <h4>No posts yet</h4>
-                <p>Be the first to start a discussion!</p>
-                <button class="btn btn-primary" id="empty-state-post-btn">Create First Post</button>
-            </div>
-
-            <!-- Load More -->
-            <div id="load-more-container" style="text-align: center; margin: 2rem 0;">
-                <button class="btn btn-outline-primary" id="load-more-btn">
-                    Load More Posts
-                </button>
-            </div>
-        </div>
-
-        <!-- Auth Required Message -->
-        <div id="auth-required" class="text-center" style="padding: 4rem 2rem;">
-            <i class="bi bi-chat-square-text" style="font-size: 4rem; color: var(--text-muted);"></i>
-            <h3>Welcome to EdgePowered Forum</h3>
-            <p class="text-muted">Please sign in to view and participate in discussions</p>
-            <button class="btn btn-primary btn-lg" id="auth-required-signin">Sign In</button>
-        </div>
-    </div>
-
-    <!-- Modals -->
-    <div id="loginModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4>Sign In</h4>
-                <button class="btn-close" onclick="hideModal('loginModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="login-form">
-                    <div class="mb-3">
-                        <label class="form-label">Username or Email</label>
-                        <input type="text" id="loginUsername" class="form-control" autocomplete="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" id="loginPassword" class="form-control" autocomplete="current-password" required>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline-primary w-50" onclick="hideModal('loginModal')">Cancel</button>
-                        <button type="submit" class="btn btn-primary w-50" id="login-btn">Sign In</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="registerModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4>Create Account</h4>
-                <button class="btn-close" onclick="hideModal('registerModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="register-form">
-                    <div class="mb-3">
-                        <label class="form-label">Username</label>
-                        <input type="text" id="registerUsername" class="form-control" autocomplete="username" required minlength="3">
-                        <div class="form-text">Username must be at least 3 characters</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email (Optional)</label>
-                        <input type="email" id="registerEmail" class="form-control" autocomplete="email">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" id="registerPassword" class="form-control" autocomplete="new-password" required minlength="8">
-                        <div class="password-requirements">
-                            Password must be at least 8 characters and contain 3 of: uppercase, lowercase, digits, special characters
+                        <h5 class="card-title">Categories</h5>
+                        <div id="categories-list">
+                            <!-- Categories will be loaded here -->
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" id="registerConfirmPassword" class="form-control" autocomplete="new-password" required minlength="8">
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Forum Stats</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <div class="text-center">
+                                <div class="stats-number" id="stats-users">0</div>
+                                <div class="stats-label">Users</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="stats-number" id="stats-posts">0</div>
+                                <div class="stats-label">Posts</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="stats-number" id="stats-comments">0</div>
+                                <div class="stats-label">Comments</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline-primary w-50" onclick="hideModal('registerModal')">Cancel</button>
-                        <button type="submit" class="btn btn-primary w-50" id="register-btn">Create Account</button>
+                </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="col-lg-9">
+                <!-- Welcome Banner -->
+                <div class="card bg-primary text-white mb-4" id="welcome-banner">
+                    <div class="card-body">
+                        <h2>Welcome to EdgePowered Forum</h2>
+                        <p class="mb-0">Join the conversation and connect with the community</p>
                     </div>
-                </form>
+                </div>
+                
+                <!-- Create Post Card (visible when logged in) -->
+                <div class="card mb-4" id="create-post-card" style="display: none;">
+                    <div class="card-body">
+                        <h5 class="card-title">Create a Post</h5>
+                        <form id="create-post-form">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="post-title" placeholder="Post Title" required>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-select" id="post-category" required>
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" id="post-content" rows="3" placeholder="What's on your mind?" required></textarea>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary">Post</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Filters and Sorting -->
+                <div class="card mb-3">
+                    <div class="card-body py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="me-3">Sort by:</span>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm active" data-sort="newest">Newest</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-sort="popular">Popular</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-sort="trending">Trending</button>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="show-pinned">
+                                <label class="form-check-label" for="show-pinned">
+                                    Show Pinned
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Posts Container -->
+                <div id="posts-container">
+                    <!-- Posts will be loaded here -->
+                </div>
+                
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="posts-loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading posts...</p>
+                </div>
+                
+                <!-- Pagination -->
+                <nav aria-label="Posts pagination" id="pagination-container" style="display: none;">
+                    <ul class="pagination justify-content-center">
+                        <!-- Pagination will be generated here -->
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
 
-    <div id="createPostModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4>Create New Post</h4>
-                <button class="btn-close" onclick="hideModal('createPostModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="create-post-form">
-                    <div class="mb-3">
-                        <label class="form-label">Category</label>
-                        <select id="postCategory" class="form-control" required>
-                            <option value="General">General</option>
-                            <option value="Technology">Technology</option>
-                            <option value="Science">Science</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Title (Optional)</label>
-                        <input type="text" id="postTitle" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Content</label>
-                        <textarea id="postContent" class="form-control" rows="6" required minlength="10"></textarea>
-                        <div class="form-text">Content must be at least 10 characters</div>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline-primary w-50" onclick="hideModal('createPostModal')">Cancel</button>
-                        <button type="submit" class="btn btn-primary w-50" id="create-post-btn">Publish Post</button>
-                    </div>
-                </form>
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login to EdgePowered</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <label for="login-username" class="form-label">Username or Email</label>
+                            <input type="text" class="form-control" id="login-username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="login-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="login-password" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember-me">
+                            <label class="form-check-label" for="remember-me">Remember me</label>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <span>Don't have an account? <a href="#" id="show-register">Register</a></span>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Join EdgePowered</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="register-form">
+                        <div class="mb-3">
+                            <label for="register-username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="register-username" required>
+                            <div class="form-text">3-20 characters, letters, numbers, underscores and hyphens only</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="register-email" class="form-label">Email (optional)</label>
+                            <input type="email" class="form-control" id="register-email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="register-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="register-password" required>
+                            <div class="form-text">At least 8 characters with 3 of: uppercase, lowercase, digits, special characters</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="register-confirm-password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="register-confirm-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="register-fullname" class="form-label">Full Name (optional)</label>
+                            <input type="text" class="form-control" id="register-fullname">
+                        </div>
+                        <div class="mb-3">
+                            <label for="register-bio" class="form-label">Bio (optional)</label>
+                            <textarea class="form-control" id="register-bio" rows="2"></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <span>Already have an account? <a href="#" id="show-login">Login</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Detail Modal -->
+    <div class="modal fade" id="postModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="post-modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="post-modal-content">
+                        <!-- Post content will be loaded here -->
+                    </div>
+                    <hr>
+                    <div id="comments-section">
+                        <h6>Comments</h6>
+                        <div id="comments-list">
+                            <!-- Comments will be loaded here -->
+                        </div>
+                        <form id="add-comment-form" style="display: none;">
+                            <div class="mb-3">
+                                <textarea class="form-control" id="comment-content" rows="2" placeholder="Add a comment..." required></textarea>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        // Configuration
+        // API Base URL - adjust if needed
         const API_BASE = window.location.origin + '/api';
+        
+        // Application state
         let currentUser = null;
+        let authToken = null;
+        let currentPage = 1;
+        let currentSort = 'newest';
+        let currentCategory = '';
+        let currentSearch = '';
+        
+        // DOM Elements
+        const elements = {
+            authButtons: document.getElementById('auth-buttons'),
+            userMenu: document.getElementById('user-menu'),
+            usernameDisplay: document.getElementById('username-display'),
+            userAvatar: document.getElementById('user-avatar'),
+            createPostCard: document.getElementById('create-post-card'),
+            welcomeBanner: document.getElementById('welcome-banner'),
+            postsContainer: document.getElementById('posts-container'),
+            postsLoading: document.getElementById('posts-loading'),
+            paginationContainer: document.getElementById('pagination-container'),
+            categoriesList: document.getElementById('categories-list'),
+            loginModal: new bootstrap.Modal(document.getElementById('loginModal')),
+            registerModal: new bootstrap.Modal(document.getElementById('registerModal')),
+            postModal: new bootstrap.Modal(document.getElementById('postModal'))
+        };
 
-        // Utility Functions
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <div>${message}</div>
-                <button onclick="this.parentElement.remove()" style="background:none; border:none; margin-left:10px;">&times;</button>
-            `;
-            document.getElementById('toast-container').appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            loadCategories();
+            loadPosts();
+            loadStats();
+        });
+
+        function initializeApp() {
+            // Check if user is already logged in
+            const savedToken = localStorage.getItem('forumToken');
+            const savedUser = localStorage.getItem('forumUser');
+            
+            if (savedToken && savedUser) {
+                authToken = savedToken;
+                currentUser = JSON.parse(savedUser);
+                updateUIForUser();
+            }
         }
 
-        function showModal(id) {
-            document.getElementById(id).style.display = 'block';
+        function setupEventListeners() {
+            // Auth buttons
+            document.getElementById('login-btn').addEventListener('click', () => elements.loginModal.show());
+            document.getElementById('register-btn').addEventListener('click', () => elements.registerModal.show());
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            
+            // Modal switches
+            document.getElementById('show-register').addEventListener('click', (e) => {
+                e.preventDefault();
+                elements.loginModal.hide();
+                elements.registerModal.show();
+            });
+            
+            document.getElementById('show-login').addEventListener('click', (e) => {
+                e.preventDefault();
+                elements.registerModal.hide();
+                elements.loginModal.show();
+            });
+            
+            // Forms
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('register-form').addEventListener('submit', handleRegister);
+            document.getElementById('create-post-form').addEventListener('submit', handleCreatePost);
+            document.getElementById('add-comment-form').addEventListener('submit', handleAddComment);
+            
+            // Sorting
+            document.querySelectorAll('[data-sort]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSort = this.getAttribute('data-sort');
+                    currentPage = 1;
+                    loadPosts();
+                });
+            });
+            
+            // Search
+            document.getElementById('search-input').addEventListener('input', function() {
+                currentSearch = this.value;
+                currentPage = 1;
+                loadPosts();
+            });
+            
+            // Navigation
+            document.getElementById('home-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                currentCategory = '';
+                currentPage = 1;
+                loadPosts();
+            });
         }
 
-        function hideModal(id) {
-            document.getElementById(id).style.display = 'none';
-            // Clear forms when hiding modals
-            if (id === 'loginModal') {
-                document.getElementById('login-form').reset();
-            }
-            if (id === 'registerModal') {
-                document.getElementById('register-form').reset();
-            }
-            if (id === 'createPostModal') {
-                document.getElementById('create-post-form').reset();
-            }
-        }
-
+        // API Functions
         async function apiCall(endpoint, options = {}) {
+            const url = API_BASE + endpoint;
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                ...options
+            };
+            
+            if (authToken) {
+                config.headers.Authorization = `Bearer ${authToken}`;
+            }
+            
             try {
-                const token = localStorage.getItem('token');
-                const config = {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...(token && { 'Authorization': `Bearer ${token}` }),
-                    },
-                    ...options
-                };
-
-                if (config.body) {
-                    config.body = JSON.stringify(config.body);
-                }
-
-                const response = await fetch(API_BASE + endpoint, config);
+                const response = await fetch(url, config);
                 const data = await response.json();
                 
                 if (!response.ok) {
-                    throw new Error(data.error || `Request failed with status ${response.status}`);
+                    throw new Error(data.error || 'API request failed');
                 }
-
+                
                 return data;
             } catch (error) {
-                console.error('API Call error:', error);
-                showToast(error.message, 'error');
+                console.error('API call failed:', error);
+                showAlert(error.message, 'danger');
                 throw error;
             }
         }
 
-        // Frontend password validation
-        function validatePassword(password) {
-            if (password.length < 8) {
-                return "Password must be at least 8 characters";
-            }
+        // Auth Functions
+        async function handleLogin(e) {
+            e.preventDefault();
             
-            const checks = {
-                'uppercase': /[A-Z]/.test(password),
-                'lowercase': /[a-z]/.test(password),
-                'digit': /\d/.test(password),
-                'special': /[!@#$%^&*(),.?":{}|<>]/.test(password)
-            };
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
             
-            const passedChecks = Object.values(checks).filter(Boolean).length;
-            if (passedChecks < 3) {
-                return "Password must contain at least 3 of: uppercase, lowercase, digits, special characters";
-            }
-            
-            return null;
-        }
-
-        // Authentication Functions
-        async function handleLogin(event) {
-            if (event) event.preventDefault();
-            
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-
-            if (!username || !password) {
-                showToast('Please fill in all fields', 'error');
-                return;
-            }
-
             try {
                 const data = await apiCall('/login', {
                     method: 'POST',
-                    body: { username, password }
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        remember_me: rememberMe
+                    })
                 });
-
+                
                 if (data.success) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('userData', JSON.stringify(data.user));
+                    authToken = data.token;
                     currentUser = data.user;
                     
-                    hideModal('loginModal');
-                    showAuthenticatedUI();
-                    showToast('Successfully signed in!', 'success');
-                    loadPosts();
-                    loadStats();
+                    // Save to localStorage
+                    localStorage.setItem('forumToken', authToken);
+                    localStorage.setItem('forumUser', JSON.stringify(currentUser));
+                    
+                    // Update UI
+                    updateUIForUser();
+                    elements.loginModal.hide();
+                    document.getElementById('login-form').reset();
+                    
+                    showAlert('Login successful!', 'success');
+                    loadPosts(); // Reload posts to show create post form
                 }
             } catch (error) {
                 // Error handled in apiCall
             }
         }
 
-        async function handleRegister(event) {
-            if (event) event.preventDefault();
+        async function handleRegister(e) {
+            e.preventDefault();
             
-            const username = document.getElementById('registerUsername').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-            const email = document.getElementById('registerEmail').value;
-
-            if (!username || !password || !confirmPassword) {
-                showToast('Please fill in all required fields', 'error');
-                return;
-            }
-
-            if (username.length < 3) {
-                showToast('Username must be at least 3 characters', 'error');
-                return;
-            }
-
-            // Frontend password validation
-            const passwordError = validatePassword(password);
-            if (passwordError) {
-                showToast(passwordError, 'error');
-                return;
-            }
-
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const fullName = document.getElementById('register-fullname').value;
+            const bio = document.getElementById('register-bio').value;
+            
             if (password !== confirmPassword) {
-                showToast('Passwords do not match', 'error');
+                showAlert('Passwords do not match', 'danger');
                 return;
             }
-
+            
             try {
                 const data = await apiCall('/register', {
                     method: 'POST',
-                    body: { username, password, email }
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        password,
+                        full_name: fullName,
+                        bio
+                    })
                 });
-
+                
                 if (data.success) {
-                    hideModal('registerModal');
-                    showToast('Account created! Please sign in.', 'success');
+                    elements.registerModal.hide();
+                    document.getElementById('register-form').reset();
+                    
+                    if (data.requires_verification) {
+                        showAlert('Account created! Please check your email for verification.', 'success');
+                    } else {
+                        showAlert('Account created successfully! You can now login.', 'success');
+                    }
                 }
             } catch (error) {
                 // Error handled in apiCall
             }
         }
 
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userData');
-            currentUser = null;
-            showUnauthenticatedUI();
-            showToast('Successfully signed out', 'success');
-        }
-
-        function showAuthenticatedUI() {
-            document.getElementById('auth-section').style.display = 'none';
-            document.getElementById('auth-required').style.display = 'none';
-            document.getElementById('posts-section').style.display = 'block';
-            document.getElementById('user-section').style.display = 'block';
-            
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            document.getElementById('username-display').textContent = userData.username;
-        }
-
-        function showUnauthenticatedUI() {
-            document.getElementById('auth-section').style.display = 'block';
-            document.getElementById('auth-required').style.display = 'block';
-            document.getElementById('posts-section').style.display = 'none';
-            document.getElementById('user-section').style.display = 'none';
-        }
-
-        // Posts Functions
-        async function loadPosts() {
-            const category = document.getElementById('category-filter').value;
-            const search = document.getElementById('search-input').value;
-            const sort = document.getElementById('sort-filter').value;
-
+        async function handleLogout() {
             try {
-                const params = new URLSearchParams({
-                    page: 1,
-                    per_page: 10,
-                    ...(category && { category }),
-                    ...(search && { search }),
-                    ...(sort && { sort })
-                });
+                await apiCall('/logout', { method: 'POST' });
+            } catch (error) {
+                // Continue with logout even if API call fails
+            }
+            
+            // Clear local storage
+            localStorage.removeItem('forumToken');
+            localStorage.removeItem('forumUser');
+            
+            // Reset state
+            authToken = null;
+            currentUser = null;
+            
+            // Update UI
+            updateUIForUser();
+            showAlert('Logged out successfully', 'info');
+        }
 
-                const data = await apiCall(`/posts?${params}`);
+        // Post Functions
+        async function handleCreatePost(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('post-title').value;
+            const category = document.getElementById('post-category').value;
+            const content = document.getElementById('post-content').value;
+            
+            try {
+                const data = await apiCall('/posts', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title,
+                        category,
+                        content
+                    })
+                });
                 
                 if (data.success) {
-                    renderPosts(data.data);
-                    document.getElementById('empty-state').style.display = data.data.length === 0 ? 'block' : 'none';
+                    document.getElementById('create-post-form').reset();
+                    showAlert('Post created successfully!', 'success');
+                    loadPosts(); // Reload to show the new post
                 }
             } catch (error) {
-                if (error.message.includes('401')) {
-                    // Not authenticated, show auth required message
-                    showUnauthenticatedUI();
-                } else {
-                    document.getElementById('posts-container').innerHTML = '<div class="text-center text-muted">Failed to load posts</div>';
-                }
+                // Error handled in apiCall
             }
         }
 
-        function renderPosts(posts) {
-            const container = document.getElementById('posts-container');
+        async function loadPosts() {
+            elements.postsLoading.style.display = 'block';
+            elements.postsContainer.innerHTML = '';
             
-            if (!posts || posts.length === 0) {
-                container.innerHTML = '';
+            try {
+                let url = `/posts?page=${currentPage}&per_page=10&sort=${currentSort}`;
+                
+                if (currentCategory) {
+                    url += `&category=${encodeURIComponent(currentCategory)}`;
+                }
+                
+                if (currentSearch) {
+                    url += `&search=${encodeURIComponent(currentSearch)}`;
+                }
+                
+                const data = await apiCall(url);
+                
+                if (data.success) {
+                    displayPosts(data.data);
+                    displayPagination(data.pagination);
+                }
+            } catch (error) {
+                elements.postsContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        Failed to load posts. Please try again later.
+                    </div>
+                `;
+            } finally {
+                elements.postsLoading.style.display = 'none';
+            }
+        }
+
+        function displayPosts(posts) {
+            if (posts.length === 0) {
+                elements.postsContainer.innerHTML = `
+                    <div class="card">
+                        <div class="card-body text-center py-5">
+                            <i class="bi bi-inbox display-4 text-muted"></i>
+                            <h4 class="mt-3">No posts found</h4>
+                            <p class="text-muted">Be the first to start a discussion in this category!</p>
+                        </div>
+                    </div>
+                `;
                 return;
             }
-
-            container.innerHTML = posts.map(post => `
-                <div class="card">
+            
+            elements.postsContainer.innerHTML = posts.map(post => `
+                <div class="card ${post.is_pinned ? 'pinned-post' : ''} ${post.featured_until ? 'featured-post' : ''}">
                     <div class="card-body">
-                        <div class="d-flex align-items-start gap-3 mb-3">
-                            <div class="user-avatar" style="background-color: ${post.avatar_color}">
-                                ${post.username.charAt(0).toUpperCase()}
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between">
-                                    <strong>${post.username}</strong>
-                                    <span class="timestamp">${post.formatted_timestamp}</span>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-2" style="background-color: ${post.avatar_color}">
+                                    ${post.username.charAt(0).toUpperCase()}
                                 </div>
-                                <span class="category-tag">${post.category}</span>
+                                <div>
+                                    <h6 class="mb-0">${post.username}</h6>
+                                    <small class="text-muted">${post.formatted_timestamp}</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                ${post.is_pinned ? '<span class="badge bg-success me-1"><i class="bi bi-pin-angle"></i> Pinned</span>' : ''}
+                                ${post.featured_until ? '<span class="badge trending-badge me-1"><i class="bi bi-fire"></i> Featured</span>' : ''}
+                                <span class="category-badge" style="background-color: ${getCategoryColor(post.category)}; color: white;">
+                                    ${post.category}
+                                </span>
                             </div>
                         </div>
                         
-                        ${post.title ? `<h5 class="post-title">${post.title}</h5>` : ''}
-                        
-                        <div class="post-content">${post.content}</div>
-                        
-                        <div class="post-stats">
-                            <span><i class="bi bi-eye"></i> ${post.view_count || 0} views</span>
-                            <span><i class="bi bi-activity"></i> ${post.formatted_last_activity}</span>
+                        <h5 class="card-title">${post.title || 'Untitled Post'}</h5>
+                        <div class="post-content mb-3">
+                            ${truncateText(post.content, 200)}
                         </div>
-
-                        <div class="post-actions">
-                            <div>
-                                <button class="action-btn like-btn ${post.user_has_liked ? 'liked' : ''}" 
-                                        onclick="likePost(${post.id})">
-                                    <i class="bi bi-heart${post.user_has_liked ? '-fill' : ''}"></i>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex">
+                                <button class="like-btn me-3 ${post.user_has_liked ? 'liked' : ''}" data-post-id="${post.id}">
+                                    <i class="bi ${post.user_has_liked ? 'bi-heart-fill' : 'bi-heart'} me-1"></i>
                                     <span>${post.likes_count}</span>
                                 </button>
-                                
-                                <button class="action-btn" onclick="loadComments(${post.id})">
-                                    <i class="bi bi-chat"></i>
-                                    <span>${post.comments_count}</span>
+                                <button class="btn btn-outline-secondary btn-sm me-2 view-comments" data-post-id="${post.id}">
+                                    <i class="bi bi-chat me-1"></i>
+                                    ${post.real_comments_count || post.comments_count} comments
                                 </button>
-                                
-                                <button class="action-btn bookmark-btn ${post.user_has_bookmarked ? 'bookmarked' : ''}" 
-                                        onclick="bookmarkPost(${post.id})">
-                                    <i class="bi bi-bookmark${post.user_has_bookmarked ? '-fill' : ''}"></i>
+                                <button class="bookmark-btn btn btn-outline-secondary btn-sm ${post.user_has_bookmarked ? 'bookmarked' : ''}" data-post-id="${post.id}">
+                                    <i class="bi ${post.user_has_bookmarked ? 'bi-bookmark-fill' : 'bi-bookmark'}"></i>
                                 </button>
                             </div>
+                            <button class="btn btn-primary btn-sm view-post" data-post-id="${post.id}">Read More</button>
                         </div>
                     </div>
                 </div>
             `).join('');
-        }
-
-        async function createPost(event) {
-            if (event) event.preventDefault();
             
-            const category = document.getElementById('postCategory').value;
-            const content = document.getElementById('postContent').value;
-            const title = document.getElementById('postTitle').value;
-
-            if (!category || !content) {
-                showToast('Please fill in all required fields', 'error');
-                return;
-            }
-
-            if (content.length < 10) {
-                showToast('Content must be at least 10 characters', 'error');
-                return;
-            }
-
-            try {
-                const data = await apiCall('/posts', {
-                    method: 'POST',
-                    body: { category, content, title }
-                });
-
-                if (data.success) {
-                    hideModal('createPostModal');
-                    showToast('Post published successfully!', 'success');
-                    loadPosts();
-                }
-            } catch (error) {
-                // Error handled in apiCall
-            }
+            // Add event listeners to post buttons
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', handleLikePost);
+            });
+            
+            document.querySelectorAll('.bookmark-btn').forEach(btn => {
+                btn.addEventListener('click', handleBookmarkPost);
+            });
+            
+            document.querySelectorAll('.view-post').forEach(btn => {
+                btn.addEventListener('click', handleViewPost);
+            });
+            
+            document.querySelectorAll('.view-comments').forEach(btn => {
+                btn.addEventListener('click', handleViewPost);
+            });
         }
 
-        async function likePost(postId) {
+        async function handleLikePost(e) {
+            if (!currentUser) {
+                showAlert('Please login to like posts', 'warning');
+                return;
+            }
+            
+            const postId = e.currentTarget.getAttribute('data-post-id');
+            const isLiked = e.currentTarget.classList.contains('liked');
+            
             try {
                 const data = await apiCall(`/posts/${postId}/like`, {
-                    method: 'POST'
+                    method: isLiked ? 'DELETE' : 'POST'
                 });
-
+                
                 if (data.success) {
-                    loadPosts(); // Reload posts to update like status
+                    // Update UI
+                    const likeCount = e.currentTarget.querySelector('span');
+                    const icon = e.currentTarget.querySelector('i');
+                    
+                    if (isLiked) {
+                        e.currentTarget.classList.remove('liked');
+                        icon.className = 'bi bi-heart me-1';
+                        likeCount.textContent = parseInt(likeCount.textContent) - 1;
+                    } else {
+                        e.currentTarget.classList.add('liked');
+                        icon.className = 'bi bi-heart-fill me-1';
+                        likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                    }
                 }
             } catch (error) {
                 // Error handled in apiCall
             }
         }
 
-        async function bookmarkPost(postId) {
+        async function handleBookmarkPost(e) {
+            if (!currentUser) {
+                showAlert('Please login to bookmark posts', 'warning');
+                return;
+            }
+            
+            const postId = e.currentTarget.getAttribute('data-post-id');
+            const isBookmarked = e.currentTarget.classList.contains('bookmarked');
+            
             try {
                 const data = await apiCall(`/posts/${postId}/bookmark`, {
-                    method: 'POST'
+                    method: isBookmarked ? 'DELETE' : 'POST'
                 });
-
+                
                 if (data.success) {
-                    loadPosts(); // Reload posts to update bookmark status
-                    showToast(`Post ${data.action}`, 'success');
+                    // Update UI
+                    const icon = e.currentTarget.querySelector('i');
+                    
+                    if (isBookmarked) {
+                        e.currentTarget.classList.remove('bookmarked');
+                        icon.className = 'bi bi-bookmark';
+                    } else {
+                        e.currentTarget.classList.add('bookmarked');
+                        icon.className = 'bi bi-bookmark-fill';
+                    }
                 }
             } catch (error) {
                 // Error handled in apiCall
             }
         }
 
-        async function loadComments(postId) {
-            showToast('Comments feature coming soon!', 'info');
-        }
-
-        async function loadUserProfile() {
+        async function handleViewPost(e) {
+            const postId = e.currentTarget.getAttribute('data-post-id');
+            
             try {
-                const data = await apiCall('/profile');
+                const data = await apiCall(`/posts/${postId}`);
+                
                 if (data.success) {
-                    showToast(`Welcome ${data.profile.username}!`, 'success');
+                    displayPostModal(data.post, data.comments);
                 }
             } catch (error) {
                 // Error handled in apiCall
             }
         }
 
-        async function loadBookmarks() {
+        function displayPostModal(post, comments) {
+            document.getElementById('post-modal-title').textContent = post.title || 'Untitled Post';
+            
+            document.getElementById('post-modal-content').innerHTML = `
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar me-2" style="background-color: ${post.avatar_color}">
+                            ${post.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <h6 class="mb-0">${post.username}</h6>
+                            <small class="text-muted">${formatTimestamp(post.timestamp)}</small>
+                        </div>
+                    </div>
+                    <span class="category-badge" style="background-color: ${getCategoryColor(post.category)}; color: white;">
+                        ${post.category}
+                    </span>
+                </div>
+                <div class="post-content">
+                    ${post.content}
+                </div>
+                <div class="d-flex mt-3">
+                    <button class="like-btn me-3 ${post.user_has_liked ? 'liked' : ''}" data-post-id="${post.id}">
+                        <i class="bi ${post.user_has_liked ? 'bi-heart-fill' : 'bi-heart'} me-1"></i>
+                        <span>${post.likes_count}</span>
+                    </button>
+                    <button class="bookmark-btn btn btn-outline-secondary btn-sm ${post.user_has_bookmarked ? 'bookmarked' : ''}" data-post-id="${post.id}">
+                        <i class="bi ${post.user_has_bookmarked ? 'bi-bookmark-fill' : 'bi-bookmark'} me-1"></i> Bookmark
+                    </button>
+                </div>
+            `;
+            
+            // Display comments
+            const commentsList = document.getElementById('comments-list');
+            if (comments && comments.length > 0) {
+                commentsList.innerHTML = comments.map(comment => `
+                    <div class="comment ${comment.depth > 0 ? 'comment-reply' : ''}">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-2" style="background-color: ${comment.avatar_color}; width: 30px; height: 30px; font-size: 0.9rem;">
+                                    ${comment.username.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">${comment.username}</h6>
+                                    <small class="text-muted">${formatTimestamp(comment.timestamp)}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="comment-content">
+                            ${comment.content}
+                        </div>
+                        <div class="mt-2">
+                            <button class="like-btn btn btn-sm btn-outline-secondary me-2 ${comment.user_has_liked ? 'liked' : ''}" data-comment-id="${comment.id}">
+                                <i class="bi ${comment.user_has_liked ? 'bi-heart-fill' : 'bi-heart'}"></i> ${comment.likes_count}
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                commentsList.innerHTML = '<p class="text-muted">No comments yet. Be the first to comment!</p>';
+            }
+            
+            // Show/hide comment form based on auth
+            document.getElementById('add-comment-form').style.display = currentUser ? 'block' : 'none';
+            
+            // Update event listeners for modal buttons
+            document.querySelectorAll('#post-modal-content .like-btn').forEach(btn => {
+                btn.addEventListener('click', handleLikePost);
+            });
+            
+            document.querySelectorAll('#post-modal-content .bookmark-btn').forEach(btn => {
+                btn.addEventListener('click', handleBookmarkPost);
+            });
+            
+            document.querySelectorAll('#comments-list .like-btn').forEach(btn => {
+                btn.addEventListener('click', handleLikeComment);
+            });
+            
+            // Set post ID for comment form
+            document.getElementById('add-comment-form').setAttribute('data-post-id', post.id);
+            
+            elements.postModal.show();
+        }
+
+        async function handleAddComment(e) {
+            e.preventDefault();
+            
+            const postId = e.currentTarget.getAttribute('data-post-id');
+            const content = document.getElementById('comment-content').value;
+            
             try {
-                const data = await apiCall('/bookmarks');
+                const data = await apiCall(`/posts/${postId}/comments`, {
+                    method: 'POST',
+                    body: JSON.stringify({ content })
+                });
+                
                 if (data.success) {
-                    showToast(`Loaded ${data.data.length} bookmarks`, 'success');
+                    document.getElementById('comment-content').value = '';
+                    showAlert('Comment added successfully!', 'success');
+                    
+                    // Reload the post to show the new comment
+                    const postData = await apiCall(`/posts/${postId}`);
+                    if (postData.success) {
+                        displayPostModal(postData.post, postData.comments);
+                    }
                 }
             } catch (error) {
                 // Error handled in apiCall
             }
         }
 
+        async function handleLikeComment(e) {
+            if (!currentUser) {
+                showAlert('Please login to like comments', 'warning');
+                return;
+            }
+            
+            const commentId = e.currentTarget.getAttribute('data-comment-id');
+            const isLiked = e.currentTarget.classList.contains('liked');
+            
+            try {
+                const data = await apiCall(`/comments/${commentId}/like`, {
+                    method: isLiked ? 'DELETE' : 'POST'
+                });
+                
+                if (data.success) {
+                    // Update UI
+                    const likeCount = e.currentTarget.querySelector('span');
+                    const icon = e.currentTarget.querySelector('i');
+                    
+                    if (isLiked) {
+                        e.currentTarget.classList.remove('liked');
+                        icon.className = 'bi bi-heart me-1';
+                        likeCount.textContent = parseInt(likeCount.textContent) - 1;
+                    } else {
+                        e.currentTarget.classList.add('liked');
+                        icon.className = 'bi bi-heart-fill me-1';
+                        likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                    }
+                }
+            } catch (error) {
+                // Error handled in apiCall
+            }
+        }
+
+        // Category Functions
+        async function loadCategories() {
+            try {
+                const data = await apiCall('/categories');
+                
+                if (data.success) {
+                    displayCategories(data.categories);
+                }
+            } catch (error) {
+                // Error handled in apiCall
+            }
+        }
+
+        function displayCategories(categories) {
+            elements.categoriesList.innerHTML = categories.map(category => `
+                <div class="d-flex justify-content-between align-items-center mb-2 category-item" data-category="${category.name}">
+                    <div class="d-flex align-items-center">
+                        <span class="badge me-2" style="background-color: ${category.color}; width: 12px; height: 12px; border-radius: 50%;"></span>
+                        <span>${category.name}</span>
+                    </div>
+                    <span class="badge bg-light text-dark">${category.post_count}</span>
+                </div>
+            `).join('');
+            
+            // Add event listeners to categories
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    currentCategory = this.getAttribute('data-category');
+                    currentPage = 1;
+                    loadPosts();
+                });
+            });
+        }
+
+        // Stats Functions
         async function loadStats() {
             try {
-                const data = await apiCall('/stats');
+                const data = await apiCall('/analytics/overview');
+                
                 if (data.success) {
-                    document.getElementById('stats-users').textContent = data.stats.users;
-                    document.getElementById('stats-posts').textContent = data.stats.posts;
-                    document.getElementById('stats-comments').textContent = data.stats.comments;
-                    document.getElementById('stats-likes').textContent = data.stats.likes;
+                    document.getElementById('stats-users').textContent = data.analytics.users.total_users.toLocaleString();
+                    document.getElementById('stats-posts').textContent = data.analytics.posts.total_posts.toLocaleString();
+                    document.getElementById('stats-comments').textContent = data.analytics.engagement.total_comments.toLocaleString();
                 }
             } catch (error) {
-                console.error('Stats load error:', error);
-                // Don't show error for stats - it's non-critical
+                // Error handled in apiCall
             }
         }
 
-        function toggleTheme() {
-            const currentTheme = document.body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+        // Pagination Functions
+        function displayPagination(pagination) {
+            if (pagination.pages <= 1) {
+                elements.paginationContainer.style.display = 'none';
+                return;
+            }
             
-            const themeIcon = document.querySelector('#theme-toggle i');
-            themeIcon.className = newTheme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
-        }
-
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check authentication
-            const token = localStorage.getItem('token');
-            const userData = localStorage.getItem('userData');
+            elements.paginationContainer.style.display = 'block';
             
-            if (token && userData) {
-                try {
-                    currentUser = JSON.parse(userData);
-                    showAuthenticatedUI();
-                    loadPosts();
-                    loadStats();
-                } catch (error) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('userData');
+            let paginationHTML = '';
+            const { page, pages } = pagination;
+            
+            // Previous button
+            paginationHTML += `
+                <li class="page-item ${page === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${page - 1}">Previous</a>
+                </li>
+            `;
+            
+            // Page numbers
+            for (let i = 1; i <= pages; i++) {
+                if (i === 1 || i === pages || (i >= page - 2 && i <= page + 2)) {
+                    paginationHTML += `
+                        <li class="page-item ${i === page ? 'active' : ''}">
+                            <a class="page-link" href="#" data-page="${i}">${i}</a>
+                        </li>
+                    `;
+                } else if (i === page - 3 || i === page + 3) {
+                    paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
                 }
             }
-
-            // Theme
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.body.setAttribute('data-theme', savedTheme);
-            const themeIcon = document.querySelector('#theme-toggle i');
-            themeIcon.className = savedTheme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
-
-            // Form event listeners
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('register-form').addEventListener('submit', handleRegister);
-            document.getElementById('create-post-form').addEventListener('submit', createPost);
             
-            // Other event listeners
-            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-            document.getElementById('sign-in-btn').addEventListener('click', () => showModal('loginModal'));
-            document.getElementById('create-account-btn').addEventListener('click', () => showModal('registerModal'));
-            document.getElementById('auth-required-signin').addEventListener('click', () => showModal('loginModal'));
-            document.getElementById('logout-btn').addEventListener('click', logout);
-            document.getElementById('new-post-btn').addEventListener('click', () => showModal('createPostModal'));
-            document.getElementById('empty-state-post-btn').addEventListener('click', () => showModal('createPostModal'));
-
-            // Filters
-            document.getElementById('category-filter').addEventListener('change', loadPosts);
-            document.getElementById('search-input').addEventListener('input', debounce(loadPosts, 500));
-            document.getElementById('sort-filter').addEventListener('change', loadPosts);
-        });
-
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
+            // Next button
+            paginationHTML += `
+                <li class="page-item ${page === pages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${page + 1}">Next</a>
+                </li>
+            `;
+            
+            elements.paginationContainer.querySelector('.pagination').innerHTML = paginationHTML;
+            
+            // Add event listeners to pagination buttons
+            elements.paginationContainer.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageNum = parseInt(this.getAttribute('data-page'));
+                    if (pageNum && pageNum !== currentPage) {
+                        currentPage = pageNum;
+                        loadPosts();
+                    }
+                });
+            });
         }
 
-        // Make functions globally available
-        window.hideModal = hideModal;
-        window.loadComments = loadComments;
-        window.likePost = likePost;
-        window.bookmarkPost = bookmarkPost;
-        window.loadUserProfile = loadUserProfile;
-        window.loadBookmarks = loadBookmarks;
+        // UI Update Functions
+        function updateUIForUser() {
+            if (currentUser) {
+                elements.authButtons.style.display = 'none';
+                elements.userMenu.style.display = 'block';
+                elements.createPostCard.style.display = 'block';
+                
+                elements.usernameDisplay.textContent = currentUser.username;
+                elements.userAvatar.textContent = currentUser.username.charAt(0).toUpperCase();
+                elements.userAvatar.style.backgroundColor = currentUser.avatar_color || '#007AFF';
+                
+                // Update welcome banner for logged in user
+                elements.welcomeBanner.innerHTML = `
+                    <div class="card-body">
+                        <h2>Welcome back, ${currentUser.username}!</h2>
+                        <p class="mb-0">Ready to join the conversation?</p>
+                    </div>
+                `;
+            } else {
+                elements.authButtons.style.display = 'block';
+                elements.userMenu.style.display = 'none';
+                elements.createPostCard.style.display = 'none';
+                
+                // Reset welcome banner
+                elements.welcomeBanner.innerHTML = `
+                    <div class="card-body">
+                        <h2>Welcome to EdgePowered Forum</h2>
+                        <p class="mb-0">Join the conversation and connect with the community</p>
+                    </div>
+                `;
+            }
+            
+            // Populate category dropdown for post creation
+            if (currentUser) {
+                loadCategoriesForPost();
+            }
+        }
+
+        async function loadCategoriesForPost() {
+            try {
+                const data = await apiCall('/categories');
+                
+                if (data.success) {
+                    const categorySelect = document.getElementById('post-category');
+                    categorySelect.innerHTML = '<option value="">Select Category</option>' +
+                        data.categories.map(cat => 
+                            `<option value="${cat.name}">${cat.name}</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                // Error handled in apiCall
+            }
+        }
+
+        // Utility Functions
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.querySelector('.container').insertBefore(alert, document.querySelector('.container').firstChild);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        function truncateText(text, maxLength) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'Recently';
+            
+            try {
+                const postTime = new Date(timestamp);
+                const now = new Date();
+                const diff = now - postTime;
+                
+                if (diff > 365 * 24 * 60 * 60 * 1000) {
+                    const years = Math.floor(diff / (365 * 24 * 60 * 60 * 1000));
+                    return `${years} year${years > 1 ? 's' : ''} ago`;
+                } else if (diff > 30 * 24 * 60 * 60 * 1000) {
+                    const months = Math.floor(diff / (30 * 24 * 60 * 60 * 1000));
+                    return `${months} month${months > 1 ? 's' : ''} ago`;
+                } else if (diff > 24 * 60 * 60 * 1000) {
+                    const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+                    return `${days}d ago`;
+                } else if (diff > 60 * 60 * 1000) {
+                    const hours = Math.floor(diff / (60 * 60 * 1000));
+                    return `${hours}h ago`;
+                } else if (diff > 60 * 1000) {
+                    const minutes = Math.floor(diff / (60 * 1000));
+                    return `${minutes}m ago`;
+                } else {
+                    return 'Just now';
+                }
+            } catch {
+                return timestamp;
+            }
+        }
+
+        function getCategoryColor(categoryName) {
+            const categoryColors = {
+                'General': '#007AFF',
+                'Technology': '#34C759',
+                'Science': '#FF9500',
+                'Entertainment': '#AF52DE',
+                'Sports': '#FF3B30',
+                'Politics': '#5856D6'
+            };
+            
+            return categoryColors[categoryName] || '#6c757d';
+        }
     </script>
 </body>
 </html>
