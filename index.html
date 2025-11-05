@@ -368,18 +368,20 @@
                 <button class="btn-close" onclick="hideModal('loginModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Username or Email</label>
-                    <input type="text" id="loginUsername" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Password</label>
-                    <input type="password" id="loginPassword" class="form-control">
-                </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary w-50" onclick="hideModal('loginModal')">Cancel</button>
-                    <button class="btn btn-primary w-50" id="login-btn">Sign In</button>
-                </div>
+                <form id="login-form">
+                    <div class="mb-3">
+                        <label class="form-label">Username or Email</label>
+                        <input type="text" id="loginUsername" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="loginPassword" class="form-control" required>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary w-50" onclick="hideModal('loginModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary w-50" id="login-btn">Sign In</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -391,26 +393,28 @@
                 <button class="btn-close" onclick="hideModal('registerModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Username</label>
-                    <input type="text" id="registerUsername" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Email (Optional)</label>
-                    <input type="email" id="registerEmail" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Password</label>
-                    <input type="password" id="registerPassword" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Confirm Password</label>
-                    <input type="password" id="registerConfirmPassword" class="form-control">
-                </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary w-50" onclick="hideModal('registerModal')">Cancel</button>
-                    <button class="btn btn-primary w-50" id="register-btn">Create Account</button>
-                </div>
+                <form id="register-form">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="registerUsername" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email (Optional)</label>
+                        <input type="email" id="registerEmail" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="registerPassword" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" id="registerConfirmPassword" class="form-control" required>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary w-50" onclick="hideModal('registerModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary w-50" id="register-btn">Create Account</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -422,38 +426,38 @@
                 <button class="btn-close" onclick="hideModal('createPostModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Category</label>
-                    <select id="postCategory" class="form-control">
-                        <option value="General">General</option>
-                        <option value="Technology">Technology</option>
-                        <option value="Science">Science</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Title (Optional)</label>
-                    <input type="text" id="postTitle" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Content</label>
-                    <textarea id="postContent" class="form-control" rows="6"></textarea>
-                </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary w-50" onclick="hideModal('createPostModal')">Cancel</button>
-                    <button class="btn btn-primary w-50" id="create-post-btn">Publish Post</button>
-                </div>
+                <form id="create-post-form">
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select id="postCategory" class="form-control" required>
+                            <option value="General">General</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Science">Science</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Title (Optional)</label>
+                        <input type="text" id="postTitle" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Content</label>
+                        <textarea id="postContent" class="form-control" rows="6" required></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary w-50" onclick="hideModal('createPostModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary w-50" id="create-post-btn">Publish Post</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     
     <script>
         // Configuration
         const API_BASE = window.location.origin + '/api';
         let currentUser = null;
-        let socket = null;
 
         // Utility Functions
         function showToast(message, type = 'info') {
@@ -473,6 +477,16 @@
 
         function hideModal(id) {
             document.getElementById(id).style.display = 'none';
+            // Clear forms when hiding modals
+            if (id === 'loginModal') {
+                document.getElementById('login-form').reset();
+            }
+            if (id === 'registerModal') {
+                document.getElementById('register-form').reset();
+            }
+            if (id === 'createPostModal') {
+                document.getElementById('create-post-form').reset();
+            }
         }
 
         async function apiCall(endpoint, options = {}) {
@@ -494,18 +508,21 @@
                 const data = await response.json();
                 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Request failed');
+                    throw new Error(data.error || `Request failed with status ${response.status}`);
                 }
 
                 return data;
             } catch (error) {
+                console.error('API Call error:', error);
                 showToast(error.message, 'error');
                 throw error;
             }
         }
 
         // Authentication Functions
-        async function handleLogin() {
+        async function handleLogin(event) {
+            if (event) event.preventDefault();
+            
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
 
@@ -530,23 +547,22 @@
                     showToast('Successfully signed in!', 'success');
                     loadPosts();
                     loadStats();
-                    
-                    // Initialize socket connection
-                    initializeSocket();
                 }
             } catch (error) {
                 // Error handled in apiCall
             }
         }
 
-        async function handleRegister() {
+        async function handleRegister(event) {
+            if (event) event.preventDefault();
+            
             const username = document.getElementById('registerUsername').value;
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('registerConfirmPassword').value;
             const email = document.getElementById('registerEmail').value;
 
             if (!username || !password || !confirmPassword) {
-                showToast('Please fill in all fields', 'error');
+                showToast('Please fill in all required fields', 'error');
                 return;
             }
 
@@ -576,10 +592,6 @@
             currentUser = null;
             showUnauthenticatedUI();
             showToast('Successfully signed out', 'success');
-            
-            if (socket) {
-                socket.disconnect();
-            }
         }
 
         function showAuthenticatedUI() {
@@ -621,14 +633,19 @@
                     document.getElementById('empty-state').style.display = data.data.length === 0 ? 'block' : 'none';
                 }
             } catch (error) {
-                document.getElementById('posts-container').innerHTML = '<div class="text-center text-muted">Failed to load posts</div>';
+                if (error.message.includes('401')) {
+                    // Not authenticated, show auth required message
+                    showUnauthenticatedUI();
+                } else {
+                    document.getElementById('posts-container').innerHTML = '<div class="text-center text-muted">Failed to load posts</div>';
+                }
             }
         }
 
         function renderPosts(posts) {
             const container = document.getElementById('posts-container');
             
-            if (posts.length === 0) {
+            if (!posts || posts.length === 0) {
                 container.innerHTML = '';
                 return;
             }
@@ -682,7 +699,9 @@
             `).join('');
         }
 
-        async function createPost() {
+        async function createPost(event) {
+            if (event) event.preventDefault();
+            
             const category = document.getElementById('postCategory').value;
             const content = document.getElementById('postContent').value;
             const title = document.getElementById('postTitle').value;
@@ -700,8 +719,6 @@
 
                 if (data.success) {
                     hideModal('createPostModal');
-                    document.getElementById('postContent').value = '';
-                    document.getElementById('postTitle').value = '';
                     showToast('Post published successfully!', 'success');
                     loadPosts();
                 }
@@ -732,7 +749,7 @@
 
                 if (data.success) {
                     loadPosts(); // Reload posts to update bookmark status
-                showToast(`Post ${data.action}`, 'success');
+                    showToast(`Post ${data.action}`, 'success');
                 }
             } catch (error) {
                 // Error handled in apiCall
@@ -775,21 +792,9 @@
                     document.getElementById('stats-likes').textContent = data.stats.likes;
                 }
             } catch (error) {
-                // Error handled in apiCall
+                console.error('Stats load error:', error);
+                // Don't show error for stats - it's non-critical
             }
-        }
-
-        function initializeSocket() {
-            socket = io();
-            
-            socket.on('connect', () => {
-                console.log('Connected to server');
-            });
-
-            socket.on('new_post', (data) => {
-                showToast(`New post in ${data.category} by ${data.username}`, 'info');
-                loadPosts();
-            });
         }
 
         function toggleTheme() {
@@ -809,11 +814,15 @@
             const userData = localStorage.getItem('userData');
             
             if (token && userData) {
-                currentUser = JSON.parse(userData);
-                showAuthenticatedUI();
-                loadPosts();
-                loadStats();
-                initializeSocket();
+                try {
+                    currentUser = JSON.parse(userData);
+                    showAuthenticatedUI();
+                    loadPosts();
+                    loadStats();
+                } catch (error) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userData');
+                }
             }
 
             // Theme
@@ -822,17 +831,19 @@
             const themeIcon = document.querySelector('#theme-toggle i');
             themeIcon.className = savedTheme === 'light' ? 'bi bi-moon' : 'bi bi-sun';
 
-            // Event listeners
+            // Form event listeners
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('register-form').addEventListener('submit', handleRegister);
+            document.getElementById('create-post-form').addEventListener('submit', createPost);
+            
+            // Other event listeners
             document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
             document.getElementById('sign-in-btn').addEventListener('click', () => showModal('loginModal'));
             document.getElementById('create-account-btn').addEventListener('click', () => showModal('registerModal'));
             document.getElementById('auth-required-signin').addEventListener('click', () => showModal('loginModal'));
             document.getElementById('logout-btn').addEventListener('click', logout);
-            document.getElementById('login-btn').addEventListener('click', handleLogin);
-            document.getElementById('register-btn').addEventListener('click', handleRegister);
             document.getElementById('new-post-btn').addEventListener('click', () => showModal('createPostModal'));
             document.getElementById('empty-state-post-btn').addEventListener('click', () => showModal('createPostModal'));
-            document.getElementById('create-post-btn').addEventListener('click', createPost);
 
             // Filters
             document.getElementById('category-filter').addEventListener('change', loadPosts);
