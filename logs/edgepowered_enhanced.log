@@ -1,1 +1,3 @@
 2025-11-04 18:40:58,538 ERROR: Database initialization error: near "WHERE": syntax error [in C:\Users\barak\OneDrive\Documents\AaINIBIC\GroupsResearch\Hosting\app.py:319]
+2025-11-04 19:22:59,801 INFO: Enhanced database schema initialized successfully [in C:\Users\barak\OneDrive\Documents\AaINIBIC\GroupsResearch\Hosting\app.py:303]
+2025-11-04 19:23:06,652 INFO: Enhanced database schema initialized successfully [in C:\Users\barak\OneDrive\Documents\AaINIBIC\GroupsResearch\Hosting\app.py:303]
